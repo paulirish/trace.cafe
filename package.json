@@ -16,6 +16,7 @@
     "firebase": "^9.13.0"
   },
   "devDependencies": {
+    "@rollup/plugin-html": "^1.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "rollup": "^3.2.5"
   }

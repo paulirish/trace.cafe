@@ -26,10 +26,9 @@ const traceFilename = 'loadingtrace-in-opp.json';
 // const traceFilename = 'cnnindo-click.json.gz';
 
 
-const dlurl = await getDownloadURL(ref(storage, `${encodeURIComponent('traces/')}${traceFilename}`));
-const iframe = document.querySelector('#ifr');
-const encodedDlurl = encodeURIComponent(dlurl);
-  // .replace('traces%252F', encodeURIComponent('traces%252F')); // why? dunno.
+const dlurl = await getDownloadURL(ref(storage, `${'traces/'}${traceFilename}`));
+const encodedDlurl = encodeURIComponent(dlurl)
+  .replace('traces%252F', encodeURIComponent('traces%252F')); // why? dunno.
 console.log({encodedDlurl})
 // No workie cuz of browser protections on devtools:// URLs
 const dtViewingTraceUrl = `devtools://devtools/bundled/devtools_app.html?loadTimelineFromURL=${encodedDlurl}`;
@@ -38,6 +37,10 @@ const dtViewingTraceUrl = `devtools://devtools/bundled/devtools_app.html?loadTim
 const hostedDtViewingTraceUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@3d5948960d62418160796d5831a4d2d7d6c90fa8/worker_app.html?loadTimelineFromURL=${encodedDlurl}`;
 
 console.log(hostedDtViewingTraceUrl) 
+// const iframe = document.querySelector('#ifr');
+const iframe = document.createElement('iframe');
+iframe.style.cssText = 'width: 600px; height: 600px;'
+document.body.append(iframe);
 // iframe.src = `devtools://devtools/bundled/devtools_app.html?loadTimelineFromURL=${url}`;
 iframe.src = hostedDtViewingTraceUrl;
 // document.location.href = dtViewingTraceUrl;

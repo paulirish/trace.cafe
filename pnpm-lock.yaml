@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@rollup/plugin-html': ^1.0.1
   '@rollup/plugin-node-resolve': ^15.0.1
   firebase: ^9.13.0
   rollup: ^3.2.5
@@ -9,6 +10,7 @@ dependencies:
   firebase: 9.13.0
 
 devDependencies:
+  '@rollup/plugin-html': 1.0.1_rollup@3.2.5
   '@rollup/plugin-node-resolve': 15.0.1_rollup@3.2.5
   rollup: 3.2.5
 
@@ -555,6 +557,18 @@ packages:
   /@protobufjs/utf8/1.1.0:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
+
+  /@rollup/plugin-html/1.0.1_rollup@3.2.5:
+    resolution: {integrity: sha512-ex4qCaauEhrhYTlFaW/D1Y66I/qL8Uu04FWFR+eQgjOtRCegMtscn69fS6ZGeL1GG6qCFdV8DTaP911uyMycWw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      rollup: 3.2.5
+    dev: true
 
   /@rollup/plugin-node-resolve/15.0.1_rollup@3.2.5:
     resolution: {integrity: sha512-ReY88T7JhJjeRVbfCyNj+NXAG3IIsVMsX9b5/9jC98dRP8/yxlZdz7mHZbHk5zHr24wZZICS5AcXsFZAXYUQEg==}

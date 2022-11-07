@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["devtools://devtools", "https://chrome-devtools-frontend.appspot.com"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]

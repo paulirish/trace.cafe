@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "trace-uploading-maybe",
+    "tum": "trace-uploading-maybe"
+  },
+  "targets": {},
+  "etags": {}
+}

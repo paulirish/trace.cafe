@@ -66,10 +66,9 @@ function upload(fileItem) {
     async () => {
       console.debug('upload complete', uploadTask.snapshot.ref, uploadTask);
       console.log('Upload complete', uploadTask.snapshot.ref.name);
-      const urlToView = new URL('/', location.href);
-      urlToView.searchParams.set('trace', uploadTask.snapshot.ref.name);
 
-      // pushState is for the bird
+      const urlToView = new URL(`/trace/${uploadTask.snapshot.ref.name}`, location.href);
+      // pushState is for the birds
       location.href = urlToView.href;
 
       // Upload completed successfully, now we can get the download URL

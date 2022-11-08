@@ -44,9 +44,9 @@ hijackConsole();
     return;
   }
   // Pull from path
-  const pathTraceId = parsed.pathname.match(/\/trace\/(?<traceid>\w+)/)?.groups?.traceid;
+  const pathTraceId = parsed.pathname.match(/\/trace\/(?<traceid>[^/]*)/)?.groups?.traceid;
   if (pathTraceId) {
-    const dlurl = await getTraceDlUrl(traceId);
+    const dlurl = await getTraceDlUrl(pathTraceId);
     viewTraceFromUrl(dlurl);
   }
 })();

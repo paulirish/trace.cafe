@@ -3,6 +3,7 @@
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, getStream } from "firebase/storage";
 
+import { setupDragAndDrop } from './dragndrop';
 
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
@@ -42,6 +43,7 @@ const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/
 
 async function viewTraceFromUrl(downloadUrl) {
   console.log('File exists in storage. Fetching ' + downloadUrl);
+  document.body.className = 'state--viewing';
   const encodedDlurl = encodeURIComponent(downloadUrl)
     .replace('traces%252F', encodeURIComponent('traces%252F')); // why? dunno.
 
@@ -52,7 +54,6 @@ async function viewTraceFromUrl(downloadUrl) {
   const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
   
   const iframe = document.querySelector('#ifr');
-  iframe.hidden = false;
   iframe.src = hostedDtViewingTraceUrl;
 
 }
@@ -74,46 +75,26 @@ async function viewTraceFromUrl(downloadUrl) {
   }
 })();
 
+setupDragAndDrop()
 
-// Setup drag n drop
-const dropArea = document.querySelector('body');
-dropArea.addEventListener('dragover', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  // Style the drag-and-drop as a "copy file" operation.
-  event.dataTransfer.dropEffect = 'copy';
-});
-dropArea.addEventListener('drop', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  const fileList = event.dataTransfer.files;
-
-  if (fileList.length !== 1) {
-    throw new Error('Can only upload 1 trace at a time');
-  }
-  // TODO: support .json.gz
-  const fileItem = fileList.item(0);
-  if (!fileItem.type.endsWith('/json')) {
-    throw new Error('Only JSON is accepted');
-  }
-  upload(fileItem);
-});
 
 // Preload iframe
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'width: 600px; height: 600px;'
-  iframe.id = 'ifr';
-  iframe.src = devtoolsBaseUrl;
-  iframe.hidden = true;
-  document.body.append(iframe);
-  
+const iframe = document.createElement('iframe');
+iframe.id = 'ifr';
+iframe.src = devtoolsBaseUrl;
+document.body.append(iframe);
+
+// Update example trace URL
+const example = document.querySelector('#example');
+const rootRelUrl = example.href.replace(example.origin, '');
+const adjustedExampleUrl = new URL(rootRelUrl, location.href);
+example.textContent = example.href = adjustedExampleUrl;
 
 
 /**
  * @param {File} fileItem 
  */
 function upload(fileItem) {
-
   // Create the file metadata
   /** @type {UploadMetadata} */
   const metadata = {
@@ -149,6 +130,10 @@ function upload(fileItem) {
       viewTraceFromUrl(dlurl);
     }
   );
+}
 
-
+export {
+  getTraceDlUrl,
+  viewTraceFromUrl,
+  upload,
 }

@@ -46,11 +46,9 @@ const template = ({attributes, files, meta, publicPath, title }) => {
     </style>
     ${links}
   </head>
-  <body>
-    <main>
-      <h2>sup</h2>
-    </main>
-    ${scripts}
+  <body class="state--idle">
+   ${readFileSync('./src/body.html', 'utf-8')}
+   ${scripts}
   </body>
 </html>`;
 

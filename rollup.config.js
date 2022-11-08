@@ -4,19 +4,17 @@ import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
 
 import {readFileSync} from 'node:fs';
 
-// import commonjs from 'rollup-plugin-commonjs';
-// import buble from '@rollup/plugin-buble';
-// import { visualizer } from 'rollup-plugin-visualizer';
-
-
-
 // stolen from https://github.com/rollup/plugins/blob/master/packages/html/src/index.ts
 const template = ({attributes, files, meta, publicPath, title }) => { 
 
+  // console.log({attributes}, files);
   const scripts = (files.js || [])
-    .map(({ fileName }) => {
+    .map(({ fileName, code }) => {
       const attrs = makeHtmlAttributes(attributes.script);
-      return `<script src="${publicPath}${fileName}"${attrs}></script>`;
+      // inline the script. no external scripts
+      return `<script ${attrs}>
+${code}
+</script>`;
     })
     .join('\n');
 

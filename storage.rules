@@ -1,13 +1,13 @@
 rules_version = '2';
 service firebase.storage {
-  match /{imageId} {
-    allow read: if resource.size < 100 * 1024;
-    allow write: if imageId.matches(".*\\.txt");
-  }
+  // match /{imageId} {
+  //   allow read: if resource.size < 100 * 1024;
+  //   allow write: if imageId.matches(".*\\.txt");
+  // }
 
-  match /traces/{traceId} {
-    allow read
-    allow write
+  match /b/{bucket}/o/traces/{traceId} {
+    allow get
+    allow create
   }
   match /b/{bucket}/o {
     match /{allPaths=**} {

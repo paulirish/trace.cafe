@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, getStream } from "firebase/storage";
+import { viewTraceFromUrl } from './app';
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
 
@@ -24,8 +25,14 @@ const traceFilename = 'loadingtrace-in-opp.json';
 
 
 async function getTraceDlUrl(traceFilename) {
-  const dlurl = await getDownloadURL(ref(storage, `${'traces/'}${traceFilename}`));
-  return dlurl;
+  console.log('Looking for trace:', traceFilename);
+  const currentRef = ref(storage, `${'traces/'}${traceFilename}`);
+  return getDownloadURL(currentRef).then(dlurl => {
+    console.log('Trace found in storage.', currentRef.name);
+    return dlurl;
+  }).catch(e => {
+    console.error(e);
+  });
 }
 
 
@@ -39,7 +46,7 @@ function upload(fileItem) {
   const metadata = {
     contentType: fileItem.type,
     cacheControl: 'max-age=31536000', // 1yr. https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl/
-    contentEncoding: 'br'
+    // contentEncoding: 'br'
   };
 
   // Upload file and metadata to the object 'images/mountains.jpg'
@@ -57,14 +64,15 @@ function upload(fileItem) {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
     }, 
     async () => {
-      console.log('upload complete', uploadTask.snapshot.ref, uploadTask);
+      console.debug('upload complete', uploadTask.snapshot.ref, uploadTask);
+      console.log('Upload complete', uploadTask.snapshot.ref.name);
       const urlToView = new URL('/', location.href);
       urlToView.searchParams.set('trace', uploadTask.snapshot.ref.name);
-      console.log('OK done', urlToView.href);
 
-      history.pushState({}, null, urlToView.href);
+      // pushState is for the bird
+      location.href = urlToView.href;
+
       // Upload completed successfully, now we can get the download URL
-
       const dlurl = await getDownloadURL(uploadTask.snapshot.ref);
       viewTraceFromUrl(dlurl);
     }

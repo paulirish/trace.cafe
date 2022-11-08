@@ -52,7 +52,7 @@ iframe {
 }
 
 .state--idle details {
-  display: none;
+  visibility: hidden;
 }
 
 .state--viewing details {
@@ -60,7 +60,6 @@ iframe {
     background-color: rgb(241 243 244);
     width: 100%;
     color: rgb(51, 51, 51);
-    padding: 7px 8px;
     position: fixed;
     top: 0;
     z-index: 10; /* Above devtools iframe */
@@ -70,7 +69,27 @@ iframe {
   height: 26px; /* Matches the height of devtools tab strip */
 }
 
+summary {
+  padding: 7px 8px;
+  cursor: pointer;
+}
+summary:hover {
+  background-color: rgb(222 225 230);
+}
 
+textarea {
+  width: 100%;
+  height: 90px;
+  font-size: 11px;
+  font-family: menlo, dejavu sans mono, consolas, lucida console, courier new, monospace;
+  border: 0;
+  resize: none;
+}
+.state--idle details textarea {
+  visibility: visible;
+}
+
+/** drag n drop */
 .dropping main {
   filter: blur(2px) grayscale(1);
 }

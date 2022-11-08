@@ -1,5 +1,6 @@
 import { upload } from "./storage";
 
+// Thx Lighthouse viewer drag-and-drop.js
 export function setupDragAndDrop() {
   let dragging = false;
 
@@ -30,7 +31,6 @@ export function setupDragAndDrop() {
     dropArea.classList.add('dropping');
     dragging = true;
   });
-
 
   function resetDraggingUI() {
     dropArea.classList.remove('dropping');

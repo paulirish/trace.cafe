@@ -1,7 +1,7 @@
 
 import { setupDragAndDrop } from './dragndrop';
-import { upload, getTraceDlUrl } from './storage';
-
+import { getTraceDlUrl } from './storage';
+import { hijackConsole } from './log';
 
 // traceid param (either query param or path param) is a a ref.name
 
@@ -11,8 +11,13 @@ import { upload, getTraceDlUrl } from './storage';
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@3d5948960d62418160796d5831a4d2d7d6c90fa8/worker_app.html`;
 
 async function viewTraceFromUrl(downloadUrl) {
-  console.log('File exists in storage. Fetching ' + downloadUrl);
+  if (!downloadUrl) return;
+ 
   document.body.className = 'state--viewing';
+  setTimeout(_ => {
+    document.querySelector('details').open = false;
+  }, 1_000);
+
   const encodedDlurl = encodeURIComponent(downloadUrl)
     .replace('traces%252F', encodeURIComponent('traces%252F')); // why? dunno.
 
@@ -22,10 +27,12 @@ async function viewTraceFromUrl(downloadUrl) {
   // TODO: find mechanism to update this or make sure it matches the trace version
   const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
   
+  console.log('Loading trace in DevTools…');
   const iframe = document.querySelector('#ifr');
   iframe.src = hostedDtViewingTraceUrl;
-
 }
+
+hijackConsole();
 
 (async function readParams(){
   const parsed = new URL(location.href);
@@ -34,6 +41,7 @@ async function viewTraceFromUrl(downloadUrl) {
   if (traceId) {
     const dlurl = await getTraceDlUrl(traceId);
     viewTraceFromUrl(dlurl);
+    return;
   }
   // Pull from path
   const pathTraceId = parsed.pathname.match(/\/trace\/(?<traceid>\w+)/)?.groups?.traceid;

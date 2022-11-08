@@ -1,7 +1,7 @@
-import { upload } from "./app";
+import { upload } from "./storage";
 
 export function setupDragAndDrop() {
-
+  let dragging = false;
 
   // Setup drag n drop
   const dropArea = document.querySelector('body');
@@ -11,13 +11,31 @@ export function setupDragAndDrop() {
     // Style the drag-and-drop as a "copy file" operation.
     event.dataTransfer.dropEffect = 'copy';
   });
+
   dropArea.addEventListener('drop', (event) => {
     event.stopPropagation();
     event.preventDefault();
+    resetDraggingUI()
     const fileList = event.dataTransfer.files;
     handleDrop(fileList);
   });
 
+  // The mouseleave event is more reliable than dragleave when the user drops
+  // the file outside the window.
+  dropArea.addEventListener('mouseleave', _ => {
+    if (!dragging) return;
+    resetDraggingUI();
+  });
+  dropArea.addEventListener('dragenter', _ => {
+    dropArea.classList.add('dropping');
+    dragging = true;
+  });
+
+
+  function resetDraggingUI() {
+    dropArea.classList.remove('dropping');
+    dragging = false;
+  }
 }
 
 

@@ -61,7 +61,5 @@ example.textContent = example.href = adjustedExampleUrl;
 
 
 export {
-  getTraceDlUrl,
   viewTraceFromUrl,
-  upload,
 }

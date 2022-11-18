@@ -9,7 +9,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    // https://firebase.google.com/docs/hosting/full-config#rewrites
     "rewrites": [
+      {
+        "source": "**/app.js.map",
+        "destination": "/app.js.map"
+      },
       {
         "source": "**",
         "destination": "/index.html"

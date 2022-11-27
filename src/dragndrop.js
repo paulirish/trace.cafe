@@ -48,8 +48,9 @@ function handleDrop(fileList) {
   }
   // TODO: support .json.gz
   const fileItem = fileList.item(0);
-  if (!fileItem.type.endsWith('/json')) {
-    throw new Error('Only JSON is accepted');
+// I see .json.gz as  "application/x-gzip"
+  if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
+    throw new Error('Only .json and .json.gz is accepted');
   }
   upload(fileItem);
 }

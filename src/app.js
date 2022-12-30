@@ -54,7 +54,7 @@ function setupLanding() {
   // Preload iframe
   const iframe = document.createElement('iframe');
   iframe.id = 'ifr';
-  iframe.src = devtoolsBaseUrl;
+  iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
   document.body.append(iframe);
 
   // Update example trace URL

@@ -21,11 +21,7 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
 
-const traceFilename = 'loadingtrace-in-opp.json';
 // TODO: need to add FunkedFileReader's gzip support to TimelineLoader.loadFromURL
-// const traceFilename = 'cnnindo-click.json.gz';
-
-
 async function getTraceDlUrl(traceId) {
   console.log('Looking for trace:', traceId);
 
@@ -33,14 +29,32 @@ async function getTraceDlUrl(traceId) {
     ? ref(storage, `permatraces/demotrace.json`)
     : ref(storage, `traces/${traceId}`);
 
-  const dlUrlP = getDownloadURL(currentRef);
-  const metadataP = getMetadata(currentRef);
-  return Promise.all([dlUrlP, metadataP]).then(([dlurl, metadata]) => {
-    console.log('Trace found in storage.', currentRef.name);
-    return {dlurl, metadata};
-  }).catch(e => {
-    console.error(e);
-  });
+  // Could use getDownloadURL(currentRef) and getMetadata(currentRef) but at the REST level they're the same request and it adds ~300ms of extra latency
+  // So instead we fetch this data ourselves (instead of firebase JS API)
+  const bucketPrefix = 'https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o';
+  const fileDataUrl = `${bucketPrefix}/${encodeURIComponent(currentRef.fullPath)}`;
+  const resp = await fetch(fileDataUrl);
+  if (!resp.ok) {
+    const err = await resp.json()
+    if (err?.error?.code === 404) {
+      console.error(`Trace (${traceId}) not found. Perhaps it's been more than 30 days since upload?`);
+    } else {
+      console.error(err);
+    } 
+    return {dlurl: undefined, metadata: undefined};
+  }
+  const fileData = await resp.json()
+
+  const date = new Date(fileData.timeCreated);
+  console.log('Trace found in storage.', currentRef.name, 'from', `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`);
+
+  // eg. https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o/traces%2FsfmYyqoGXa?alt=media&token=b9cf1da7-7120-4d3a-8d5b-e9e54146cdf9
+  const dlurl = new URL(fileDataUrl);
+  dlurl.searchParams.append('alt', 'media');
+  dlurl.searchParams.append('token', fileData.downloadTokens);
+  const metadata = fileData.customMetadata;
+
+  return {dlurl, metadata};
 }
 
 /**

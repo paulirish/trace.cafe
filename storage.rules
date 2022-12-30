@@ -10,6 +10,10 @@ service firebase.storage {
     allow create: if resource == null // it doesnt already exist
   }
 
+  match /b/{bucket}/o/permatraces/{traceId} {
+    allow get
+  }
+
   // match /b/{bucket}/o {
   //   match /{allPaths=**} {
   //     allow read, write: if false;

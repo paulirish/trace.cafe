@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll, getStream } from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, getMetadata, listAll, getStream } from 'firebase/storage';
+import {customAlphabet} from 'nanoid';
+
 import { viewTraceFromUrl } from './app';
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
@@ -24,33 +26,50 @@ const traceFilename = 'loadingtrace-in-opp.json';
 // const traceFilename = 'cnnindo-click.json.gz';
 
 
-async function getTraceDlUrl(traceFilename) {
-  console.log('Looking for trace:', traceFilename);
-  const currentRef = ref(storage, `${'traces/'}${traceFilename}`);
-  return getDownloadURL(currentRef).then(dlurl => {
+async function getTraceDlUrl(traceId) {
+  console.log('Looking for trace:', traceId);
+
+  const currentRef = (traceId === 'demo') 
+    ? ref(storage, `permatraces/demotrace.json`)
+    : ref(storage, `traces/${traceId}`);
+
+  const dlUrlP = getDownloadURL(currentRef);
+  const metadataP = getMetadata(currentRef);
+  return Promise.all([dlUrlP, metadataP]).then(([dlurl, metadata]) => {
     console.log('Trace found in storage.', currentRef.name);
-    return dlurl;
+    return {dlurl, metadata};
   }).catch(e => {
     console.error(e);
   });
 }
 
-
+/**
+ * 
+ * @param {*} fileItem 
+ */
+function getCuteId(fileItem) {
+  const allowedIDCharacters = 'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789';
+  const nanoid = customAlphabet(allowedIDCharacters, 10);
+  return nanoid();
+}
 
 /**
  * @param {File} fileItem 
  */
 function upload(fileItem) {
-  // Create the file metadata
   /** @type {UploadMetadata} */
   const metadata = {
     contentType: fileItem.type,
     cacheControl: 'max-age=31536000', // 1yr. https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl/
-    // contentEncoding: 'br'
+    customMetadata: {
+      // Readable in `x-goog-meta-oname` response header.
+      oName: fileItem.name,
+    },
+    // contentEncoding: 'br' // Doesn't work right.
   };
 
-  // Upload file and metadata to the object 'images/mountains.jpg'
-  const storageRef = ref(storage, 'traces/' + fileItem.name);
+  const cuteId = getCuteId(fileItem);
+  const storageRef = ref(storage, `traces/${cuteId}`);
   const uploadTask = uploadBytesResumable(storageRef, fileItem, metadata);
 
   // Listen for state changes, errors, and completion of the upload.

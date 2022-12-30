@@ -62,7 +62,7 @@ export default {
     sourcemap: true,
   },
   plugins: [
-    resolve(),
+    resolve({browser: true}),
     // 
     html({
       template,

@@ -42,6 +42,7 @@ main {
   text-align: center;
 }
 h1 { font-size: 72px; }
+h1 a { color: inherit; text-decoration: inherit;}
 h2 {  font-size: 24px; line-height: 32px; 
   color: #512da8;  
   margin: 5vw; 

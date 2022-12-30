@@ -2,8 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, getMetadata, listAll, getStream } from 'firebase/storage';
 import {customAlphabet} from 'nanoid';
 
-import { viewTraceFromUrl } from './app';
-
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
 
 
@@ -45,16 +43,14 @@ async function getTraceDlUrl(traceId) {
   }
   const fileData = await resp.json()
 
-  const date = new Date(fileData.timeCreated);
-  console.log('Trace found in storage.', currentRef.name, 'from', `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`);
+  console.log('Trace found in storage.', currentRef.name);
 
   // eg. https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o/traces%2FsfmYyqoGXa?alt=media&token=b9cf1da7-7120-4d3a-8d5b-e9e54146cdf9
   const dlurl = new URL(fileDataUrl);
   dlurl.searchParams.append('alt', 'media');
   dlurl.searchParams.append('token', fileData.downloadTokens);
-  const metadata = fileData.customMetadata;
 
-  return {dlurl, metadata};
+  return {dlurl, fileData};
 }
 
 /**
@@ -101,12 +97,8 @@ function upload(fileItem) {
       console.log('Upload complete', uploadTask.snapshot.ref.name);
 
       const urlToView = new URL(`/trace/${uploadTask.snapshot.ref.name}`, location.href);
-      // pushState is for the birds
+      // pushState is for the birds. State-wise this is more straightforward.
       location.href = urlToView.href;
-
-      // Upload completed successfully, now we can get the download URL
-      const dlurl = await getDownloadURL(uploadTask.snapshot.ref);
-      viewTraceFromUrl(dlurl);
     }
   );
 }

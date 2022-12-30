@@ -1,17 +1,20 @@
 rules_version = '2';
+
+// docs: https://firebase.google.com/docs/rules/rules-language?hl=en&authuser=0
+
 service firebase.storage {
-  // match /{imageId} {
-  //   allow read: if resource.size < 100 * 1024;
-  //   allow write: if imageId.matches(".*\\.txt");
-  // }
 
   match /b/{bucket}/o/traces/{traceId} {
     allow get
-    allow create
+    // https://stackoverflow.com/questions/38995011/firebase-3-storage-dont-allow-file-updating-overwriting
+    allow create: if resource == null // it doesnt already exist
   }
+
   // match /b/{bucket}/o {
   //   match /{allPaths=**} {
   //     allow read, write: if false;
   //   }
   // }
 }
+
+// The 30d deletion rule is in cloud console / storage / lifecycle rules

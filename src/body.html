@@ -2,17 +2,17 @@
 <main>
   <div class="landing">
     <div class="topbar"></div>
-    <h1><a href="/"><span class="emoji">☕</span> trace cafe</a></h1>
+    <h1><a href="/"><span class="emoji">☕</span> trace.cafe</a></h1>
     <ol class="intro-steps">
-      <li>Drag-and-drop a trace (or <a href="#">select a file</a>)</li>
-      <li>We'll upload it and give you a shareable URL, e.g., <a id="example" href="https://trace.cafe/trace/demo">https://trace.cafe/trace/demo</a></li>
-      <li>URLs expire after 30 days</li>
+      <li>Drag-and-drop a trace (or <button id="selectfile">select a file</button>)
+      <li>We'll upload it and give you a shareable URL, 
+        with the Chrome DevTools Performance Panel, e.g., <a id="example" href="https://trace.cafe/t/demo">https://trace.cafe/t/demo</a>
+      <li>URLs expire after 30 days. 🕶
     </ol>
     <!-- <h2>Drag-and-drop a trace. We'll upload it and get you shareable URL. </h2> -->
     <!-- The query param ?trace also works.. (but isnt as sexy). eg: https://trace.cafe/?trace=loadingtrace-in-npp.json  -->
     <!-- <p>Example: </p> -->
     <!-- <p>URLs will expire after 30 days.</p> -->
-
   </div>
 </main>
 
@@ -27,3 +27,7 @@
   </div>
 
 </details>
+
+
+<input id=fileinput type="file" hidden accept=".json,application/json"> <!-- todo: accept json.gz -->  
+<iframe id="ifr" title="DevTools Panel"></iframe>

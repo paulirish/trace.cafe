@@ -225,3 +225,17 @@ h1 a span.emoji {
   border-bottom: 1px solid hsl(214deg 7% 81%);
   height: 27px;
 }
+
+/* style a button as a link */
+button#selectfile {
+  border: 0;
+  background: 0;
+  display: inline;
+  padding: 0;
+  color: #0000ee; /* fallback i guess */
+
+  /* thx useragent stylesheet! */
+  color: -webkit-link; 
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -38,7 +38,7 @@ ${code}
   <head>
     <title>${title}</title>
     ${metas}
-    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css">  -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
     <style>
       ${readFileSync('./src/style.css', 'utf-8')}
     </style>
@@ -66,7 +66,7 @@ export default {
     // 
     html({
       template,
-      title: 'trace cafe'
+      title: 'trace.cafe'
     }),
   ]
 };

@@ -1,4 +1,4 @@
-import {setupDragAndDrop} from './dragndrop';
+import {setupDragAndDrop, handleDrop} from './dragndrop';
 import {getTraceDlUrl} from './storage';
 import {hijackConsole} from './log';
 
@@ -26,7 +26,7 @@ async function displayTrace(downloadUrl, fileData) {
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
-  document.title = `trace cafe — ${filename} — ${dateStr}`;
+  document.title = `trace.cafe — ${filename} — ${dateStr}`;
 
   setTimeout(_ => {document.querySelector('details').open = false;}, 1_000);
 
@@ -35,7 +35,7 @@ async function displayTrace(downloadUrl, fileData) {
   const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
 
   console.log('Trace opening in DevTools…', filename);
-  const iframe = document.querySelector('#ifr');
+  const iframe = document.getElementById('ifr');
   iframe.onload = _ => {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too. 
     // Can't really extract errors from that iframe.....
@@ -47,7 +47,7 @@ async function displayTrace(downloadUrl, fileData) {
 async function readParams() {
   const parsed = new URL(location.href);
   // Pull from path
-  let traceId = parsed.pathname.match(/\/trace\/(?<traceid>[^/]*)/)?.groups?.traceid;
+  let traceId = parsed.pathname.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid;
   if (!traceId) {
     // Pull from query param
     traceId = parsed.searchParams.get('trace');
@@ -59,11 +59,10 @@ async function readParams() {
 }
 
 function setupLanding() {
-  // Preload iframe
-  const iframe = document.createElement('iframe');
-  iframe.id = 'ifr';
-  iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
-  document.body.append(iframe);
+  // // Preload iframe
+  // TODO: use Navigation API to avoid the preload from adding a history entry.
+  // const iframe = document.getElementById('ifr');
+  // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
   // Update example trace URL
   const example = document.querySelector('#example');
@@ -72,8 +71,21 @@ function setupLanding() {
   example.textContent = example.href = adjustedExampleUrl;
 }
 
+function setupFileInput() {
+  const fileinput = document.getElementById('fileinput');
+  document.getElementById('selectfile').addEventListener('click', e => {
+    e.preventDefault();
+    fileinput.showPicker(); // hawt.
+  });
+  fileinput.addEventListener('change', e => {
+    handleDrop(e.target.files);
+  });
+
+
+}
+
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
-
+setupFileInput();

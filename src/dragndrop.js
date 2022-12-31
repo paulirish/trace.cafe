@@ -1,22 +1,22 @@
-import { upload } from "./storage";
+import {upload} from './storage';
 
 // Thx Lighthouse viewer drag-and-drop.js
-export function setupDragAndDrop() {
+function setupDragAndDrop() {
   let dragging = false;
 
   // Setup drag n drop
   const dropArea = document.querySelector('body');
-  dropArea.addEventListener('dragover', (event) => {
+  dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();
     // Style the drag-and-drop as a "copy file" operation.
     event.dataTransfer.dropEffect = 'copy';
   });
 
-  dropArea.addEventListener('drop', (event) => {
+  dropArea.addEventListener('drop', event => {
     event.stopPropagation();
     event.preventDefault();
-    resetDraggingUI()
+    resetDraggingUI();
     const fileList = event.dataTransfer.files;
     handleDrop(fileList);
   });
@@ -38,9 +38,8 @@ export function setupDragAndDrop() {
   }
 }
 
-
 /**
- * @param {FileList} fileList 
+ * @param {FileList} fileList
  */
 function handleDrop(fileList) {
   if (fileList.length === 0) return;
@@ -49,9 +48,14 @@ function handleDrop(fileList) {
   }
   // TODO: support .json.gz
   const fileItem = fileList.item(0);
-// I see .json.gz as  "application/x-gzip"
+  // I see .json.gz as  "application/x-gzip"
   if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
     throw console.error('Only .json and .json.gz is accepted');
   }
   upload(fileItem);
 }
+
+export {
+  setupDragAndDrop, 
+  handleDrop,
+};

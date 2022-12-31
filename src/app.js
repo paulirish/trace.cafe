@@ -26,7 +26,7 @@ async function displayTrace(downloadUrl, fileData) {
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
-  document.title = `Trace Share Server — ${filename} — ${dateStr}`;
+  document.title = `trace cafe — ${filename} — ${dateStr}`;
 
   setTimeout(_ => {document.querySelector('details').open = false;}, 1_000);
 
@@ -74,6 +74,6 @@ function setupLanding() {
 
 hijackConsole();
 setupLanding();
+readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
-readParams();
 

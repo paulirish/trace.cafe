@@ -66,7 +66,7 @@ export default {
     // 
     html({
       template,
-      title: 'Trace Share Server'
+      title: 'trace cafe'
     }),
   ]
 };

@@ -39,9 +39,11 @@ main {
 }
 
 .landing {
-  text-align: center;
+  margin: 60px auto;
+  width: 600px;
+  border: 1px solid hsl(214deg 7% 81%);
 }
-h1 { font-size: 72px; }
+h1 { margin: 1rem; }
 h1 a { color: inherit; text-decoration: inherit;}
 h2 {  font-size: 24px; line-height: 32px; 
   color: #512da8;  
@@ -161,4 +163,65 @@ textarea {
   font-size: 35px;
   font-weight: 600;
   color: #ba68c8;
+}
+
+/* mimic css overview style */  
+:root {
+  --color-text-primary: hsl(25deg 6% 13%);
+}
+
+h1 a {
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 28px;
+  color: hsl(25deg 6% 13%);
+}
+h1 a span.emoji { 
+  font-size: 24px;
+}
+
+.intro-steps {
+  counter-reset: custom-counter 0;
+  list-style: none;
+  margin: 16px 1rem 30px calc(30px + 1rem);
+
+  padding: 0px;
+}
+.intro-steps li {
+  color: var(--color-text-primary);
+  counter-increment: custom-counter 1;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  line-height: 1.54;
+  margin-bottom: 9px;
+  position: relative;
+}
+
+
+.intro-steps li::before {
+
+
+  --override-color-counter-background: rgba(26 115 232/25%);
+  box-sizing: border-box;
+  background: var(--override-color-counter-background);
+  border-radius: 50%;
+  color: var(--color-primary);
+  content: counter(custom-counter);
+  font-size: 12px;
+  height: 18px;
+  left: -30px;
+  line-height: 20px;
+  position: absolute;
+  text-align: center;
+  top: 0px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar {
+  background: hsl(200deg 12% 95%);
+  border-bottom: 1px solid hsl(214deg 7% 81%);
+  height: 27px;
 }

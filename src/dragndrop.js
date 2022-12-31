@@ -43,14 +43,15 @@ export function setupDragAndDrop() {
  * @param {FileList} fileList 
  */
 function handleDrop(fileList) {
+  if (fileList.length === 0) return;
   if (fileList.length !== 1) {
-    throw new Error('Can only upload 1 trace at a time');
+    throw console.error('Can only upload 1 trace at a time');
   }
   // TODO: support .json.gz
   const fileItem = fileList.item(0);
 // I see .json.gz as  "application/x-gzip"
   if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
-    throw new Error('Only .json and .json.gz is accepted');
+    throw console.error('Only .json and .json.gz is accepted');
   }
   upload(fileItem);
 }

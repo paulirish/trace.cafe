@@ -7,10 +7,11 @@ import {hijackConsole} from './log';
 // Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
 // but the browser has extra protection on devtools:// URLS..
 
-// TODO: find a way to update this as it's currently frozen in time (~oct 2022) .. or make sure it matches the trace version?
+// TODO: find a way to update this as it's currently frozen in time (~stable @ dec 2022) .. or make sure it matches the trace version?
+// Current workflow: remote debug chrome stable and grab the hash in DTonDT
 
 // worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@3d5948960d62418160796d5831a4d2d7d6c90fa8/worker_app.html`;
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@1cd27afdb8e5d057070c0961e04c490d2aca1aa0/worker_app.html`;
 
 async function displayTrace(downloadUrl, fileData) {
   if (!downloadUrl) return;

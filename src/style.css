@@ -90,6 +90,20 @@ summary {
 summary:hover {
   background-color: rgb(222 225 230);
 }
+summary span {
+  color: gray;
+  font-size: 11px;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-left: 20px;
+  vertical-align: bottom;
+
+}
+details[open] summary span {
+  display: none;
+}
 
 textarea {
   width: 100%;
@@ -99,6 +113,10 @@ textarea {
   border: 0;
   resize: none;
 }
+/* "clever" hack to make sure log textarea is visible in idle state, 
+    but dont show the rest of the <details> elem. 
+    probably 
+  */
 .state--idle details textarea {
   visibility: visible;
 }

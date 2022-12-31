@@ -21,7 +21,7 @@ const storage = getStorage(app);
 
 // TODO: need to add FunkedFileReader's gzip support to TimelineLoader.loadFromURL
 async function getTraceDlUrl(traceId) {
-  console.log('Looking for trace:', traceId);
+  console.log(`Looking for trace with ID:  (${traceId})`);
 
   const currentRef = (traceId === 'demo') 
     ? ref(storage, `permatraces/demotrace.json`)
@@ -43,7 +43,7 @@ async function getTraceDlUrl(traceId) {
   }
   const fileData = await resp.json()
 
-  console.log('Trace found in storage.', currentRef.name);
+  console.log('Trace found in cloud storage.', currentRef.name);
 
   // eg. https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o/traces%2FsfmYyqoGXa?alt=media&token=b9cf1da7-7120-4d3a-8d5b-e9e54146cdf9
   const dlurl = new URL(fileDataUrl);

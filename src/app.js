@@ -14,7 +14,10 @@ import {hijackConsole} from './log';
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@1cd27afdb8e5d057070c0961e04c490d2aca1aa0/worker_app.html`;
 
 async function displayTrace(downloadUrl, fileData) {
-  if (!downloadUrl) return;
+  if (!downloadUrl) {
+    document.body.className = 'state--idle';
+    return;
+  }
 
   document.body.className = 'state--viewing';
   
@@ -31,8 +34,13 @@ async function displayTrace(downloadUrl, fileData) {
   const encodedDlurl = encodeURIComponent(downloadUrl).replace('traces%252F', encodeURIComponent('traces%252F'));
   const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
 
-  console.log('Loading trace in DevTools…', filename, dateStr);
+  console.log('Trace opening in DevTools…', filename);
   const iframe = document.querySelector('#ifr');
+  iframe.onload = _ => {
+    // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too. 
+    // Can't really extract errors from that iframe.....
+    console.log('Trace loaded.', filename, 'from', dateStr);
+  }
   iframe.src = hostedDtViewingTraceUrl;
 }
 
@@ -45,6 +53,7 @@ async function readParams() {
     traceId = parsed.searchParams.get('trace');
   }
   if (!traceId) return;
+  document.body.className = 'state--viewing';
   const {dlurl, fileData} = await getTraceDlUrl(traceId);
   displayTrace(dlurl, fileData);
 }

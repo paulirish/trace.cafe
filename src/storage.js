@@ -27,10 +27,13 @@ async function getTraceDlUrl(traceId) {
     ? ref(storage, `permatraces/demotrace.json`)
     : ref(storage, `traces/${traceId}`);
 
+  const bucket =  (traceId === 'demo') 
+    ? 'tum-permatraces2'
+    : firebaseConfig.storageBucket;
+
   // Could use getDownloadURL(currentRef) and getMetadata(currentRef) but at the REST level they're the same request and it adds ~300ms of extra latency
   // So instead we fetch this data ourselves (instead of firebase JS API)
-  const bucketPrefix = 'https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o';
-  const fileDataUrl = `${bucketPrefix}/${encodeURIComponent(currentRef.fullPath)}`;
+  const fileDataUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(currentRef.fullPath)}`;
   const resp = await fetch(fileDataUrl);
   if (!resp.ok) {
     const err = await resp.json()
@@ -87,18 +90,17 @@ function upload(fileItem) {
     (snapshot) => {
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log(`Upload is ${snapshot.state} at ${progress.toLocaleString()}% done.`);
+      console.log(`Upload is ${snapshot.state}. ${progress.toLocaleString()}% done.`);
     }, 
     (error) => {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
     }, 
     async () => {
-      console.debug('upload complete', uploadTask.snapshot.ref, uploadTask);
-      console.log('Upload complete', uploadTask.snapshot.ref.name);
+      console.log(`Upload complete. Trace ID: (${uploadTask.snapshot.ref.name})`);
 
 
       const urlToView = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
-      console.log('Navigating (MPA-style) to ', `/t/${uploadTask.snapshot.ref.name}`);
+      console.log('Navigating to', `/t/${uploadTask.snapshot.ref.name}`);
       // pushState is for the birds. State-wise this is more straightforward.
       location.href = urlToView.href;
     }

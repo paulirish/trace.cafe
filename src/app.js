@@ -86,6 +86,10 @@ function setupFileInput() {
   fileinput.addEventListener('change', e => {
     handleDrop(e.target.files);
   });
+
+  // setInterval(_ => {
+  //   console.log('hello from', Date.now());
+  // }, 1000);
 }
 
 hijackConsole();

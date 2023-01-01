@@ -4,13 +4,13 @@ rules_version = '2';
 
 service firebase.storage {
 
-  match /b/{bucket}/o/traces/{traceId} {
+  match /b/trace-uploading-maybe.appspot.com/o/traces/{traceId} {
     allow get
     // https://stackoverflow.com/questions/38995011/firebase-3-storage-dont-allow-file-updating-overwriting
     allow create: if resource == null // it doesnt already exist
   }
 
-  match /b/{bucket}/o/permatraces/{traceId} {
+  match /b/tum-permatraces2/o/permatraces/{traceId} {
     allow get
   }
 
@@ -21,4 +21,6 @@ service firebase.storage {
   // }
 }
 
-// The 30d deletion rule is in cloud console / storage / lifecycle rules
+// The 90d deletion rule is in cloud console / storage / lifecycle rules
+
+// If anything is changed, the 2nd bucket should be updated the admin UI

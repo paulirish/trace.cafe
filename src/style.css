@@ -42,6 +42,8 @@ main {
   margin: 60px auto;
   width: 600px;
   border: 1px solid hsl(214deg 7% 81%);
+  border-top: 0;
+  border-radius: 2px;
   display: flex;
   flex-direction: column;
 }
@@ -173,7 +175,7 @@ textarea {
   background-color: #ffffffe6;
   font-size: 35px;
   font-weight: 600;
-  color: #ba68c8;
+  color: var(--color-text-primary);
 }
 
 
@@ -198,6 +200,7 @@ button#selectfile {
 /* mimic css overview style */  
 :root {
   --color-text-primary: hsl(25deg 6% 13%);
+  --color-text-secondary: rgb(95 99 104);
   --color-details-hairline: rgb(202 205 209);
   --color-details-hairline-light: rgb(223 225 227);
   --color-background-elevation-0: rgb(248 249 249);

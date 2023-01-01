@@ -96,6 +96,7 @@ function upload(fileItem) {
       console.debug('upload complete', uploadTask.snapshot.ref, uploadTask);
       console.log('Upload complete', uploadTask.snapshot.ref.name);
 
+
       const urlToView = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
       console.log('Navigating (MPA-style) to ', `/t/${uploadTask.snapshot.ref.name}`);
       // pushState is for the birds. State-wise this is more straightforward.

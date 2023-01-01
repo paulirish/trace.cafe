@@ -1,6 +1,6 @@
 /* Thx inspectorCommon.css */
 
-* {
+*, *:before, *:after {
   box-sizing: border-box;
 }
 
@@ -38,10 +38,12 @@ main {
   margin: 8px;
 }
 
-.landing {
+.landing-ui {
   margin: 60px auto;
   width: 600px;
   border: 1px solid hsl(214deg 7% 81%);
+  display: flex;
+  flex-direction: column;
 }
 h1 { margin: 1rem; }
 h1 a { color: inherit; text-decoration: inherit;}
@@ -76,14 +78,23 @@ iframe {
     color: rgb(51, 51, 51);
     position: fixed;
     top: 0;
+    left: 0;
     z-index: 10; /* Above devtools iframe */
+}
+
+.state--viewing details[open] {
+  border-bottom-width: 2px; /* i just like it better */
+}
+
+.state--idle details p,
+.state--idle details summary {
+  display: none;
 }
 
 .state--viewing details summary {
   height: 26px; /* Matches the height of devtools tab strip */
-}
-details > * {
-  padding: 7px 8px;
+  padding: 0 10px;
+  line-height: 26px;
 }
 summary {
   cursor: pointer;
@@ -109,7 +120,7 @@ details[open] summary span {
 
 textarea {
   width: 100%;
-  height: 50px;
+  height: 100px;
   font-size: 11px;
   font-family: menlo, dejavu sans mono, consolas, lucida console, courier new, monospace;
   border: 0;
@@ -119,7 +130,7 @@ textarea {
     but dont show the rest of the <details> elem. 
     probably 
   */
-.state--idle details textarea {
+.state--idle details .console {
   visibility: visible;
 }
 
@@ -165,9 +176,36 @@ textarea {
   color: #ba68c8;
 }
 
+
+/* style a button as a link */
+button#selectfile {
+  border: 0;
+  background: 0;
+  display: inline;
+  padding: 0;
+  color: #0000ee; /* fallback i guess */
+
+  /* thx useragent stylesheet! */
+  color: -webkit-link; 
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
+
+
+
 /* mimic css overview style */  
 :root {
   --color-text-primary: hsl(25deg 6% 13%);
+  --color-details-hairline: rgb(202 205 209);
+  --color-details-hairline-light: rgb(223 225 227);
+  --color-background-elevation-0: rgb(248 249 249);
+  --color-background-elevation-1: rgb(241 243 244);
+  --color-background-elevation-2: rgb(222 225 230);
+  --legacy-accent-color: #1a73e8;
+  --override-message-border-color: rgb(240 240 240);
+  
 }
 
 h1 a {
@@ -199,8 +237,6 @@ h1 a span.emoji {
 
 
 .intro-steps li::before {
-
-
   --override-color-counter-background: rgba(26 115 232/25%);
   box-sizing: border-box;
   background: var(--override-color-counter-background);
@@ -221,21 +257,120 @@ h1 a span.emoji {
 }
 
 .topbar {
-  background: hsl(200deg 12% 95%);
-  border-bottom: 1px solid hsl(214deg 7% 81%);
+  background-color: var(--color-background-elevation-1);
+  border-bottom: 1px solid var(--color-details-hairline);
   height: 27px;
 }
 
-/* style a button as a link */
-button#selectfile {
+.console {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: white;
+
+  height: 0;
+  overflow: hidden;
+  transition: 150ms height;
+}
+
+.console.populated {
+  height: 120px;
+}
+
+.console::after {
+  content: '❯';
+  color: hsl(217deg 86% 72%);
+  display: block;
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid var(--override-message-border-color);
+  padding: 4px 8px;
+}
+
+.tabbed-pane-header {
+  display: flex;
+  flex: 0 0 27px;
+  border: 1px solid var(--color-details-hairline);
+  overflow: visible;
+  width: 100%;
+  background-color: var(--color-background-elevation-1);
+  border-width: 1px 0;
+  padding: 0 6px;
+}
+.tabbed-pane-header-tab.selected {
+  border-bottom: none;
+  color: var(--legacy-tab-selected-fg-color);
+  position: relative;
+}
+.tabbed-pane-header-tab.selected::after {
+  content: '';
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  bottom: -1px;
+  background-color: var(--legacy-accent-color);
+  left: 0;
+}
+
+.tabbed-pane-header-tab {
+  float: left;
+  padding: 2px 0.8em;
+  height: 26px;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary);
+}
+.tabbed-pane-header-tab:hover, .tabbed-pane-shadow .tabbed-pane-header-tab:focus-visible {
+  color: var(--color-text-primary);
+  background-color: var(--color-background-elevation-2);
+}
+.toolbar-divider {
+  background-color: var(--color-details-hairline);
+  width: 1px;
+  margin: 4px 4px;
+  height: 16px;
+  display: inline-block;
+}
+
+.summary-body {
+  display: inline-flex;
+  width: calc(100% - 16px);
+  justify-content: flex-end;
+  height: 25px;
+}
+.last-log {
+  flex-grow: 1;
+}
+.toolbar-button {
+  width: 28px;
+  height: 25px;
   border: 0;
-  background: 0;
   display: inline;
   padding: 0;
-  color: #0000ee; /* fallback i guess */
-
-  /* thx useragent stylesheet! */
-  color: -webkit-link; 
+  background: none;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: 4px 1px;
+  opacity: 0.6;
+  --home-icon-url: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path  d="M11.45 38.55h6.35V25.7h12.45v12.85h6.3V19.7L24 10.3l-12.55 9.4ZM6.9 43.1V17.4L24 4.55 41.15 17.4v25.7h-14.9V29.7H21.8v13.4ZM24 24.4Z"/></svg>');
+}
+.toolbar-button:hover {
+  opacity: 1;
   cursor: pointer;
-  text-decoration: underline;
+}
+.toolbar-button--home {
+  background-image: var(--home-icon-url);
+}
+
+/* a la .console-message */
+textarea {
+  padding: 3px 22px 1px 24px;
+  line-height: 17px;
+  margin-bottom: 18px;
 }

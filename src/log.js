@@ -1,7 +1,9 @@
 
 export function hijackConsole(){
   const textarea = document.querySelector('textarea');
+  const consoleEl = document.querySelector('.console');
   const detailsSummaryItem = document.querySelector('details summary span');
+  let count = 0;
 
   const origConsole = globalThis.console;
   for (const method of 'log warn error'.split(' ')) {
@@ -11,7 +13,8 @@ export function hijackConsole(){
           return typeof arg === 'string' ? arg : JSON.stringify(arg)
         }).join('\t');
         const logLine = `[${method.padStart(5)}] ${logText}`;
-        textarea.textContent += `\n${logLine}`;
+        consoleEl.classList.add('populated');
+        textarea.textContent += `${count++ ? '\n' : ''}${logLine}`;
         textarea.scrollTop = textarea.scrollHeight;
 
         detailsSummaryItem.textContent = `${logText}`

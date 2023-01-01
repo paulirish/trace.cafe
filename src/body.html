@@ -1,6 +1,6 @@
 
 <main>
-  <div class="landing">
+  <div class="landing-ui">
     <div class="topbar"></div>
     <h1><a href="/"><span class="emoji">☕</span> trace.cafe</a></h1>
     <ol class="intro-steps">
@@ -9,25 +9,29 @@
         with the Chrome DevTools Performance Panel, e.g., <a id="example" href="https://trace.cafe/t/demo">https://trace.cafe/t/demo</a>
       <li>URLs expire after 30 days. 🕶
     </ol>
-    <!-- <h2>Drag-and-drop a trace. We'll upload it and get you shareable URL. </h2> -->
-    <!-- The query param ?trace also works.. (but isnt as sexy). eg: https://trace.cafe/?trace=loadingtrace-in-npp.json  -->
-    <!-- <p>Example: </p> -->
-    <!-- <p>URLs will expire after 30 days.</p> -->
+
+    <details open>
+      <summary>
+        <div class="summary-body">
+          <span class="last-log"></span>
+          <div class="toolbar-divider"></div>
+          <form>
+          <button class="toolbar-button toolbar-button--home" title="Navigate to trace.cafe home" formaction="/"></button>
+          </form>
+        </div>
+      </summary>
+      <div class="details-body">
+        <div class="console">
+          <div class="tabbed-pane-header">
+            <div class="tabbed-pane-header-tab selected">Console</div>
+          </div>
+
+          <textarea title="Activity log" readonly></textarea>
+        </div>
+      </div>
+    </details>
   </div>
 </main>
-
-
-
-<details open>
-  <summary>Log<span></span></summary>
-  <div>
-
-    <p><a href="/">Return to home</a></p>
-    <textarea title="Activity log" readonly></textarea>
-  </div>
-
-</details>
-
 
 <input id=fileinput type="file" hidden accept=".json,application/json"> <!-- todo: accept json.gz -->  
 <iframe id="ifr" title="DevTools Panel"></iframe>

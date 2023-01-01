@@ -39,7 +39,7 @@ async function displayTrace(downloadUrl, fileData) {
   iframe.onload = _ => {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too. 
     // Can't really extract errors from that iframe.....
-    console.log('Trace loaded.', filename, 'from', dateStr);
+    console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
   }
   iframe.src = hostedDtViewingTraceUrl;
 }
@@ -69,6 +69,12 @@ function setupLanding() {
   const rootRelUrl = example.href.replace(example.origin, '');
   const adjustedExampleUrl = new URL(rootRelUrl, location.href);
   example.textContent = example.href = adjustedExampleUrl;
+
+  // formaction is trés cool but it adds a questionMark param
+  document.querySelector('.toolbar-button--home').addEventListener('click', e => {
+    e.preventDefault();
+    location.href = '/';
+  });
 }
 
 function setupFileInput() {
@@ -80,8 +86,6 @@ function setupFileInput() {
   fileinput.addEventListener('change', e => {
     handleDrop(e.target.files);
   });
-
-
 }
 
 hijackConsole();

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, getMetadata, listAll, getStream } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import {customAlphabet} from 'nanoid';
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */

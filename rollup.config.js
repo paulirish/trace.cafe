@@ -1,8 +1,9 @@
 // rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
 
-import {readFileSync} from 'node:fs';
+import {readFileSync, writeFileSync} from 'node:fs';
+
 
 // stolen from https://github.com/rollup/plugins/blob/master/packages/html/src/index.ts
 const template = ({attributes, files, meta, publicPath, title }) => { 
@@ -62,11 +63,26 @@ export default {
     sourcemap: true,
   },
   plugins: [
-    resolve({browser: true}),
+    nodeResolve({browser: true}),
     // 
     html({
       template,
       title: 'trace.cafe'
-    }),
-  ]
+    }), 
+    {
+      // For bundlebuddy
+      buildEnd() {
+        const deps = [];
+        for (const id of this.getModuleIds()) {
+          const m = this.getModuleInfo(id);
+          if (m != null && !m.isExternal) {
+            for (const target of m.importedIds) {
+              deps.push({ source: m.id, target })
+            }
+          }
+        }
+        writeFileSync('dist/graph.json', JSON.stringify(deps, null, 2));
+      },
+    }
+  ],
 };

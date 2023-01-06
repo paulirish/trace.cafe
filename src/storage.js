@@ -4,6 +4,8 @@ import {customAlphabet} from 'nanoid';
 import { compressTrace } from './trace-compression';
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
+/** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
+
 
 
 const firebaseConfig = {
@@ -19,6 +21,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
+/**
+ * From the traceId, find the full URL (with token) that'll receive the correct asset.
+ * @param {string} traceId 
+ */
 async function getTraceDlUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
@@ -37,12 +43,13 @@ async function getTraceDlUrl(traceId) {
   if (!resp.ok) {
     const err = await resp.json()
     if (err?.error?.code === 404) {
-      console.error(`Trace (${traceId}) not found. Perhaps it's been more than 30 days since upload?`);
+      console.error(`Trace (${traceId}) not found. Perhaps it's been more than 90 days since upload?`);
     } else {
       console.error(err);
     } 
     return {dlurl: undefined, metadata: undefined};
   }
+  /** @type {FullMetadata} */
   const fileData = await resp.json()
 
   console.log('Trace found in cloud storage.', currentRef.name);
@@ -52,7 +59,7 @@ async function getTraceDlUrl(traceId) {
   dlurl.searchParams.append('alt', 'media');
   dlurl.searchParams.append('token', fileData.downloadTokens);
 
-  return {dlurl, fileData};
+  return {dlurl: dlurl.href, fileData};
 }
 
 /**

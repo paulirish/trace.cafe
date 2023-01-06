@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "outDir": ".tmp/tsbuildinfo/",
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+
+    // Limit to base JS and DOM defs.
+    "lib": ["ES2021", "DOM"],
+
+    "forceConsistentCasingInFileNames": true
+
+    // "listFiles": true,
+    // "noErrorTruncation": true,
+    // "extendedDiagnostics": true,
+
+    // TODO(esmodules): included to support require('file.json'). Remove on the switch to ES Modules.
+    //   "resolveJsonModule": true,
+  },
+  "include": [
+    "**/*.js",
+    "types/**/*.d.ts",
+    // "node_modules/puppeteer/lib/types.d.ts",
+
+    // TODO(esmodules): JSON files included via resolveJsonModule. Removable on the switch to ES Modules.
+    "package.json"
+  ]
+}

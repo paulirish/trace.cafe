@@ -2,6 +2,8 @@ import {setupDragAndDrop, handleDrop} from './dragndrop';
 import {getTraceDlUrl} from './storage';
 import {hijackConsole} from './log';
 
+/** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
+
 // traceid param (either query param or path param) is a a ref.name
 
 // Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
@@ -13,6 +15,12 @@ import {hijackConsole} from './log';
 // worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@1cd27afdb8e5d057070c0961e04c490d2aca1aa0/worker_app.html`;
 
+/**
+ * Show devtools now that we have a trace asset URL
+ * @param {string | undefined} downloadUrl 
+ * @param {FullMetadata} fileData 
+ * @returns 
+ */
 async function displayTrace(downloadUrl, fileData) {
   if (!downloadUrl) {
     document.body.className = 'state--idle';

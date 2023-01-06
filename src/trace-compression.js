@@ -17,6 +17,9 @@ function codec(buffer, codecStream) {
   return response.arrayBuffer();
 }
 
+/**
+ * @param {string} str 
+ */
 async function gzipString(str) {
   /** @param {number} num */
   const mbStr = num => (num / 1_000_000).toLocaleString() + '\xa0MB';
@@ -33,6 +36,9 @@ async function gzipString(str) {
   return buffer;
 }
 
+/**
+ * @param {ArrayBuffer} gzippedBuffer 
+ */
 async function decodeGzipBufferToString(gzippedBuffer) {
   console.log('Decompressing gzip data…');
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));

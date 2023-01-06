@@ -33,6 +33,7 @@ async function getTraceDlUrl(traceId) {
 
   // Could use getDownloadURL(currentRef) and getMetadata(currentRef) but at the REST level they're the same request and it adds ~300ms of extra latency
   // So instead we fetch this data ourselves (instead of firebase JS API)
+  // TODO: might have to add timeouts/retries to this. i've seen it hang.
   const fileDataUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(currentRef.fullPath)}`;
   const resp = await fetch(fileDataUrl);
   if (!resp.ok) {
@@ -69,25 +70,35 @@ function getCuteId(fileItem) {
 /**
  * @param {File} fileItem 
  */
-function upload(fileItem) {
+async function upload(fileItem) {
+
+  // I see .json.gz as  "application/x-gzip"
+  if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
+    throw console.error('Only .json and .json.gz is accepted');
+  }
+
+  const {encoding, buffer} = await encodeFileMaybe(fileItem);
+
   /** @type {UploadMetadata} */
   const metadata = {
-    contentType: fileItem.type,
+    contentType: 'application/json',
+    contentEncoding: encoding === 'gzip' ? 'gzip' : undefined,
     cacheControl: 'max-age=31536000', // 1yr. https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl/
     customMetadata: {
       // Readable in `x-goog-meta-oname` response header.
       oName: fileItem.name,
     },
-    // contentEncoding: 'br' // Doesn't work right.
   };
 
   const cuteId = getCuteId(fileItem);
   const storageRef = ref(storage, `traces/${cuteId}`);
-  const uploadTask = uploadBytesResumable(storageRef, fileItem, metadata);
+  const uploadTask = uploadBytesResumable(storageRef, buffer, metadata);
 
+  console.log(`Upload starting… Trace ID: (${cuteId})`);
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.on('state_changed',
     (snapshot) => {
+      console.log('state_changed', snapshot.bytesTransferred, snapshot.totalBytes);
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       console.log(`Upload is ${snapshot.state}. ${progress.toLocaleString()}% done.`);
@@ -100,11 +111,115 @@ function upload(fileItem) {
 
 
       const urlToView = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
-      console.log('Navigating to', `/t/${uploadTask.snapshot.ref.name}`);
+      console.log('Navigating to', urlToView.href);
       // pushState is for the birds. State-wise this is more straightforward.
-      location.href = urlToView.href;
+      // location.href = urlToView.href;
     }
   );
+}
+
+
+
+/**
+ * thx aerotwist for writing these for NPP!
+ * @param {ArrayBuffer} buffer 
+ * @param {CompressionStream|DecompressionStream} codecStream 
+ * @returns Promise<ArrayBuffer>
+ */
+function codec(buffer, codecStream)  {
+  const {readable, writable} = new TransformStream();
+  const codecReadable = readable.pipeThrough(codecStream);
+
+  const writer = writable.getWriter();
+  void writer.write(buffer);
+  void writer.close();
+
+  // Wrap in a response for convenience.
+  const response = new Response(codecReadable);
+  return response.arrayBuffer();
+}
+
+async function gzipString(str) {
+  const encoder = new TextEncoder();
+  const encoded = encoder.encode(str);
+  const buffer = await codec(encoded, new CompressionStream('gzip'));
+  return buffer;
+}
+
+async function decodeGzipBufferToString(gzippedBuffer) {
+  const buffer =  await codec(gzippedBuffer, new DecompressionStream('gzip'));
+  const decoder = new TextDecoder('utf-8');
+  const str = decoder.decode(buffer);
+  return str;
+}
+
+
+/**
+ * @param {File} fileItem
+ */
+async function encodeFileMaybe(fileItem) {
+  // Fallback case for... browser support?
+  if (typeof CompressionStream === 'undefined') {
+    const buffer = await fileItem.arrayBuffer();
+    return {
+      encoding: 'text',
+      buffer,
+    }
+  }
+  // Already gzip (from NPP or otherwise)
+  if (fileItem.type.endsWith('gzip')) {
+    const buffer = await normalizeCompressedTrace(fileItem);
+    return {
+      encoding: 'gzip',
+      buffer,
+    }
+  }
+  if (!fileItem.type.endsWith('json')) {
+    throw console.error('Unexpected file type', fileItem);
+  }
+  // 
+  const textData = await fileItem.text();
+  const buffer = await gzipString(textData);
+  return {
+    encoding: 'gzip',
+    buffer,
+  } 
+}
+
+/**
+ * NPP traces are {traceEvents, metadata} whereas
+ * OPP traces just traceEvent[]
+ * @param {File} fileItem
+ */
+async function normalizeCompressedTrace(fileItem) {
+  const gzippedBuffer = await fileItem.arrayBuffer();
+  const str = await decodeGzipBufferToString(gzippedBuffer);
+  const traceFile  = JSON.parse(str);
+
+  // Perhaps someone manually gzipped an OPP trace
+  if (Array.isArray(traceFile)) {
+    return gzippedBuffer;
+  } 
+  if (traceFile.metadata) {
+    // move NPP metadata into a __metadata event
+    const evt = {
+      args: traceFile.metadata,
+      cat: '__metadata',
+      name: 'npp_meta',
+      ph: 'M',
+      pid: 0,
+      tid: 0,
+      ts: 0,
+    };
+    traceFile.traceEvents?.push(evt);
+  }
+  const updatedEvents = traceFile.traceEvents;
+  if (!Array.isArray(updatedEvents)) {
+    throw console.error('Unexpected gzip trace file');
+  }
+  const traceStr = JSON.stringify(updatedEvents);
+  const buffer = await gzipString(traceStr);
+  return buffer;
 }
 
 export {

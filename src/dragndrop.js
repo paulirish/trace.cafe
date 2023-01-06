@@ -46,12 +46,7 @@ function handleDrop(fileList) {
   if (fileList.length !== 1) {
     throw console.error('Can only upload 1 trace at a time');
   }
-  // TODO: support .json.gz
   const fileItem = fileList.item(0);
-  // I see .json.gz as  "application/x-gzip"
-  if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
-    throw console.error('Only .json and .json.gz is accepted');
-  }
   upload(fileItem);
 }
 

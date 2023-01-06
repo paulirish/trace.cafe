@@ -10,7 +10,7 @@ export function hijackConsole(){
     const handler = {
       apply: function(target, thisArg, argumentsList) {
         const logText = argumentsList.map(arg => {
-          return typeof arg === 'string' ? arg : JSON.stringify(arg)
+          return typeof arg === 'string' ? arg : JSON.stringify(arg).slice(0, 1000)
         }).join('\t');
         const logLine = `[${method.padStart(5)}] ${logText}`;
         consoleEl.classList.add('populated');

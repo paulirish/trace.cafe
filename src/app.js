@@ -3,15 +3,29 @@ import {getTraceDlUrl} from './storage';
 import {hijackConsole} from './log';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
+/** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
-// traceid param (either query param or path param) is a a ref.name
+/**
+ * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
+ * Thx lighthouse's dom.js!
+ * @template {string} T
+ * @param {T} query
+ * @param {ParentNode=} context
+ * @return {ParseSelector<T>}
+ */
+globalThis.$ = function(query, context) {
+  const result = (context || document).querySelector(query);
+  if (result === null) {
+    throw new Error(`query ${query} not found`);
+  }
+  return /** @type {ParseSelector<T>} */ (result);
+}
+
 
 // Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
-// but the browser has extra protection on devtools:// URLS..
-
+//     but the browser has extra protection on devtools:// URLS..
 // TODO: find a way to update this as it's currently frozen in time (~stable @ dec 2022) .. or make sure it matches the trace version?
-// Current workflow: remote debug chrome stable and grab the hash in DTonDT
-
+//    Current workflow: remote debug chrome stable and grab the hash in DTonDT
 // worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@1cd27afdb8e5d057070c0961e04c490d2aca1aa0/worker_app.html`;
 
@@ -36,14 +50,14 @@ async function displayTrace(downloadUrl, fileData) {
   const dateStr = fmter.format(date);
   document.title = `trace.cafe — ${filename} — ${dateStr}`;
 
-  setTimeout(_ => {document.querySelector('details').open = false;}, 1_000);
+  setTimeout(_ => {$('details').open = false;}, 1_000);
 
   // why? dunno.
   const encodedDlurl = encodeURIComponent(downloadUrl).replace('traces%252F', encodeURIComponent('traces%252F'));
   const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
 
   console.log('Trace opening in DevTools…', filename);
-  const iframe = document.getElementById('ifr');
+  const iframe = $('iframe#ifr');
   iframe.onload = _ => {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too. 
     // Can't really extract errors from that iframe.....
@@ -69,17 +83,17 @@ async function readParams() {
 function setupLanding() {
   // // Preload iframe
   // TODO: use Navigation API to avoid the preload from adding a history entry.
-  // const iframe = document.getElementById('ifr');
+  // const iframe = $('iframe#ifr');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
   // Update example trace URL
-  const example = document.querySelector('#example');
+  const example = $('a#example');
   const rootRelUrl = example.href.replace(example.origin, '');
   const adjustedExampleUrl = new URL(rootRelUrl, location.href);
-  example.textContent = example.href = adjustedExampleUrl;
+  example.textContent = example.href = adjustedExampleUrl.href;
 
   // formaction is trés cool but it adds a questionMark param
-  document.querySelector('.toolbar-button--home').addEventListener('click', e => {
+  $('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
   });
@@ -90,13 +104,13 @@ function setupLanding() {
 }
 
 function setupFileInput() {
-  const fileinput = document.getElementById('fileinput');
-  document.getElementById('selectfile').addEventListener('click', e => {
+  const fileinput = $('input#fileinput');
+  $('#selectfile').addEventListener('click', e => {
     e.preventDefault();
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
-    handleDrop(e.target.files);
+    handleDrop(e.target?.files);
   });
 
   // setInterval(_ => {

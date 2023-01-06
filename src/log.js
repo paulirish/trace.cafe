@@ -1,8 +1,8 @@
 
 export function hijackConsole(){
-  const textarea = document.querySelector('textarea');
-  const consoleEl = document.querySelector('.console');
-  const detailsSummaryItem = document.querySelector('details summary span');
+  const textarea = $('textarea');
+  const consoleEl = $('.console');
+  const detailsSummaryItem = $('details summary span');
   let count = 0;
 
   const origConsole = globalThis.console;

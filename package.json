@@ -7,6 +7,7 @@
   "scripts": {
     "watch": "rollup --watch -c",
     "build": "rollup -c",
+    "tsc": "tsc -p tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +20,8 @@
   "devDependencies": {
     "@rollup/plugin-html": "^1.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
-    "rollup": "^3.9.1"
+    "rollup": "^3.9.1",
+    "typed-query-selector": "^2.8.0",
+    "typescript": "^4.9.4"
   }
 }

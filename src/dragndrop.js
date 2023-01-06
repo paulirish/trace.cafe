@@ -5,7 +5,7 @@ function setupDragAndDrop() {
   let dragging = false;
 
   // Setup drag n drop
-  const dropArea = document.querySelector('body');
+  const dropArea = $('body');
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();

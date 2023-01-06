@@ -6,6 +6,8 @@ specifiers:
   firebase: ^9.13.0
   nanoid: ^4.0.0
   rollup: ^3.9.1
+  typed-query-selector: ^2.8.0
+  typescript: ^4.9.4
 
 dependencies:
   firebase: 9.13.0
@@ -15,6 +17,8 @@ devDependencies:
   '@rollup/plugin-html': 1.0.1_rollup@3.9.1
   '@rollup/plugin-node-resolve': 15.0.1_rollup@3.9.1
   rollup: 3.9.1
+  typed-query-selector: 2.8.0
+  typescript: 4.9.4
 
 packages:
 
@@ -1048,6 +1052,16 @@ packages:
   /tslib/2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
     dev: false
+
+  /typed-query-selector/2.8.0:
+    resolution: {integrity: sha512-jo9NLGQ0b7sT9TK3mxzemATQqTb/uh8TRvcOK6WSwKNewALt3AA8q2m7cdpF/uUbd/cdixaBxCGe6fpzpEWbGw==}
+    dev: true
+
+  /typescript/4.9.4:
+    resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}

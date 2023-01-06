@@ -75,6 +75,10 @@ function setupLanding() {
     e.preventDefault();
     location.href = '/';
   });
+
+  addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled rejection: ', event?.reason?.message)
+   });
 }
 
 function setupFileInput() {

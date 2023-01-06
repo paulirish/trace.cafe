@@ -47,6 +47,7 @@ function handleDrop(fileList) {
     throw console.error('Can only upload 1 trace at a time');
   }
   const fileItem = fileList.item(0);
+  console.log('Received file: ', fileItem.name);
   upload(fileItem);
 }
 

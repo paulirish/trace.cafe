@@ -1,7 +1,7 @@
 // rollup.config.js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import {readFileSync, writeFileSync} from 'node:fs';
 
 

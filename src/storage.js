@@ -29,7 +29,7 @@ async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
   const currentRef = (traceId === 'demo') 
-    ? ref(storage, `permatraces/demotrace.json`)
+    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp
     : ref(storage, `traces/${traceId}`);
 
   const bucket =  (traceId === 'demo') 

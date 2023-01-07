@@ -1,5 +1,5 @@
 import {setupDragAndDrop, handleDrop} from './dragndrop';
-import {getTraceDlUrl} from './storage';
+import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
@@ -31,12 +31,12 @@ const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/
 
 /**
  * Show devtools now that we have a trace asset URL
- * @param {string | undefined} downloadUrl 
+ * @param {string | undefined} assetUrl 
  * @param {FullMetadata} fileData 
  * @returns 
  */
-async function displayTrace(downloadUrl, fileData) {
-  if (!downloadUrl) {
+async function displayTrace(assetUrl, fileData) {
+  if (!assetUrl) {
     document.body.className = 'state--idle';
     return;
   }
@@ -52,9 +52,16 @@ async function displayTrace(downloadUrl, fileData) {
 
   setTimeout(_ => {$('details').open = false;}, 1_000);
 
-  // why? dunno.
-  const encodedDlurl = encodeURIComponent(downloadUrl).replace('traces%252F', encodeURIComponent('traces%252F'));
-  const hostedDtViewingTraceUrl = `${devtoolsBaseUrl}?loadTimelineFromURL=${encodedDlurl}`;
+  /**
+  * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
+  * Because DevTools incorrectly double decodes the path.
+  *  - First decode in `Runtime.Runtime.queryParam()` with the searchParams.get call
+  *  - Second decode in TimelinePanel's `handleQueryParam()` for loadTimelineFromURL it happens again.
+  * TODO: fix that bug in devtools.
+  */
+  const encodedAssetUrl = encodeURIComponent(assetUrl);
+  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
+  hostedDtViewingTraceUrl.searchParams.set('loadTimelineFromURL', encodedAssetUrl);
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr');
@@ -63,7 +70,7 @@ async function displayTrace(downloadUrl, fileData) {
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
   }
-  iframe.src = hostedDtViewingTraceUrl;
+  iframe.src = hostedDtViewingTraceUrl.href;
 }
 
 async function readParams() {
@@ -76,8 +83,8 @@ async function readParams() {
   }
   if (!traceId) return;
   document.body.className = 'state--viewing';
-  const {dlurl, fileData} = await getTraceDlUrl(traceId);
-  displayTrace(dlurl, fileData);
+  const {assetUrl, fileData} = await getAssetUrl(traceId);
+  displayTrace(assetUrl, fileData);
 }
 
 function setupLanding() {

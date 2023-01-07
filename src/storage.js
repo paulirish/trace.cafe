@@ -25,7 +25,7 @@ const storage = getStorage(app);
  * From the traceId, find the full URL (with token) that'll receive the correct asset.
  * @param {string} traceId 
  */
-async function getTraceDlUrl(traceId) {
+async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
   const currentRef = (traceId === 'demo') 
@@ -38,8 +38,9 @@ async function getTraceDlUrl(traceId) {
 
   // Could use getDownloadURL(currentRef) and getMetadata(currentRef) but at the REST level they're the same request and it adds ~300ms of extra latency
   // So instead we fetch this data ourselves (instead of firebase JS API)
-  const fileDataUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(currentRef.fullPath)}`;
-  const resp = await fetch(fileDataUrl);
+  const objectUrlPrefix = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o`;
+  const objectDataUrl = `${objectUrlPrefix}/${encodeURIComponent(currentRef.fullPath)}`;
+  const resp = await fetch(objectDataUrl);
   if (!resp.ok) {
     const err = await resp.json()
     if (err?.error?.code === 404) {
@@ -51,15 +52,13 @@ async function getTraceDlUrl(traceId) {
   }
   /** @type {FullMetadata} */
   const fileData = await resp.json()
-
   console.log('Trace found in cloud storage.', currentRef.name);
 
   // eg. https://firebasestorage.googleapis.com/v0/b/trace-uploading-maybe.appspot.com/o/traces%2FsfmYyqoGXa?alt=media&token=b9cf1da7-7120-4d3a-8d5b-e9e54146cdf9
-  const dlurl = new URL(fileDataUrl);
-  dlurl.searchParams.append('alt', 'media');
-  dlurl.searchParams.append('token', fileData.downloadTokens);
-
-  return {dlurl: dlurl.href, fileData};
+  const assetUrl = new URL(objectDataUrl);
+  assetUrl.searchParams.set('alt', 'media');
+  assetUrl.searchParams.set('token', fileData.downloadTokens);
+  return {assetUrl: assetUrl.href, fileData};
 }
 
 /**
@@ -122,6 +121,6 @@ async function upload(fileItem) {
 }
 
 export {
-  getTraceDlUrl,
+  getAssetUrl,
   upload
 }

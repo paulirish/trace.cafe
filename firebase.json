@@ -9,6 +9,14 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "headers": [ {
+      "source": "**",
+      "headers": [{
+        // Just for fun
+        "key": "document-policy",
+        "value": "js-profiling"
+      }]
+    }],
     // https://firebase.google.com/docs/hosting/full-config#rewrites
     "rewrites": [
       {

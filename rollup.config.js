@@ -1,7 +1,7 @@
 // rollup.config.js
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
-
+import {terser} from 'rollup-plugin-terser';
 import {readFileSync, writeFileSync} from 'node:fs';
 
 
@@ -68,7 +68,19 @@ export default {
     html({
       template,
       title: 'trace.cafe'
-    }), 
+    }),
+    // todo; dont do in development?
+    true && terser({
+      ecma: 2021,
+      output: {
+        comments: (node, comment) => {
+          const text = comment.value;
+          if (text.includes('The Lighthouse Authors') && comment.line > 1) return false;
+          return /@ts-nocheck - Prevent tsc|@preserve|@license|@cc_on|^!/i.test(text);
+        },
+        max_line_len: 1000,
+      },
+    }),
     {
       // For bundlebuddy
       buildEnd() {

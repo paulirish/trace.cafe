@@ -1,6 +1,7 @@
 rules_version = '2';
 
 // docs: https://firebase.google.com/docs/rules/rules-language?hl=en&authuser=0
+//       https://firebase.google.com/docs/reference/security/storage
 
 service firebase.storage {
 

@@ -73,7 +73,16 @@ async function compressTrace(fileItem) {
     throw console.error('Unexpected file type', fileItem);
   }
   // At this point we assume its a trace as JSON, (though we don't explicitly check)
-  const textData = await fileItem.text();
+  let textData = await fileItem.text();
+  // TODO: fix url import in RPP so this isnt neccesary.
+  // Also TODO fix this nasty bit
+  const isntEventsArray = textData.slice(0, 30).includes('traceEvents') || textData.at(0) !== '[';
+  if (isntEventsArray) {
+    console.log('Moving traceEvents up a level…');
+    const traceFile = JSON.parse(textData);
+    const events = traceFile.traceEvents;
+    textData = JSON.stringify(events);
+  }
   const buffer = await gzipString(textData);
   return {
     encoding: 'gzip',

@@ -38,6 +38,12 @@ main {
   margin: 8px;
 }
 
+footer {
+  font-size: 90%;
+  text-align: right;
+  margin: 0 1rem 1rem;
+}
+
 .landing-ui {
   margin: 60px auto;
   width: 600px;
@@ -224,8 +230,7 @@ h1 a span.emoji {
 .intro-steps {
   counter-reset: custom-counter 0;
   list-style: none;
-  margin: 16px 1rem 30px calc(30px + 1rem);
-
+  margin: 16px 1rem 6px calc(30px + 1rem);
   padding: 0px;
 }
 .intro-steps li {

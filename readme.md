@@ -29,3 +29,4 @@ firebase deploy
 - motion grpahics animation on drop?
 - navigation transition API?
 - create nanoid as hash of content
+- worker_app to js_app for less JS

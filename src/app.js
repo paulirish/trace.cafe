@@ -5,6 +5,16 @@ import {hijackConsole} from './log';
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
+// TODO: find a way to update this as it's currently frozen in time (~stable @ dec 2022) .. or make sure it matches the trace version?
+//    Current workflow: grab the Revision from chrome:version
+//    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
+const devtoolsGitHash = '70a65c460095e80faae05c0fa3cebf75464a399b'; // 112.0.5574.0. ~2023 feb 10. Has interrupted flamechart fix and timelineloader .traceEvents fix.
+
+// Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
+//     but the browser has extra protection on devtools:// URLS..
+// worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/worker_app.html`;
+
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
  * Thx lighthouse's dom.js!
@@ -20,15 +30,6 @@ globalThis.$ = function(query, context) {
   }
   return /** @type {ParseSelector<T>} */ (result);
 }
-
-
-// Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
-//     but the browser has extra protection on devtools:// URLS..
-// TODO: find a way to update this as it's currently frozen in time (~stable @ dec 2022) .. or make sure it matches the trace version?
-//    Current workflow: grab the Revision from chrome:version but be sure to get a @ prefix in the serve_rev url
-//    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
-// worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@a1299692576f2cd89384f049f9909cd679cd8e6b/worker_app.html`;
 
 /**
  * Show devtools now that we have a trace asset URL

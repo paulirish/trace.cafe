@@ -69,7 +69,7 @@ async function compressTrace(fileItem) {
       buffer,
     };
   }
-  if (!fileItem.type.endsWith('/json')) {
+  if (!fileItem.type.endsWith('/json') && !fileItem.name.endsWith('.cpuprofile')) {
     throw console.error('Unexpected file type', fileItem);
   }
   // At this point we assume its a trace as JSON, (though we don't explicitly check)

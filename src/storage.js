@@ -77,7 +77,7 @@ function getNanoId(fileItem) {
 async function upload(fileItem) {
 
   // I see .json.gz as  "application/x-gzip"
-  if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip')) {
+  if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip') && !fileItem.name.endsWith('.cpuprofile')) {
     throw console.error('Only .json and .json.gz is accepted');
   }
 

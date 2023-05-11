@@ -14,9 +14,9 @@ And shoutout to Artem (and me, lol), who worked on this project's predecessor: h
 ```sh
 firebase use tum
 
-firebase serve
-
 yarn watch # or yarn build
+
+firebase serve
 ```
 
 ```sh
@@ -29,4 +29,3 @@ firebase deploy
 - motion grpahics animation on drop?
 - navigation transition API?
 - create nanoid as hash of content
-- worker_app to js_app for less JS

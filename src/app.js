@@ -5,18 +5,21 @@ import {hijackConsole} from './log';
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
-// TODO: find a way to update this as it's currently frozen in time (~stable @ dec 2022) .. or make sure it matches the trace version?
+// TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
 const devtoolsGitHash = '030cc140435b0152645522b9864b75cac6c0a854'; // 112.0.5615.20 should be the 112 beta branch.  
                                                                     // Has interrupted flamechart fix and timelineloader .traceEvents fix. 
-                                                                    // No tracemodel worker.
+                                                                    // No tracemodel worker. No trace engine at all.
                                                                     // Has 'fixing samples' message not emitted to users.
 
-// Ideally we'd use `devtools://devtools/bundled/devtools_app.html...` …
+// Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
-// worker_app has less deps than devtools_app so.. should load faster. dunno if theres a faster one than that
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/worker_app.html`;
+// There are multiple "entrypoints". We go for the leanest one (even tho it loads LOTS that we don't need)
+// - devtools_app ~= 101 req (5.0 MB)
+// - worker_app   ~=  99 req (5.0 MB)
+// - js_app       ~=  83 req (4.3 MB)
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/js_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

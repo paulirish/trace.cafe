@@ -22,6 +22,6 @@ service firebase.storage {
   // }
 }
 
-// The 90d deletion rule is in cloud console / storage / lifecycle rules
+// The 1yr/365d deletion rule is in cloud console / storage / lifecycle rules
 
 // If anything is changed, the 2nd bucket should be updated the admin UI

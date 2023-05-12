@@ -1,5 +1,6 @@
 {
-  "name": "uploading_traces",
+  "name": "trace-cafe",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +9,9 @@
     "watch": "rollup --watch -c",
     "build": "rollup -c",
     "tsc": "tsc -p tsconfig.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "firebase serve",
+    "deploy": "firebase deploy",
+    "predeploy": "pnpm run build"
   },
   "keywords": [],
   "author": "",

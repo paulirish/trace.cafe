@@ -12,16 +12,16 @@ And shoutout to Artem (and me, lol), who worked on this project's predecessor: h
 ## Development
 
 ```sh
-firebase use tum
+firebase use tum # optional
 
 yarn watch # or yarn build
 
-firebase serve
+yarn serve
 ```
 
 ```sh
 # deploying
-firebase deploy
+yarn deploy
 ```
 
 ## TODO

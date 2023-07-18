@@ -30,6 +30,7 @@ body {
   tab-size: 2;
   color: var(--color-text-primary);
   background: var(--color-background);
+  --dt-tabstrip-height: 26px;  /* Matches the height of devtools tab strip */
 }
 
 /* Mine */
@@ -71,8 +72,15 @@ iframe {
   display: none;
 }
 
-.state--viewing iframe {
+.state--viewing iframe#ifr-dt {
   display: block;
+}
+
+/* not handled with same body state as devtools iframe, but.. thats good */ 
+iframe#ifr-perfetto.visible {  
+  display: block;
+  background-color: white;
+  padding-top: var(--dt-tabstrip-height);
 }
 
 .state--idle details {
@@ -100,9 +108,9 @@ iframe {
 }
 
 .state--viewing details summary {
-  height: 26px; /* Matches the height of devtools tab strip */
+  height: var(--dt-tabstrip-height); 
   padding: 0 10px;
-  line-height: 26px;
+  line-height: var(--dt-tabstrip-height);
 }
 summary {
   cursor: pointer;
@@ -326,7 +334,7 @@ h1 a span.emoji {
 .tabbed-pane-header-tab {
   float: left;
   padding: 2px 0.8em;
-  height: 26px;
+  height: var(--dt-tabstrip-height);
   line-height: 16px;
   white-space: nowrap;
   cursor: default;
@@ -364,7 +372,7 @@ h1 a span.emoji {
   background: none;
   background-size: 20px;
   background-repeat: no-repeat;
-  background-position: 4px 1px;
+  background-position: 4px 3px;
   opacity: 0.6;
   --home-icon-url: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path  d="M11.45 38.55h6.35V25.7h12.45v12.85h6.3V19.7L24 10.3l-12.55 9.4ZM6.9 43.1V17.4L24 4.55 41.15 17.4v25.7h-14.9V29.7H21.8v13.4ZM24 24.4Z"/></svg>');
 }
@@ -375,6 +383,16 @@ h1 a span.emoji {
 .toolbar-button--home {
   background-image: var(--home-icon-url);
 }
+
+.toolbar-button--perfetto-toggle {
+  background-image: url('https://perfetto.dev/assets/favicon.png');
+}
+.toolbar-button--perfetto-toggle-devtools {
+  background-image: url('https://raw.githubusercontent.com/ChromeDevTools/devtools-logo/master/logos/png/devtools-circle-48.png');
+}
+
+
+
 
 /* a la .console-message */
 textarea {

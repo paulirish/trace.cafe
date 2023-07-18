@@ -9,9 +9,9 @@ import {hijackConsole} from './log';
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
 const devtoolsGitHash = '030cc140435b0152645522b9864b75cac6c0a854'; // 112.0.5615.20 should be the 112 beta branch.
-// Has interrupted flamechart fix and timelineloader .traceEvents fix.
-// No tracemodel worker. No trace engine at all.
-// Has 'fixing samples' message not emitted to users.
+                                                                    // Has interrupted flamechart fix and timelineloader .traceEvents fix.
+                                                                    // No tracemodel worker. No trace engine at all.
+                                                                    // Has 'fixing samples' message not emitted to users.
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -46,6 +46,7 @@ globalThis.$ = function (query, context) {
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
     document.body.className = 'state--idle';
+    $('iframe#ifr-perfetto').className = '';
     return;
   }
 
@@ -58,9 +59,7 @@ async function displayTrace(assetUrl, fileData) {
   const dateStr = fmter.format(date);
   document.title = `trace.cafe — ${filename} — ${dateStr}`;
 
-  setTimeout(_ => {
-    $('details').open = false;
-  }, 1_000);
+  setTimeout(_ => {$('details').open = false;}, 1_000);
 
   /**
    * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
@@ -79,45 +78,49 @@ async function displayTrace(assetUrl, fileData) {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too.
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
-    showTraceInPerfetto(iframePftto, assetUrl, filename);
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 
-  // warm up perfetto iframe
-  const iframePftto = $('iframe#ifr-pftto');
-  iframePftto.src = 'https://ui.perfetto.dev/';
-  globalThis.iframePftto = iframePftto;
-  // TODO: move this, so its only called once
+  // Warm up perfetto iframe
+  const iframePerfetto = $('iframe#ifr-perfetto');
+  iframePerfetto.src = 'https://ui.perfetto.dev/';
+  // global vars for the perfetto load... it's gross. i'm sorry.
+  globalThis.traceAssetUrl = assetUrl;
+  globalThis.traceTitle = `${filename} — ${dateStr}`;
 }
 
 // https://perfetto.dev/docs/visualization/deep-linking-to-perfetto-ui
-async function showTraceInPerfetto(iframePftto, assetUrl, filename) {
+async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   const ORIGIN = 'https://ui.perfetto.dev';
-  const timer = setInterval(() => iframePftto.contentWindow.postMessage('PING', ORIGIN), 50);
+  const timer = setInterval(() => iframePerfetto.contentWindow.postMessage('PING', ORIGIN), 50);
 
-  const perfettoOnMessage = async evt => {
+  const onPerfettoMsg = async evt => {
     if (evt.data !== 'PONG') return;
-
     // We got a PONG, the UI is ready.
-    window.clearInterval(timer);
-    window.removeEventListener('message', perfettoOnMessage);
+    window.clearInterval(timer); window.removeEventListener('message', onPerfettoMsg);
 
-
-    const buffer = await fetch(assetUrl).then(r => r.arrayBuffer());
-
-    // send trace
-    iframePftto.contentWindow.postMessage(
-      {
-        perfetto: {
-          buffer: buffer,
-          title: filename,
-        },
+    const traceBuffer = await fetch(traceAssetUrl).then(r => r.arrayBuffer());
+    // Send trace
+    const payload = {
+      perfetto: {
+        buffer: traceBuffer,
+        title: traceTitle,
       },
-      ORIGIN
-    );
+    };
+    iframePerfetto.contentWindow.postMessage(payload, ORIGIN);
+    iframePerfetto.classList.add('traceloaded');
   };
 
-  window.addEventListener('message', perfettoOnMessage);
+  window.addEventListener('message', onPerfettoMsg);
+}
+
+function togglePerfettoViz(){
+  const iframePerfetto = $('iframe#ifr-perfetto');
+  const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
+  // Only load it once. but user can toggle visibility all they want
+  if (shouldShowPerfetto && !iframePerfetto.classList.contains('traceloaded')) {
+    showTraceInPerfetto(iframePerfetto, globalThis.traceAssetUrl, globalThis.traceTitle);
+  }
 }
 
 async function readParams() {
@@ -150,6 +153,13 @@ function setupLanding() {
   $('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
+  }); 
+
+  // Toggle icon between Perfetto and PP
+  $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
+    const isDT = e.target.classList.toggle('toolbar-button--perfetto-toggle-devtools');
+    e.target.title = `Show in ${isDT ? 'DevTools Perf Panel' : 'Perfetto UI'}`;
+    togglePerfettoViz();
   });
 
   addEventListener('unhandledrejection', event => {
@@ -166,10 +176,6 @@ function setupFileInput() {
   fileinput.addEventListener('change', e => {
     handleDrop(e.target?.files);
   });
-
-  // setInterval(_ => {
-  //   console.log('hello from', Date.now());
-  // }, 1000);
 }
 
 hijackConsole();

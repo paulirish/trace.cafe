@@ -8,8 +8,8 @@ import {hijackConsole} from './log';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
-const devtoolsGitHash = '030cc140435b0152645522b9864b75cac6c0a854'; // 112.0.5615.20 should be the 112 beta branch.  
-                                                                    // Has interrupted flamechart fix and timelineloader .traceEvents fix. 
+const devtoolsGitHash = '030cc140435b0152645522b9864b75cac6c0a854'; // 112.0.5615.20 should be the 112 beta branch.
+                                                                    // Has interrupted flamechart fix and timelineloader .traceEvents fix.
                                                                     // No tracemodel worker. No trace engine at all.
                                                                     // Has 'fixing samples' message not emitted to users.
 
@@ -29,28 +29,29 @@ const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/
  * @param {ParentNode=} context
  * @return {ParseSelector<T>}
  */
-globalThis.$ = function(query, context) {
+globalThis.$ = function (query, context) {
   const result = (context || document).querySelector(query);
   if (result === null) {
     throw new Error(`query ${query} not found`);
   }
   return /** @type {ParseSelector<T>} */ (result);
-}
+};
 
 /**
  * Show devtools now that we have a trace asset URL
- * @param {string | undefined} assetUrl 
- * @param {FullMetadata} fileData 
- * @returns 
+ * @param {string | undefined} assetUrl
+ * @param {FullMetadata} fileData
+ * @returns
  */
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
     document.body.className = 'state--idle';
+    $('iframe#ifr-perfetto').classList.remove('visible', 'traceloaded');
     return;
   }
 
   document.body.className = 'state--viewing';
-  
+
   // Set human-friendly title
   const filename = (fileData?.metadata?.oName || fileData.name).replace('.json', '');
   const date = new Date(fileData.timeCreated);
@@ -61,24 +62,65 @@ async function displayTrace(assetUrl, fileData) {
   setTimeout(_ => {$('details').open = false;}, 1_000);
 
   /**
-  * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
-  * Because DevTools incorrectly double decodes the path.
-  *  - First decode in `Runtime.Runtime.queryParam()` with the searchParams.get call
-  *  - Second decode in TimelinePanel's `handleQueryParam()` for loadTimelineFromURL it happens again.
-  * TODO: fix that bug in devtools.
-  */
+   * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
+   * Because DevTools incorrectly double decodes the path.
+   *  - First decode in `Runtime.Runtime.queryParam()` with the searchParams.get call
+   *  - Second decode in TimelinePanel's `handleQueryParam()` for loadTimelineFromURL it happens again.
+   * TODO: fix that bug in devtools.
+   */
   const encodedAssetUrl = encodeURIComponent(assetUrl);
   const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
   hostedDtViewingTraceUrl.searchParams.set('loadTimelineFromURL', encodedAssetUrl);
 
   console.log('Trace opening in DevTools…', filename);
-  const iframe = $('iframe#ifr');
+  const iframe = $('iframe#ifr-dt');
   iframe.onload = _ => {
-    // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too. 
+    // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too.
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
-  }
+  };
   iframe.src = hostedDtViewingTraceUrl.href;
+
+  // Warm up perfetto iframe
+  const iframePerfetto = $('iframe#ifr-perfetto');
+  iframePerfetto.src = 'https://ui.perfetto.dev/';
+  // global vars for the perfetto load... it's gross. i'm sorry.
+  globalThis.traceAssetUrl = assetUrl;
+  globalThis.traceTitle = `${filename} — ${dateStr}`;
+}
+
+// https://perfetto.dev/docs/visualization/deep-linking-to-perfetto-ui
+async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
+  const ORIGIN = 'https://ui.perfetto.dev';
+  const timer = setInterval(() => iframePerfetto.contentWindow.postMessage('PING', ORIGIN), 50);
+
+  const onPerfettoMsg = async evt => {
+    if (evt.data !== 'PONG') return;
+    // We got a PONG, the UI is ready.
+    window.clearInterval(timer); window.removeEventListener('message', onPerfettoMsg);
+
+    const traceBuffer = await fetch(traceAssetUrl).then(r => r.arrayBuffer());
+    // Send trace
+    const payload = {
+      perfetto: {
+        buffer: traceBuffer,
+        title: traceTitle,
+      },
+    };
+    iframePerfetto.contentWindow.postMessage(payload, ORIGIN);
+    iframePerfetto.classList.add('traceloaded');
+  };
+
+  window.addEventListener('message', onPerfettoMsg);
+}
+
+function togglePerfettoViz(){
+  const iframePerfetto = $('iframe#ifr-perfetto');
+  const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
+  // Only load it once. but user can toggle visibility all they want
+  if (shouldShowPerfetto && !iframePerfetto.classList.contains('traceloaded')) {
+    showTraceInPerfetto(iframePerfetto, globalThis.traceAssetUrl, globalThis.traceTitle);
+  }
 }
 
 async function readParams() {
@@ -98,7 +140,7 @@ async function readParams() {
 function setupLanding() {
   // // Preload iframe
   // TODO: use Navigation API to avoid the preload from adding a history entry.
-  // const iframe = $('iframe#ifr');
+  // const iframe = $('iframe#ifr-dt');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
   // Update example trace URL
@@ -111,11 +153,18 @@ function setupLanding() {
   $('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
+  }); 
+
+  // Toggle icon between Perfetto and PP
+  $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
+    const isDT = e.target.classList.toggle('toolbar-button--perfetto-toggle-devtools');
+    e.target.title = `Show in ${isDT ? 'DevTools Perf Panel' : 'Perfetto UI'}`;
+    togglePerfettoViz();
   });
 
-  addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled rejection: ', event?.reason?.message)
-   });
+  addEventListener('unhandledrejection', event => {
+    console.error('Unhandled rejection: ', event?.reason?.message);
+  });
 }
 
 function setupFileInput() {
@@ -127,10 +176,6 @@ function setupFileInput() {
   fileinput.addEventListener('change', e => {
     handleDrop(e.target?.files);
   });
-
-  // setInterval(_ => {
-  //   console.log('hello from', Date.now());
-  // }, 1000);
 }
 
 hijackConsole();

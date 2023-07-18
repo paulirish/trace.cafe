@@ -46,7 +46,7 @@ globalThis.$ = function (query, context) {
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
     document.body.className = 'state--idle';
-    $('iframe#ifr-perfetto').className = '';
+    $('iframe#ifr-perfetto').classList.remove('visible', 'traceloaded');
     return;
   }
 

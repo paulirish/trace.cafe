@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["devtools://devtools", "https://chrome-devtools-frontend.appspot.com", "http://localhost:5002"],
+    "origin": ["devtools://devtools", "https://chrome-devtools-frontend.appspot.com", "https://trace.cafe", "http://localhost:5002"],
     "method": ["GET"],
     "maxAgeSeconds": 3600
   }

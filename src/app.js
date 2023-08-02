@@ -8,10 +8,7 @@ import {hijackConsole} from './log';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Incrementing VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/111.0.5544.2..111.0.5544.3?pretty=fuller&n=10000
-const devtoolsGitHash = '030cc140435b0152645522b9864b75cac6c0a854'; // 112.0.5615.20 should be the 112 beta branch.
-                                                                    // Has interrupted flamechart fix and timelineloader .traceEvents fix.
-                                                                    // No tracemodel worker. No trace engine at all.
-                                                                    // Has 'fixing samples' message not emitted to users.
+const devtoolsGitHash = '8b31dc433fc88586317dbbbbd54c531c86558686'; // 117.0.5911.0 
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..

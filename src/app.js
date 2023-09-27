@@ -76,6 +76,7 @@ async function displayTrace(assetUrl, fileData) {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too.
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
+    document.body.className += ' state--loaded';
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 

@@ -430,7 +430,7 @@ textarea {
   display: none;
 }
 
-.state--viewing .icon--dl {
+.state--loaded .icon--dl {
   display: inline-block;
   z-index: 5; /* under the details */ 
   position: absolute;

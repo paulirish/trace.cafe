@@ -400,3 +400,40 @@ textarea {
   line-height: 17px;
   margin-bottom: 18px;
 }
+
+/* download button overlay */
+/* because Failed to execute 'showSaveFilePicker' on 'Window': Cross origin sub frames aren't allowed to show a file picker. */
+.icon {
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  white-space: pre;
+  width: 28px;
+  height: 26px;
+  background-color: gray;
+}
+.icon:hover {
+  filter: invert(0.6);
+}
+.icon:active {
+  filter: invert(0.8);
+}
+.icon--dl {
+  background-image: url('https://chrome-devtools-frontend.appspot.com/serve_rev/@8b31dc433fc88586317dbbbbd54c531c86558686/Images/download.svg');
+  background-repeat: no-repeat;
+  background-position: 4px 4px;
+  display: none;
+}
+
+.state--viewing .icon--dl {
+  display: inline-block;
+  z-index: 5; /* under the details */ 
+  position: absolute;
+  left: 123px;
+  top: 27px;
+}

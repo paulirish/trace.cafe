@@ -28,4 +28,4 @@ yarn deploy
 
 - motion grpahics animation on drop?
 - navigation transition API?
-- create nanoid as hash of content
+- create nanoid as hash of content 

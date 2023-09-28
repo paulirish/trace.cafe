@@ -12,11 +12,11 @@ const devtoolsGitHash = 'f775f3615b05884713c434f5bc3c4eb13a5edb8e'; // 119.0.603
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
-// There are multiple "entrypoints". We go for the leanest one (even tho it loads LOTS that we don't need)
+// There are multiple "entrypoints". We go for a smaller one (even tho it still loads LOTS that we don't need)
 // - devtools_app ~= 101 req (5.0 MB)
 // - worker_app   ~=  99 req (5.0 MB)
-// - js_app       ~=  83 req (4.3 MB)
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/js_app.html`;
+// - js_app       ~=  83 req (4.3 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/worker_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

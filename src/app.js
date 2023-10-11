@@ -55,7 +55,7 @@ async function displayTrace(assetUrl, fileData) {
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
-  document.title = `trace.cafe — ${filename} — ${dateStr}`;
+  document.title = `${filename} — ${dateStr} - trace.cafe`;
 
   setTimeout(_ => {$('details').open = false;}, 1_000);
 

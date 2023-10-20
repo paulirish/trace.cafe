@@ -142,6 +142,9 @@ function setupLanding() {
   // const iframe = $('iframe#ifr-dt');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
+  $('#chromever').href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsGitHash}&platform=Linux`;
+  $('#chromever').hidden = false;
+
   // Update example trace URL
   const example = $('a#example');
   const rootRelUrl = example.href.replace(example.origin, '');

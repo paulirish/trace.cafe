@@ -44,6 +44,9 @@ footer {
   text-align: right;
   margin: 0 1rem 1rem;
 }
+footer a {
+  display: block;
+}
 
 .landing-ui {
   margin: 60px auto;

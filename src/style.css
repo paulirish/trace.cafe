@@ -145,7 +145,7 @@ textarea {
   border: 0;
   resize: none;
 }
-/* "clever" hack to make sure log textarea is visible in idle state, 
+/* "clever" hack to make sure log textarea is visible in landing state, 
     but dont show the rest of the <details> elem. 
     probably 
   */

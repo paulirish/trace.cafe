@@ -8,7 +8,7 @@ import {hijackConsole} from './log';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsGitHash = '8b31dc433fc88586317dbbbbd54c531c86558686'; // 117.0.5911.0 
+const devtoolsGitHash = 'a959a4394b6d1f1cef8f20f74dc2e1a507a56529'; // 121.0.6129.1
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..

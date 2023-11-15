@@ -44,7 +44,7 @@ async function getAssetUrl(traceId) {
   if (!resp.ok) {
     const err = await resp.json()
     if (err?.error?.code === 404) {
-      console.error(`Trace (${traceId}) not found. Perhaps it's been more than 90 days since upload?`);
+      console.error(`Trace (${traceId}) not found. Perhaps it's been more than 1 year since upload?`);
     } else {
       console.error(err);
     } 
@@ -97,14 +97,27 @@ async function upload(fileItem) {
   const nanoId = getNanoId(fileItem);
   const storageRef = ref(storage, `traces/${nanoId}`);
   const uploadTask = uploadBytesResumable(storageRef, buffer, metadata);
+  const traceViewUrl = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
+  let tryCopyToClipboard = true;
 
   console.log(`Upload starting… Trace ID: (${nanoId})`);
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.on('state_changed',
     (snapshot) => {
+      // Copy to clipboard
+      if (snapshot.bytesTransferred > 0 && tryCopyToClipboard) {
+        navigator.clipboard.writeText(traceViewUrl.href).then(_ => {
+          console.log('Trace URL has been copied to your clipboard! 📋');
+          tryCopyToClipboard = false;
+        }, e => {
+          // console.warn(e);
+          tryCopyToClipboard = false;
+        });
+      }
+
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log(`Upload is ${snapshot.state}. ${progress.toLocaleString()}% done.`);
+      console.log(`Upload ${progress.toLocaleString()}% done. (${snapshot.state})`);
     }, 
     (error) => {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
@@ -112,10 +125,9 @@ async function upload(fileItem) {
     async () => {
       console.log(`Upload complete. Trace ID: (${uploadTask.snapshot.ref.name})`);
 
-      const urlToView = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
-      console.log('Navigating to', urlToView.href);
+      console.log('Navigating to', traceViewUrl.href);
       // pushState is for the birds. State-wise this is more straightforward.
-      location.href = urlToView.href;
+      location.href = traceViewUrl.href;
     }
   );
 }

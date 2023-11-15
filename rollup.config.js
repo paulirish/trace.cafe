@@ -35,7 +35,7 @@ ${code}
 
   return `
 <!doctype html>
-<html${makeHtmlAttributes(attributes.html)}>
+<html lang=en class=state--landing>
   <head>
     <title>${title}</title>
     ${metas}
@@ -45,7 +45,7 @@ ${code}
     </style>
     ${links}
   </head>
-  <body class="state--idle">
+  <body>
    ${readFileSync('./src/body.html', 'utf-8')}
    ${scripts}
   </body>

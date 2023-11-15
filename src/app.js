@@ -42,12 +42,12 @@ globalThis.$ = function (query, context) {
  */
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
-    document.body.className = 'state--idle';
-    $('iframe#ifr-perfetto').classList.remove('visible', 'traceloaded');
+    document.documentElement.className = 'state--landing';
+    $('iframe#ifr-perfetto').classList.remove('visible', 'perfetto-tracedatasent');
     return;
   }
 
-  document.body.className = 'state--viewing';
+  document.documentElement.className = 'state--viewing';
 
   // Set human-friendly title
   globalThis.assetFilename = fileData?.metadata?.oName || fileData.name;
@@ -76,7 +76,7 @@ async function displayTrace(assetUrl, fileData) {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too.
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
-    document.body.className += ' state--loaded';
+    document.documentElement.classList.add('ifr-dt-loaded');
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 
@@ -107,31 +107,41 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
       },
     };
     iframePerfetto.contentWindow.postMessage(payload, ORIGIN);
-    iframePerfetto.classList.add('traceloaded');
+    iframePerfetto.classList.add('perfetto-tracedatasent');
   };
 
   window.addEventListener('message', onPerfettoMsg);
 }
 
-function togglePerfettoViz(){
+function toggleBetweenPerfettoAndDevTools(){
   const iframePerfetto = $('iframe#ifr-perfetto');
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
   // Only load it once. but user can toggle visibility all they want
-  if (shouldShowPerfetto && !iframePerfetto.classList.contains('traceloaded')) {
+  if (shouldShowPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
     showTraceInPerfetto(iframePerfetto, globalThis.traceAssetUrl, globalThis.traceTitle);
   }
 }
 
 async function readParams() {
   const parsed = new URL(location.href);
-  // Pull from path
-  let traceId = parsed.pathname.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid;
-  if (!traceId) {
+  const traceId = 
+    // Pull from path
+    parsed.pathname.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid
     // Pull from query param
-    traceId = parsed.searchParams.get('trace');
-  }
+    ?? parsed.searchParams.get('trace')
+    // Pull from hash (intermediate-while-uploading url)
+    ?? parsed.hash.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid;
+
   if (!traceId) return;
-  document.body.className = 'state--viewing';
+
+  // Let's get everyone on the canonical thing.
+  const canonicalUrl = new URL(`/t/${traceId}`, location.href);
+  if (location.href !== canonicalUrl.href) {
+    location.href = canonicalUrl.href;
+    return;
+  }
+
+  document.documentElement.className = 'state--viewing';
   const {assetUrl, fileData} = await getAssetUrl(traceId);
   displayTrace(assetUrl, fileData);
 }
@@ -178,7 +188,7 @@ function setupLanding() {
   $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
     const isDT = e.target.classList.toggle('toolbar-button--perfetto-toggle-devtools');
     e.target.title = `Show in ${isDT ? 'DevTools Perf Panel' : 'Perfetto UI'}`;
-    togglePerfettoViz();
+    toggleBetweenPerfettoAndDevTools();
   });
 
   addEventListener('unhandledrejection', event => {
@@ -196,6 +206,7 @@ function setupFileInput() {
     handleDrop(e.target?.files);
   });
 }
+
 
 hijackConsole();
 setupLanding();

@@ -86,7 +86,7 @@ iframe#ifr-perfetto.visible {
   padding-top: var(--dt-tabstrip-height);
 }
 
-.state--idle details {
+.state--landing details {
   visibility: hidden;
 }
 
@@ -105,8 +105,8 @@ iframe#ifr-perfetto.visible {
   border-bottom-width: 2px; /* i just like it better */
 }
 
-.state--idle details p,
-.state--idle details summary {
+.state--landing details p,
+.state--landing details summary {
   display: none;
 }
 
@@ -149,7 +149,7 @@ textarea {
     but dont show the rest of the <details> elem. 
     probably 
   */
-.state--idle details .console {
+.state--landing details .console {
   visibility: visible;
 }
 
@@ -433,7 +433,7 @@ textarea {
   display: none;
 }
 
-.state--loaded .icon--dl {
+.ifr-dt-loaded .icon--dl {
   display: inline-block;
   z-index: 5; /* under the details */ 
   position: absolute;

@@ -72,13 +72,14 @@ async function displayTrace(assetUrl, fileData) {
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr-dt');
+  // I experimenting with a srcdoc loading screen but it doesn't work cuz the .src assignment will nuke the srcdoc state entirly.
+  // Kinda weird but w/e. Also srcdoc messes with history entries.
   iframe.onload = _ => {
     // Technically devtools iframe just loaded (didnt 404). We assume the trace loaded succfessully too.
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
     document.documentElement.classList.add('ifr-dt-loaded');
   };
-  iframe.src = hostedDtViewingTraceUrl.href;
 
   // Warm up perfetto iframe
   const iframePerfetto = $('iframe#ifr-perfetto');

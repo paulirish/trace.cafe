@@ -104,7 +104,8 @@ async function upload(fileItem) {
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.on('state_changed',
     (snapshot) => {
-      // Copy to clipboard
+      // Copy link to clipboard
+      //    Note to self. any pushState creates history entries and messes with backnav on the iframe.. Its just not worth it.
       if (snapshot.bytesTransferred > 0 && tryCopyToClipboard) {
         navigator.clipboard.writeText(traceViewUrl.href).then(_ => {
           console.log('Trace URL has been copied to your clipboard! 📋');

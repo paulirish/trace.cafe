@@ -28,4 +28,4 @@ yarn deploy
 
 - motion grpahics animation on drop?
 - navigation transition API?
-- create nanoid as hash of content 
+- create nanoid as hash of content. (I experimented with https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string but it gives a ~40 char string. and i'm too lazy to find a determinisitic hashing nanoid thing that will stay short.)

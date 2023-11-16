@@ -82,9 +82,10 @@ async function displayTrace(assetUrl, fileData) {
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 
-  // Warm up perfetto iframe
-  const iframePerfetto = $('iframe#ifr-perfetto');
-  iframePerfetto.src = 'https://ui.perfetto.dev/';
+  // Warm up perfetto iframe. // Eh... it's so loud for something that's a 10% usecase. 
+  // const iframePerfetto = $('iframe#ifr-perfetto');
+  // iframePerfetto.src = 'https://ui.perfetto.dev/';
+
   // global vars for the perfetto load... it's gross. i'm sorry.
   globalThis.traceAssetUrl = assetUrl;
   globalThis.traceTitle = `${filename} — ${dateStr}`;
@@ -93,6 +94,7 @@ async function displayTrace(assetUrl, fileData) {
 // https://perfetto.dev/docs/visualization/deep-linking-to-perfetto-ui
 async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   const ORIGIN = 'https://ui.perfetto.dev';
+  iframePerfetto.src = 'https://ui.perfetto.dev/';
   const timer = setInterval(() => iframePerfetto.contentWindow.postMessage('PING', ORIGIN), 50);
 
   const onPerfettoMsg = async evt => {

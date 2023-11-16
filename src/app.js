@@ -80,6 +80,7 @@ async function displayTrace(assetUrl, fileData) {
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
     document.documentElement.classList.add('ifr-dt-loaded');
   };
+  iframe.src = hostedDtViewingTraceUrl.href;
 
   // Warm up perfetto iframe
   const iframePerfetto = $('iframe#ifr-perfetto');

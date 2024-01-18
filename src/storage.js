@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import {customAlphabet} from 'nanoid';
 import { compressTrace } from './trace-compression';
+import { looksLikeLighthouseLHR, uploadLhr } from './lighthouse-lhr';
 
 /** @typedef {import('firebase/storage').UploadMetadata} UploadMetadata */
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
@@ -79,6 +80,21 @@ async function upload(fileItem) {
   // I see .json.gz as  "application/x-gzip"
   if (!fileItem.type.endsWith('/json') && !fileItem.type.endsWith('gzip') && !fileItem.name.endsWith('.cpuprofile')) {
     throw console.error('Only .json and .json.gz is accepted');
+  }
+
+  // if it looks like an LHR, do dat.
+  try {
+    const lhr = await looksLikeLighthouseLHR(fileItem);
+    await uploadLhr(lhr);
+    return;
+  } catch (e) {
+    if (/** @type {Error} */ (e).message.includes('traceish') === false) {
+      // Couldn't upload or something
+      console.error(e);
+      return;
+    } else {
+      // It wasn't an LHR, let's continue with trace uploading.
+    }
   }
 
   const {encoding, buffer} = await compressTrace(fileItem);

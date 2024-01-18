@@ -9,8 +9,14 @@ function setupDragAndDrop() {
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();
-    // Style the drag-and-drop as a "copy file" operation.
-    event.dataTransfer.dropEffect = 'copy';
+
+    if (event.dataTransfer?.types?.includes('Files')) {
+      // Style the drag-and-drop as a "copy file" operation.
+      event.dataTransfer.dropEffect = 'copy';
+    } else {
+      // someone dragged text by mistake or something.
+      resetDraggingUI();
+    }
   });
 
   dropArea.addEventListener('drop', event => {
@@ -28,8 +34,11 @@ function setupDragAndDrop() {
     resetDraggingUI();
   });
   dropArea.addEventListener('dragenter', _ => {
-    dropArea.classList.add('dropping');
-    dragging = true;
+    // Don't trigger if someone (me) accidentally drags the demo link.
+    if (event.dataTransfer?.types?.includes('Files')) {
+      dropArea.classList.add('dropping');
+      dragging = true;
+    }
   });
 
   function resetDraggingUI() {
@@ -52,6 +61,6 @@ function handleDrop(fileList) {
 }
 
 export {
-  setupDragAndDrop, 
+  setupDragAndDrop,
   handleDrop,
 };

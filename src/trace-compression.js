@@ -61,28 +61,22 @@ async function compressTrace(fileItem) {
       buffer,
     };
   }
-  // Already gzip (from NPP or otherwise)
+  // Already gzip. Let's make sure it looks right and then upload the file as is.
   if (fileItem.type.endsWith('gzip')) {
-    const buffer = await normalizeCompressedTrace(fileItem);
+    const gzippedBuffer = await fileItem.arrayBuffer();
+    const textData = await decodeGzipBufferToString(gzippedBuffer);
+
+    await verifyItLooksLikeATrace(textData);
+    const buffer = await fileItem.arrayBuffer();
     return {
       encoding: 'gzip',
       buffer,
     };
   }
-  if (!fileItem.type.endsWith('/json') && !fileItem.name.endsWith('.cpuprofile')) {
-    throw console.error('Unexpected file type', fileItem);
-  }
-  // At this point we assume its a trace as JSON, (though we don't explicitly check)
+
+  // Seems like basic JSON
   let textData = await fileItem.text();
-  // TODO: fix url import in RPP so this isnt neccesary.
-  // Also TODO fix this nasty bit
-  const isntEventsArray = textData.slice(0, 30).includes('traceEvents') || textData.at(0) !== '[';
-  if (isntEventsArray) {
-    console.log('Moving traceEvents up a level…');
-    const traceFile = JSON.parse(textData);
-    const events = traceFile.traceEvents;
-    textData = JSON.stringify(events);
-  }
+  await verifyItLooksLikeATrace(textData);
   const buffer = await gzipString(textData);
   return {
     encoding: 'gzip',
@@ -91,40 +85,22 @@ async function compressTrace(fileItem) {
 }
 
 /**
- * NPP traces are {traceEvents, metadata} whereas
- * OPP traces just traceEvent[]
- * @param {File} fileItem
+ * Old OPP traces were just `traceEvent[]`, but RPP/NPP/traceviewer traces are `{traceEvents, metadata}`
+ * Just basic clientside validation.
+ * @param {string} textData
  */
-async function normalizeCompressedTrace(fileItem) {
-  const gzippedBuffer = await fileItem.arrayBuffer();
-  const str = await decodeGzipBufferToString(gzippedBuffer);
-  const traceFile = JSON.parse(str);
+async function verifyItLooksLikeATrace(textData) {
+  const traceFile = JSON.parse(textData);
 
-  // Perhaps someone manually gzipped an OPP trace
+  // Old bare array style.
   if (Array.isArray(traceFile)) {
-    return gzippedBuffer;
+    return;
   }
-  if (traceFile.metadata) {
-    console.log('Discovered NPP trace. Massaging it back to canonical trace format.');
-    // move NPP metadata into a __metadata event. Why keep it? Just for fun.
-    const evt = {
-      args: traceFile.metadata,
-      cat: '__metadata',
-      name: 'npp_meta',
-      ph: 'M',
-      pid: 0,
-      tid: 0,
-      ts: 0,
-    };
-    traceFile.traceEvents?.push(evt);
+  // Modern style
+  if (Array.isArray(traceFile.traceEvents)) {
+    return;
   }
-  const updatedEvents = traceFile.traceEvents;
-  if (!Array.isArray(updatedEvents)) {
-    throw console.error('Unexpected gzip trace file');
-  }
-  const traceStr = JSON.stringify(updatedEvents);
-  const buffer = await gzipString(traceStr);
-  return buffer;
+  throw console.error('Unexpected gzip trace file');
 }
 
 export {compressTrace};

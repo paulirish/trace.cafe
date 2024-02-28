@@ -6,8 +6,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "watch": "rollup --watch -c",
-    "build": "rollup -c",
+    "watch": "mkdir -p dist && rollup --watch -c",
+    "build": "mkdir -p dist && rollup -c",
     "tsc": "tsc -p tsconfig.json",
     "serve": "firebase serve",
     "deploy": "firebase deploy",

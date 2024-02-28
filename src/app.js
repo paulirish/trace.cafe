@@ -8,7 +8,7 @@ import {hijackConsole} from './log';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsGitHash = '0ffbc4131054764d0ef5b5652b7643648f6fb71b'; // 122.0.6254.0
+const devtoolsHashVer = ['70f00f477937b61ba1876a1fdbf9f2e914f24fe3', '124.0.6321.0']
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -16,7 +16,7 @@ const devtoolsGitHash = '0ffbc4131054764d0ef5b5652b7643648f6fb71b'; // 122.0.625
 // - devtools_app ~= 101 req (5.0 MB)
 // - worker_app   ~=  99 req (5.0 MB)
 // - js_app       ~=  83 req (4.3 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsGitHash}/worker_app.html`;
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsHashVer[0]}/worker_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
@@ -156,8 +156,11 @@ function setupLanding() {
   // const iframe = $('iframe#ifr-dt');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
-  $('#chromever').href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsGitHash}&platform=Linux`;
+  $('#chromever').href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsHashVer[0]}&platform=Linux`;
+  const mstone = devtoolsHashVer[1].split('.').at(0);
   $('#chromever').hidden = false;
+  $('#chromever').textContent += ` m${mstone}`;
+  $('#chromever').title = `${devtoolsHashVer[1]} == ${$('#chromever').title}`;
 
   // Update example trace URL
   const example = $('a#example');

@@ -11,6 +11,8 @@ And shoutout to Artem (and me, lol), who worked on this project's predecessor: h
 
 ## Development
 
+Probably `npm install -g firebase-tools`
+
 ```sh
 firebase use tum # optional
 

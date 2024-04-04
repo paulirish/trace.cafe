@@ -50,8 +50,7 @@ async function displayTrace(assetUrl, fileData) {
   document.documentElement.className = 'state--viewing';
 
   // Set human-friendly title
-  globalThis.assetFilename = fileData?.metadata?.oName || fileData.name;
-  const filename = assetFilename.replace('.json', '');
+  const filename = (fileData?.metadata?.oName || fileData.name).replace('.json', '');
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
@@ -173,23 +172,6 @@ function setupLanding() {
     e.preventDefault();
     location.href = '/';
   }); 
-  
-  // Downlaod button because showSaveFilePicker doesnt work in cross-origin iframe
-  $('.icon--dl').addEventListener('click', async e => {
-    const a = document.createElement('a');
-    a.title = globalThis.traceAssetUrl;
-    const blob = await fetch(globalThis.traceAssetUrl).then(r => r.blob());
-    if (blob.type !== 'application/json') throw new Error('Unsupported blob type');
-    a.href = URL.createObjectURL(blob);
-
-    // TODO: add a compressionstream for gz.
-    a.download = globalThis.assetFilename.replace('.gz', '');
-    document.body.append(a); // Firefox requires anchor to be in the DOM.
-    a.click();
-
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(a.href), 500);
-  });
 
   // Toggle icon between Perfetto and PP
   $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {

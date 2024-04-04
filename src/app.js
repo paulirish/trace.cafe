@@ -1,6 +1,7 @@
 import {setupDragAndDrop, handleDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
+import {recentlyViewed} from './recently-viewed';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
@@ -8,7 +9,7 @@ import {hijackConsole} from './log';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsHashVer = ['70f00f477937b61ba1876a1fdbf9f2e914f24fe3', '124.0.6321.0']
+const devtoolsHashVer = ['70f00f477937b61ba1876a1fdbf9f2e914f24fe3', '124.0.6321.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -54,9 +55,13 @@ async function displayTrace(assetUrl, fileData) {
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
+  recentlyViewed.add(fileData, filename);
+
   document.title = `${filename} — ${dateStr} - trace.cafe`;
 
-  setTimeout(_ => {$('details').open = false;}, 1_000);
+  setTimeout(_ => {
+    $('details').open = false;
+  }, 1_000);
 
   /**
    * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
@@ -81,7 +86,7 @@ async function displayTrace(assetUrl, fileData) {
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 
-  // Warm up perfetto iframe. // Eh... it's so loud for something that's a 10% usecase. 
+  // Warm up perfetto iframe. // Eh... it's so loud for something that's a 10% usecase.
   // const iframePerfetto = $('iframe#ifr-perfetto');
   // iframePerfetto.src = 'https://ui.perfetto.dev/';
 
@@ -99,7 +104,8 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   const onPerfettoMsg = async evt => {
     if (evt.data !== 'PONG') return;
     // We got a PONG, the UI is ready.
-    window.clearInterval(timer); window.removeEventListener('message', onPerfettoMsg);
+    window.clearInterval(timer);
+    window.removeEventListener('message', onPerfettoMsg);
 
     const traceBuffer = await fetch(traceAssetUrl).then(r => r.arrayBuffer());
     // Send trace
@@ -116,7 +122,7 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   window.addEventListener('message', onPerfettoMsg);
 }
 
-function toggleBetweenPerfettoAndDevTools(){
+function toggleBetweenPerfettoAndDevTools() {
   const iframePerfetto = $('iframe#ifr-perfetto');
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
   // Only load it once. but user can toggle visibility all they want
@@ -127,13 +133,13 @@ function toggleBetweenPerfettoAndDevTools(){
 
 async function readParams() {
   const parsed = new URL(location.href);
-  const traceId = 
+  const traceId =
     // Pull from path
-    parsed.pathname.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid
+    parsed.pathname.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid ??
     // Pull from query param
-    ?? parsed.searchParams.get('trace')
+    parsed.searchParams.get('trace') ??
     // Pull from hash (intermediate-while-uploading url)
-    ?? parsed.hash.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid;
+    parsed.hash.match(/\/(trace|t)\/(?<traceid>[^/]*)/)?.groups?.traceid;
 
   if (!traceId) return;
 
@@ -155,6 +161,8 @@ function setupLanding() {
   // const iframe = $('iframe#ifr-dt');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
+  $('.landing-ui').appendChild(recentlyViewed.listAsDOM());
+
   const verEl = $('a#chromever');
   verEl.href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsHashVer[0]}&platform=Linux`;
   const mstone = devtoolsHashVer[1].split('.').at(0);
@@ -172,7 +180,7 @@ function setupLanding() {
   $('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
-  }); 
+  });
 
   // Toggle icon between Perfetto and PP
   $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
@@ -196,7 +204,6 @@ function setupFileInput() {
     handleDrop(e.target?.files);
   });
 }
-
 
 hijackConsole();
 setupLanding();

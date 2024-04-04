@@ -61,13 +61,14 @@ footer a {
   display: flex;
   flex-direction: column;
 }
-h1 { margin: 1rem; }
+h1, h2 { margin: 1rem; }
 h1 a { color: inherit; text-decoration: inherit;}
-h2 {  font-size: 24px; line-height: 32px; 
-  color: #512da8;  
-  margin: 5vw; 
-  border-bottom: 5px solid #b39ddb;
-  padding-bottom: 20px;
+h2 {  
+  margin-bottom: 0;
+  font-size: 16px;
+  line-height: 19px;
+  color: var(--sys-color-on-surface);
+  font-weight: normal;
 }
 
 iframe { 
@@ -290,6 +291,12 @@ h1 a span.emoji {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+ul.recent {
+  margin-top: 8px;
+  line-height: 1.7;
 }
 
 .topbar {

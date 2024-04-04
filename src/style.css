@@ -47,6 +47,10 @@ footer {
 footer a {
   display: block;
 }
+#chromever {
+  font-family: monospace;
+  font-size: 90%;
+}
 
 .landing-ui {
   margin: 60px auto;

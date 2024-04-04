@@ -155,11 +155,12 @@ function setupLanding() {
   // const iframe = $('iframe#ifr-dt');
   // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
 
-  $('#chromever').href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsHashVer[0]}&platform=Linux`;
+  const verEl = $('a#chromever');
+  verEl.href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsHashVer[0]}&platform=Linux`;
   const mstone = devtoolsHashVer[1].split('.').at(0);
-  $('#chromever').hidden = false;
-  $('#chromever').textContent += ` m${mstone}`;
-  $('#chromever').title = `${devtoolsHashVer[1]} == ${$('#chromever').title}`;
+  verEl.hidden = false;
+  verEl.textContent = `chrome m${mstone}`;
+  verEl.title = `${devtoolsHashVer[1]} == ${verEl.title}`;
 
   // Update example trace URL
   const example = $('a#example');

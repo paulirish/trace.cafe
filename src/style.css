@@ -25,10 +25,10 @@ body {
   overflow: hidden;
   margin: 0;
   cursor: default;
-  font-family: ".SFNSDisplay-Regular", "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 12px;
   tab-size: 2;
-  color: var(--color-text-primary);
+  color: var(--sys-color-on-surface);
   background: var(--color-background);
   --dt-tabstrip-height: 26px;  /* Matches the height of devtools tab strip */
 }
@@ -91,8 +91,7 @@ iframe#ifr-perfetto.visible {
 }
 
 .state--viewing details {
-    border-bottom: 1px solid rgb(202 205 209);  
-    background-color: rgb(241 243 244);
+    border-bottom: 1px solid var(--sys-color-divider);  
     width: calc(100% - 64px);
     color: rgb(51, 51, 51);
     position: fixed;
@@ -101,8 +100,9 @@ iframe#ifr-perfetto.visible {
     z-index: 10; /* Above devtools iframe */
 }
 
-.state--viewing details[open] {
-  border-bottom-width: 2px; /* i just like it better */
+.state--viewing details[open] .details-body {
+  box-shadow: 1px 2px 2px 0px #ababab7a; /* because it overlaps other stuff. not devtools canon but w/e */
+  width: calc(100% + 64px); /* to recoup the space we gave to the other icons */
 }
 
 .state--landing details p,
@@ -118,9 +118,11 @@ iframe#ifr-perfetto.visible {
 summary {
   cursor: pointer;
   background-color: #f1f3f4;
+
+  background-color: var( --sys-color-base-container);
 }
 summary:hover {
-  background-color: rgb(222 225 230);
+  background-color: #d6dce9; /* not using var(--sys-color-state-hover-on-subtle) because its transparent and this is the resolved color */
 }
 summary span {
   color: gray;
@@ -141,7 +143,7 @@ textarea {
   width: 100%;
   height: 100px;
   font-size: 11px;
-  font-family: menlo, dejavu sans mono, consolas, lucida console, courier new, monospace;
+  font-family: monospace;
   border: 0;
   resize: none;
 }
@@ -192,7 +194,7 @@ textarea {
   background-color: #ffffffe6;
   font-size: 35px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--sys-color-on-surface);
 }
 
 
@@ -216,16 +218,27 @@ button#selectfile {
 
 /* mimic css overview style */  
 :root {
-  --color-text-primary: hsl(25deg 6% 13%);
-  --color-text-secondary: rgb(95 99 104);
-  --color-details-hairline: rgb(202 205 209);
-  --color-details-hairline-light: rgb(223 225 227);
-  --color-background-elevation-0: rgb(248 249 249);
-  --color-background-elevation-1: rgb(241 243 244);
-  --color-background-elevation-2: rgb(222 225 230);
-  --legacy-accent-color: #1a73e8;
-  --override-message-border-color: rgb(240 240 240);
+
+  --legacy-accent-color: rgb(27, 110, 243); /* didnt update the prop but the value is current */
+
+
+  /* wow these colors are complicated */
+  --ref-palette-primary40: var(--color-ref-primary40, rgb(11 87 208 / 100%));
+  --ref-palette-neutral99: var(--color-ref-neutral99, rgb(253 252 251 / 100%));
+  --sys-color-surface4: color-mix(in sRGB, var(--ref-palette-primary40) 12%, var(--ref-palette-neutral99));
+  --sys-color-base-container: var(--sys-color-surface4);
+
+  --ref-palette-primary90: var(--color-ref-primary90, rgb(211 227 253 / 100%));
+  --sys-color-divider: var(--ref-palette-primary90);
+
+  --ref-palette-neutral10: var(--color-ref-neutral10, rgb(31 31 31 / 100%));
+  --sys-color-state-hover-on-subtle: color-mix(in sRGB, var(--ref-palette-neutral10) 6%, transparent);
   
+  --ref-palette-primary40: var(--color-ref-primary40, rgb(11 87 208 / 100%));
+  --sys-color-primary: var(--ref-palette-primary40);
+
+  --sys-color-on-surface: var(--ref-palette-neutral10);
+--ref-palette-neutral10: var(--color-ref-neutral10, rgb(31 31 31 / 100%));
 }
 
 h1 a {
@@ -245,7 +258,7 @@ h1 a span.emoji {
   padding: 0px;
 }
 .intro-steps li {
-  color: var(--color-text-primary);
+  color: var(--sys-color-on-surface);
   counter-increment: custom-counter 1;
   font-size: 13px;
   letter-spacing: 0.03em;
@@ -276,8 +289,8 @@ h1 a span.emoji {
 }
 
 .topbar {
-  background-color: var(--color-background-elevation-1);
-  border-bottom: 1px solid var(--color-details-hairline);
+  background-color: var( --sys-color-base-container);
+  border-bottom: 1px solid var(--sys-color-divider);
   height: 27px;
 }
 
@@ -305,29 +318,29 @@ h1 a span.emoji {
   position: absolute;
   bottom: 0;
   left: 0;
-  border-top: 1px solid var(--override-message-border-color);
+  border-top: 1px solid var(--sys-color-divider);
   padding: 4px 8px;
 }
 
 .tabbed-pane-header {
   display: flex;
   flex: 0 0 27px;
-  border: 1px solid var(--color-details-hairline);
+  border: 1px solid var(--sys-color-divider);
   overflow: visible;
   width: 100%;
-  background-color: var(--color-background-elevation-1);
+  background-color: var( --sys-color-base-container);
   border-width: 1px 0;
   padding: 0 6px;
 }
 .tabbed-pane-header-tab.selected {
   border-bottom: none;
-  color: var(--legacy-tab-selected-fg-color);
+  color: var(--sys-color-primary);
   position: relative;
 }
 .tabbed-pane-header-tab.selected::after {
   content: '';
   width: 100%;
-  height: 2px;
+  height: 1.5px;
   position: absolute;
   bottom: -1px;
   background-color: var(--legacy-accent-color);
@@ -343,14 +356,14 @@ h1 a span.emoji {
   cursor: default;
   display: flex;
   align-items: center;
-  color: var(--color-text-secondary);
 }
 .tabbed-pane-header-tab:hover, .tabbed-pane-shadow .tabbed-pane-header-tab:focus-visible {
-  color: var(--color-text-primary);
-  background-color: var(--color-background-elevation-2);
+  color: var(--sys-color-on-surface);
+  background-color: var(--sys-color-state-hover-on-subtle);
+
 }
 .toolbar-divider {
-  background-color: var(--color-details-hairline);
+  background-color: var(--sys-color-divider);
   width: 1px;
   margin: 4px 4px;
   height: 16px;
@@ -362,6 +375,7 @@ h1 a span.emoji {
   width: calc(100% - 16px);
   justify-content: flex-end;
   height: 25px;
+  vertical-align: top; /* to prevent a 1px shift on disclosure triangle */
 }
 .last-log {
   flex-grow: 1;

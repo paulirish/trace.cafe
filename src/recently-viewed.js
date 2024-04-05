@@ -2,7 +2,7 @@
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 
 const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
-const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'short', timeStyle: 'short'});
+const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   
 
 // Object literals as singletons are underappreciated. 
@@ -40,11 +40,12 @@ const recentlyViewed = {
 
     const header = frag.appendChild(document.createElement('h2'));
     header.textContent = 'Recently viewed';
+    header.title = 'The last 50 traces you\'ve viewed. (Starting April 2024). Sorted by upload timestamp, descending'; 
     const list = frag.appendChild(document.createElement('ul'));
     list.classList.add('recent');
 
     // sort by trace age, NOT by viewing timestmap. maybe confusing but.. this means they dont jump position as much.
-    entries.sort((a, b) => b[1].fileData.timeCreated - a[1].fileData.timeCreated);
+    entries.sort((a, b) => b[1].fileData.generation - a[1].fileData.generation);
 
     for (const [traceid, data] of entries.slice(0, 50)) {
       const entryDate = new Date(data.fileData.timeCreated);
@@ -54,11 +55,21 @@ const recentlyViewed = {
 
       const link = list.appendChild(document.createElement('li')).appendChild(document.createElement('a'));
       link.href = `/t/${traceid}`;
-      // TODO: maybe use https://github.com/paulirish/dates-temporal-relativetimeformat-play for a timeago string
-      const dateStr = fmter.format(entryDate);
-      link.textContent = `${data.filename} - ${dateStr}`;
+      const dateEl = link.appendChild(document.createElement('span'));
+
+      dateEl.textContent = recentlyViewed.formatDate(entryDate);
+      link.append(` ${data.filename}`);
     }
     return frag;
+  },
+
+  formatDate: date => {
+    // TODO: instead, maybe use https://github.com/paulirish/dates-temporal-relativetimeformat-play for a timeago string
+    const timeStr = date.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute:'2-digit'});
+    const dateParts = date.toLocaleDateString('en-US', {year: 'numeric', month: '2-digit', day: '2-digit'}).split('/');
+    dateParts.unshift(dateParts.pop());
+    const dateStr = dateParts.join('-');
+    return `${dateStr} ${timeStr}`;
   }
 };
 

@@ -297,6 +297,12 @@ h1 a span.emoji {
 ul.recent {
   margin-top: 8px;
   line-height: 1.7;
+  word-break: break-all; /* because long trace filenames */
+}
+.recent li > a > span {
+  font-size: 85%;
+  letter-spacing: -0.3px;
+  font-variant: tabular-nums; /* wooo! */
 }
 
 .topbar {

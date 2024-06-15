@@ -298,6 +298,9 @@ ul.recent {
   margin-top: 8px;
   line-height: 1.7;
   word-break: break-all; /* because long trace filenames */
+  /* need some scrolling */
+  overflow: auto;
+  max-height: 31ex;
 }
 .recent li > a > span {
   font-size: 85%;

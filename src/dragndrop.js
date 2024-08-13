@@ -33,7 +33,7 @@ function setupDragAndDrop() {
     if (!dragging) return;
     resetDraggingUI();
   });
-  dropArea.addEventListener('dragenter', _ => {
+  dropArea.addEventListener('dragenter', event => {
     // Don't trigger if someone (me) accidentally drags the demo link.
     if (event.dataTransfer?.types?.includes('Files')) {
       dropArea.classList.add('dropping');

@@ -9,15 +9,16 @@ import {recentlyViewed} from './recently-viewed';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsHashVer = ['70f00f477937b61ba1876a1fdbf9f2e914f24fe3', '124.0.6321.0'];
+const devtoolsHashVer = ['776257679905a7048f96ec1ac371c3449043b0cd', '129.0.6644.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
 // There are multiple "entrypoints". We go for a smaller one (even tho it still loads LOTS that we don't need)
-// - devtools_app ~= 101 req (5.0 MB)
-// - worker_app   ~=  99 req (5.0 MB)
-// - js_app       ~=  83 req (4.3 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsHashVer[0]}/worker_app.html`;
+// - devtools_app            ~= 118 req (5.1 MB)
+// - worker_app              ~= 116 req (5.1 MB)
+// - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
+// - rehydrated_devtools_app ~= 104 req (4.9 MB) 
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsHashVer[0]}/rehydrated_devtools_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

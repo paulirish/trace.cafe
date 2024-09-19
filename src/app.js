@@ -9,7 +9,7 @@ import {recentlyViewed} from './recently-viewed';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsHashVer = ['776257679905a7048f96ec1ac371c3449043b0cd', '129.0.6644.0'];
+const devtoolsHashVer = ['b42a8150c41c7e96a5065e8f6f67da705576ede6', '130.0.6710.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..

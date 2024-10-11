@@ -22,6 +22,10 @@ yarn serve
 ```
 
 ```sh
+yarn bump # to update to latest frontend version
+```
+
+```sh
 # deploying
 yarn deploy
 ```

@@ -26,4 +26,4 @@ fs.writeFileSync('./src/app.js', text);
 
 console.log('app.js updated.')
 
-console.log(`open this to warm the caches:\n    https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/rehydrated_devtools_app.html`)
+console.log(`open this to warm the caches:\n    https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/rehydrated_devtools_app.html?loadTimelineFromURL=http://localhost:40404/404`)

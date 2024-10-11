@@ -11,7 +11,8 @@
     "tsc": "tsc -p tsconfig.json",
     "serve": "firebase serve",
     "deploy": "firebase deploy",
-    "predeploy": "pnpm run build"
+    "predeploy": "pnpm run build",
+    "bump": "node scripts/bump-frontend-version.js"
   },
   "keywords": [],
   "author": "",

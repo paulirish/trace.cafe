@@ -9,7 +9,7 @@ import {recentlyViewed} from './recently-viewed';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const devtoolsHashVer = ['0f3bae8698071956aa71e341ff6d461607ea961a', '132.0.6834.0'];
+const chromiumHashVer = ['14065013e4bc180ec4bed081df130af4feac436b', '132.0.6834.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -18,7 +18,7 @@ const devtoolsHashVer = ['0f3bae8698071956aa71e341ff6d461607ea961a', '132.0.6834
 // - worker_app              ~= 116 req (5.1 MB)
 // - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
 // - rehydrated_devtools_app ~= 104 req (4.9 MB) 
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsHashVer[0]}/rehydrated_devtools_app.html`;
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/rehydrated_devtools_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
@@ -165,11 +165,11 @@ function setupLanding() {
   $('.landing-ui').appendChild(recentlyViewed.listAsDOM());
 
   const verEl = $('a#chromever');
-  verEl.href = `https://chromiumdash.appspot.com/commits?commit=${devtoolsHashVer[0]}&platform=Linux`;
-  const mstone = devtoolsHashVer[1].split('.').at(0);
+  verEl.href = `https://chromiumdash.appspot.com/commits?commit=${chromiumHashVer[0]}&platform=Linux`;
+  const mstone = chromiumHashVer[1].split('.').at(0);
   verEl.hidden = false;
   verEl.textContent = `chrome m${mstone}`;
-  verEl.title = `${devtoolsHashVer[1]} == ${verEl.title}`;
+  verEl.title = `${chromiumHashVer[1]} == ${verEl.title}`;
 
   // Update example trace URL
   const example = $('a#example');

@@ -42,7 +42,7 @@ export async function attemptLoad () {
         break;
       }
 
-      await page.waitForLoadState('networkidle', {timeout: 120_000});
+      await page.waitForLoadState('networkidle', {timeout: 5 * 60_000});
       console.log('\n😊 Network is quiet! Ensuring text is there');
       await page.waitForSelector('text=Bottom-up', {timeout: 5_000});
       console.log('✅ Found Bottom-up!');

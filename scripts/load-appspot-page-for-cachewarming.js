@@ -1,6 +1,4 @@
 import {chromium} from 'playwright';
-import fs from 'node:fs';
-import path from 'node:path';
 import {appspotUrl} from './bump-frontend-version.js';
 
 export async function attemptLoad(hash) {
@@ -20,8 +18,8 @@ export async function attemptLoad(hash) {
   page.on('request', () => process.stdout.write('•'));
   console.log('\nAttempting to load', url);
 
-  for (let i = 0; i < attempts; i++) {
-    process.stdout.write(`\n[${i + 1} / ${attempts}] `);
+  for (let i = 1; i <= attempts; ++i) {
+    process.stdout.write(`\n[${i} / ${attempts}] `);
     try {
       const response = await page.goto(url, {waitUntil: 'domcontentloaded'});
 
@@ -41,7 +39,9 @@ export async function attemptLoad(hash) {
       break;
     } catch (error) {
       console.log('    error', error);
-      console.log('   ', i < 4 ? 'Retrying...' : 'Giving up.');
+      if (i === attempts)  {
+        throw new Error('Giving up.')
+      }
     }
   }
 

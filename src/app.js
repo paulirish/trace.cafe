@@ -17,7 +17,7 @@ const chromiumHashVer = ['287a48d457697f7fece919b983ed20e65506288d', '133.0.6847
 // - devtools_app            ~= 118 req (5.1 MB)
 // - worker_app              ~= 116 req (5.1 MB)
 // - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-// - rehydrated_devtools_app ~= 104 req (4.9 MB) 
+// - rehydrated_devtools_app ~= 104 req (4.9 MB)
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/rehydrated_devtools_app.html`;
 
 /**
@@ -206,8 +206,29 @@ function setupFileInput() {
   });
 }
 
-hijackConsole();
+// hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
 setupFileInput();
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('message', async e => {
+    switch (e.data.msg) {
+      case 'PONG':
+        e.source?.postMessage('READY', e.origin);
+        break;
+      case 'TRACE':
+        // do something
+        console.log(e);
+        e.source?.postMessage('TRACE ACK', e.origin);
+        break;
+
+      default:
+        break;
+    }
+  });
+  debugger;
+  console.log({opener, window});
+  window.opener.postMessage('PING', '*');
+});

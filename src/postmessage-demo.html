@@ -28,6 +28,9 @@
     background-color: #e9e9e999;
     color: gray;
   }
+  #result {
+    background-color: #FFF9C4;
+  }
 
   /** drag n drop */
   .dropping main {
@@ -75,7 +78,7 @@
 <h1>postMessage demo</h1>
 <h2>drag a trace onto this outer page</h2>
 
-<h3 id="h3"></h3>
+<h3 id="result"></h3>
 
 <h3>Usage:</h3>
 <code>
@@ -137,7 +140,7 @@ window.addEventListener('message', e => {
         console.log('cafe is ready for business');
         break;
       case 'UPLOADCOMPLETE':
-        const e = h3.appendChild(document.createElement('a'));
+        const e = result.appendChild(document.createElement('a'));
         e.href = data.url;
         e.textContent = `Trace uploaded. ${data.url}`;
         break;

@@ -2,6 +2,7 @@ import {setupDragAndDrop, handleDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
+import {upload} from './storage';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
@@ -212,23 +213,26 @@ readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
 setupFileInput();
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.addEventListener('message', async e => {
-    switch (e.data.msg) {
-      case 'PONG':
-        e.source?.postMessage('READY', e.origin);
-        break;
-      case 'TRACE':
-        // do something
-        console.log(e);
-        e.source?.postMessage('TRACE ACK', e.origin);
-        break;
 
-      default:
-        break;
-    }
-  });
-  debugger;
-  console.log({opener, window});
-  window.opener.postMessage('PING', '*');
+window.addEventListener('message', async e => {
+  console.log('message recv by cafe', e.data);
+  // weird file detect
+  if (e.data.arrayBuffer) {
+    upload(e.data);
+    return;
+  }
+  switch (e.data) {
+    case 'PING':
+      e.source?.postMessage('READY', e.origin);
+      break;
+    case 'TRACE':
+      // do something
+      console.log(e);
+      e.source?.postMessage('TRACE ACK', e.origin);
+      break;
+
+    default:
+      break;
+  }
 });
+  // window.opener.postMessage('PING', '*');

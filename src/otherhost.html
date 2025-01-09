@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<title>
+  cool
+</title>
+<style>
+
+/** drag n drop */
+.dropping main {
+  filter: blur(2px) grayscale(1);
+}
+
+/* translucent screen */
+.dropping::before {
+  background-color: rgba(255,255,255,0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  content: '';
+}
+
+.dropping::after {
+  --width: 33vw;
+  --height: 20vh;
+
+  content: 'Drop trace here';
+  border: 2px dashed currentColor;
+  border-radius: 5px;
+  padding: 25px;
+
+  width: var(--width);
+  height: var(--height);
+  min-width: 250px;
+  position: absolute;
+  top: calc(50vh - var(--height));
+  left: calc(50vw - var(--width)/2);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: #ffffffe6;
+  font-size: 35px;
+  font-weight: 600;
+  color: var(--sys-color-on-surface);
+}
+
+
+
+</style>
+
+<h1>drag a trace onto this outer page</h1>
+
+
+<iframe id=iframe  style="  height: 520px;" src="http://localhost:41550/"></iframe>
+
+
+<script>
+/**
+ * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
+ * Thx lighthouse's dom.js!
+ * @template {string} T
+ * @param {T} query
+ * @param {ParentNode=} context
+ * @return {ParseSelector<T>}
+ */
+globalThis.$ = function (query, context) {
+  const result = (context || document).querySelector(query);
+  if (result === null) {
+    throw new Error(`query ${query} not found`);
+  }
+  return /** @type {ParseSelector<T>} */ (result);
+};
+
+// Thx Lighthouse viewer drag-and-drop.js
+function setupDragAndDrop() {
+  let dragging = false;
+
+  // Setup drag n drop
+  const dropArea = $('body');
+  dropArea.addEventListener('dragover', event => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (event.dataTransfer?.types?.includes('Files')) {
+      // Style the drag-and-drop as a "copy file" operation.
+      event.dataTransfer.dropEffect = 'copy';
+    } else {
+      // someone dragged text by mistake or something.
+      resetDraggingUI();
+    }
+  });
+
+  dropArea.addEventListener('drop', event => {
+    event.stopPropagation();
+    event.preventDefault();
+    resetDraggingUI();
+    const fileList = event.dataTransfer.files;
+    handleDrop(fileList);
+  });
+
+  // The mouseleave event is more reliable than dragleave when the user drops
+  // the file outside the window.
+  dropArea.addEventListener('mouseleave', _ => {
+    if (!dragging) return;
+    resetDraggingUI();
+  });
+  dropArea.addEventListener('dragenter', event => {
+    // Don't trigger if someone (me) accidentally drags the demo link.
+    if (event.dataTransfer?.types?.includes('Files')) {
+      dropArea.classList.add('dropping');
+      dragging = true;
+    }
+  });
+
+  function resetDraggingUI() {
+    dropArea.classList.remove('dropping');
+    dragging = false;
+  }
+}
+
+/**
+ * @param {FileList} fileList
+ */
+function handleDrop(fileList) {
+  if (fileList.length === 0) return;
+  if (fileList.length !== 1) {
+    throw console.error('Can only upload 1 trace at a time');
+  }
+  const fileItem = fileList.item(0);
+  console.log('Received file: ', fileItem.name);
+  transferFile(fileItem);
+}
+
+
+// iframe has to load
+window.addEventListener('load', () => {
+  setupDragAndDrop();
+  iframe.contentWindow.postMessage('PING', '*');
+});
+
+
+
+window.addEventListener('message', async e => {
+  switch (e.data) {
+    case 'READY':
+      console.log('great its ready');
+      break;
+    case 'TRACE ACK':
+      console.log('you are welcome', e);
+      break;
+
+    default:
+      break;
+  }
+});
+
+
+function transferFile(fileItem) {
+  iframe.contentWindow.postMessage(fileItem, '*');
+}
+
+
+
+  
+</script>

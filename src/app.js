@@ -213,7 +213,6 @@ readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
 setupFileInput();
 
-
 window.addEventListener('message', async e => {
   console.log('message recv by cafe', e.data);
   const msg = e.data.msg ?? e.data;
@@ -228,7 +227,6 @@ window.addEventListener('message', async e => {
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
     default:
-
   }
 });
 

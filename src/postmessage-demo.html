@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<title>cool</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    min-height: 90vh;
+  }
+  pre {
+    font-size: 85%;
+  }
+  iframe {
+    height: 430px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+  }
+  .iframecover {
+    height: 430px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    z-index: 100;
+    padding: 20px 100px;
+    font-size: 22px;
+    font-family: system-ui;
+    background-color: #e9e9e999;
+    color: gray;
+  }
+  #result {
+    background-color: #FFF9C4;
+  }
+
+  /** drag n drop */
+  .dropping main {
+    filter: blur(2px) grayscale(1);
+  }
+
+  /* translucent screen */
+  .dropping::before {
+    background-color: rgba(255, 255, 255, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+  }
+
+  .dropping::after {
+    --width: 33vw;
+    --height: 20vh;
+
+    content: 'Drop trace here';
+    border: 2px dashed currentColor;
+    border-radius: 5px;
+    padding: 25px;
+
+    width: var(--width);
+    height: var(--height);
+    min-width: 250px;
+    position: absolute;
+    top: calc(50vh - var(--height));
+    left: calc(50vw - var(--width) / 2);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #ffffffe6;
+    font-size: 35px;
+    font-weight: 600;
+    color: var(--sys-color-on-surface);
+  }
+</style>
+
+<h1>postMessage demo</h1>
+<h2>drag a trace onto this outer page</h2>
+
+<h3 id="result"></h3>
+
+<h3>Usage:</h3>
+<code>
+  <pre>
+// 1. open an iframe to tracecafe.
+// 2. get a <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a> reference to the trace to upload.
+// 3. send it.
+iframe.contentWindow.postMessage({msg: 'TRACE', data: fileList.item(0)}, 'https://trace.cafe');
+
+// 4. handle messages from trace.cafe
+window.addEventListener('message', e => {
+  const msg = e.data.msg ?? e.data;
+  const data = e.data.data;
+
+  switch (msg) {
+    case 'CAFEOPEN':
+      console.log('cafe is ready for business');
+      break;
+    case 'UPLOADCOMPLETE':
+      console.log('Trace uploaded successfully.', data.url)
+      break;
+
+    default:
+  }
+});
+
+</pre>
+</code>
+
+<iframe id="iframe" src="https://trace.cafe"></iframe>
+<div class="iframecover">
+  iframe displayed only for educational purposes. It can be 1x1 offscreen. Or the postMessage can be done with a popup of trace.cafe.
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    setupDragAndDrop();
+    iframe.contentWindow.postMessage('PING', 'https://trace.cafe');
+  });
+
+  /** @param {FileList} fileList */
+  function handleDrop(fileList) {
+    if (fileList.length === 0) return;
+
+    // transfer file to iframe
+    iframe.contentWindow.postMessage({msg: 'TRACE', data: fileList.item(0)}, 'https://trace.cafe');
+  }
+
+  window.addEventListener('message', e => {
+    console.log('message recv by otherhost', e.data);
+    const msg = e.data.msg ?? e.data;
+    const data = e.data.data;
+
+    switch (msg) {
+      case 'PING':
+        e.source?.postMessage('PONG', e.origin);
+        break;
+      case 'CAFEOPEN':
+        console.log('cafe is ready for business');
+        break;
+      case 'UPLOADCOMPLETE':
+        const e = result.appendChild(document.createElement('a'));
+        e.href = data.url;
+        e.textContent = `Trace uploaded. ${data.url}`;
+        break;
+
+      default:
+    }
+  });
+
+
+  // Thx Lighthouse viewer drag-and-drop.js
+  function setupDragAndDrop() {
+    // qS helper.
+    globalThis.$ = function (query, context) {
+      const result = (context || document).querySelector(query);
+      if (result === null) {
+        throw new Error(`query ${query} not found`);
+      }
+      return /** @type {ParseSelector<T>} */ (result);
+    };
+
+    let dragging = false;
+
+    // Setup drag n drop
+    const dropArea = $('body');
+    dropArea.addEventListener('dragover', event => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      if (event.dataTransfer?.types?.includes('Files')) {
+        // Style the drag-and-drop as a "copy file" operation.
+        event.dataTransfer.dropEffect = 'copy';
+      } else {
+        // someone dragged text by mistake or something.
+        resetDraggingUI();
+      }
+    });
+
+    dropArea.addEventListener('drop', event => {
+      event.stopPropagation();
+      event.preventDefault();
+      resetDraggingUI();
+      const fileList = event.dataTransfer.files;
+      handleDrop(fileList);
+    });
+
+    // The mouseleave event is more reliable than dragleave when the user drops
+    // the file outside the window.
+    dropArea.addEventListener('mouseleave', _ => {
+      if (!dragging) return;
+      resetDraggingUI();
+    });
+    dropArea.addEventListener('dragenter', event => {
+      // Don't trigger if someone (me) accidentally drags the demo link.
+      if (event.dataTransfer?.types?.includes('Files')) {
+        dropArea.classList.add('dropping');
+        dragging = true;
+      }
+    });
+
+    function resetDraggingUI() {
+      dropArea.classList.remove('dropping');
+      dragging = false;
+    }
+  }
+</script>

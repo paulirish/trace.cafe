@@ -207,7 +207,7 @@ function setupFileInput() {
   });
 }
 
-// hijackConsole();
+hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
@@ -216,23 +216,23 @@ setupFileInput();
 
 window.addEventListener('message', async e => {
   console.log('message recv by cafe', e.data);
-  // weird file detect
-  if (e.data.arrayBuffer) {
-    upload(e.data);
-    return;
-  }
-  switch (e.data) {
-    case 'PING':
-      e.source?.postMessage('READY', e.origin);
+  const msg = e.data.msg ?? e.data;
+  const data = e.data.data;
+
+  switch (msg) {
+    case 'PING': // Always pong back
+      e.source?.postMessage('PONG', e.origin);
       break;
     case 'TRACE':
-      // do something
-      console.log(e);
-      e.source?.postMessage('TRACE ACK', e.origin);
+      const traceViewUrl = await upload(data);
+      e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
-
     default:
-      break;
+
   }
 });
-  // window.opener.postMessage('PING', '*');
+
+// If anyone opens trace.cafe as a popup, inform them
+window.addEventListener('load', _ => {
+  window.opener?.postMessage('CAFEOPEN', '*');
+});

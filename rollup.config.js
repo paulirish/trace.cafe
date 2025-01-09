@@ -70,7 +70,7 @@ export default {
       title: 'trace.cafe'
     }),
     // todo; dont do in development?
-    false && terser({
+    true && terser({
       ecma: 2021,
       output: {
         comments: (node, comment) => {

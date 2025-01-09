@@ -72,7 +72,7 @@
   }
 </style>
 
-<h1>post-message demo</h1>
+<h1>postMessage demo</h1>
 <h2>drag a trace onto this outer page</h2>
 
 <h3 id="h3"></h3>
@@ -83,7 +83,7 @@
 // 1. open an iframe to tracecafe.
 // 2. get a <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a> reference to the trace to upload.
 // 3. send it.
-iframe.contentWindow.postMessage({msg: 'TRACE', data: fileList.item(0)}, '*');
+iframe.contentWindow.postMessage({msg: 'TRACE', data: fileList.item(0)}, 'https://trace.cafe');
 
 // 4. handle messages from trace.cafe
 window.addEventListener('message', e => {
@@ -95,10 +95,7 @@ window.addEventListener('message', e => {
       console.log('cafe is ready for business');
       break;
     case 'UPLOADCOMPLETE':
-      console.log('Trace uploaded.', data.url)
-      break;
-    case 'PING': 
-      e.source?.postMessage('PONG', e.origin); // Always pong back
+      console.log('Trace uploaded successfully.', data.url)
       break;
 
     default:
@@ -108,16 +105,18 @@ window.addEventListener('message', e => {
 </pre>
 </code>
 
-<iframe id="iframe" src="http://localhost:5000/"></iframe>
+<iframe id="iframe" src="https://trace.cafe"></iframe>
 <div class="iframecover">
   iframe displayed only for educational purposes. It can be 1x1 offscreen. Or the postMessage can be done with a popup of trace.cafe.
 </div>
 
 <script>
+  window.addEventListener('load', () => {
+    setupDragAndDrop();
+    iframe.contentWindow.postMessage('PING', 'https://trace.cafe');
+  });
 
-  /**
-   * @param {FileList} fileList
-   */
+  /** @param {FileList} fileList */
   function handleDrop(fileList) {
     if (fileList.length === 0) return;
 
@@ -131,7 +130,7 @@ window.addEventListener('message', e => {
     const data = e.data.data;
 
     switch (msg) {
-      case 'PING': // Always pong back
+      case 'PING':
         e.source?.postMessage('PONG', e.origin);
         break;
       case 'CAFEOPEN':
@@ -145,11 +144,6 @@ window.addEventListener('message', e => {
 
       default:
     }
-  });
-
-  window.addEventListener('load', () => {
-    setupDragAndDrop();
-    iframe.contentWindow.postMessage('PING', '*');
   });
 
 

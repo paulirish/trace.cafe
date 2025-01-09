@@ -213,13 +213,14 @@ readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
 setupFileInput();
 
+// Allow receiving traces over postMessage
 window.addEventListener('message', async e => {
-  console.log('message recv by cafe', e.data);
   const msg = e.data.msg ?? e.data;
   const data = e.data.data;
+  console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
 
   switch (msg) {
-    case 'PING': // Always pong back
+    case 'PING':
       e.source?.postMessage('PONG', e.origin);
       break;
     case 'TRACE':

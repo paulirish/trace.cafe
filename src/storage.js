@@ -140,11 +140,12 @@ async function upload(fileItem) {
     }, 
     (error) => {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
+      uploadDone.reject(error);
     }, 
     async () => {
       console.log(`Upload complete. Trace ID: (${uploadTask.snapshot.ref.name})`);
       uploadDone.resolve(traceViewUrl);
-      
+
       console.log('Navigating to', traceViewUrl.href);
       // pushState is for the birds. State-wise this is more straightforward.
       location.href = traceViewUrl.href;

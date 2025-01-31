@@ -116,6 +116,8 @@ async function upload(fileItem) {
   const traceViewUrl = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);
   let tryCopyToClipboard = true;
 
+  const uploadDone = Promise.withResolvers();
+
   console.log(`Upload starting… Trace ID: (${nanoId})`);
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.on('state_changed',
@@ -138,15 +140,19 @@ async function upload(fileItem) {
     }, 
     (error) => {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
+      uploadDone.reject(error);
     }, 
     async () => {
       console.log(`Upload complete. Trace ID: (${uploadTask.snapshot.ref.name})`);
+      uploadDone.resolve(traceViewUrl);
 
       console.log('Navigating to', traceViewUrl.href);
       // pushState is for the birds. State-wise this is more straightforward.
       location.href = traceViewUrl.href;
     }
   );
+
+  return uploadDone.promise;
 }
 
 export {

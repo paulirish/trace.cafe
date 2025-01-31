@@ -5,8 +5,8 @@
     "emitDeclarationOnly": true,
     "declarationMap": true,
 
-    "target": "es2020",
-    "module": "es2020",
+    "target": "es2022",
+    "module": "es2022",
     "moduleResolution": "node",
     "esModuleInterop": true,
 
@@ -15,7 +15,7 @@
     "strict": true,
 
     // Limit to base JS and DOM defs.
-    "lib": ["ES2021", "DOM"],
+    "lib": ["ESnext", "DOM"],
 
     "forceConsistentCasingInFileNames": true
 

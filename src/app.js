@@ -2,6 +2,7 @@ import {setupDragAndDrop, handleDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
+import {upload} from './storage';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
@@ -9,7 +10,7 @@ import {recentlyViewed} from './recently-viewed';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['287a48d457697f7fece919b983ed20e65506288d', '133.0.6847.0'];
+const chromiumHashVer = ['0155b8edb17ab54ddbc7f4b79a160632275fbbd5', '133.0.6943.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -17,7 +18,7 @@ const chromiumHashVer = ['287a48d457697f7fece919b983ed20e65506288d', '133.0.6847
 // - devtools_app            ~= 118 req (5.1 MB)
 // - worker_app              ~= 116 req (5.1 MB)
 // - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-// - rehydrated_devtools_app ~= 104 req (4.9 MB) 
+// - rehydrated_devtools_app ~= 104 req (4.9 MB)
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/rehydrated_devtools_app.html`;
 
 /**
@@ -216,3 +217,26 @@ setupLanding();
 readParams(); // Handle permalinks and load stuff
 setupDragAndDrop();
 setupFileInput();
+
+// Allow receiving traces over postMessage
+window.addEventListener('message', async e => {
+  const msg = e.data.msg ?? e.data;
+  const data = e.data.data;
+  console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
+
+  switch (msg) {
+    case 'PING':
+      e.source?.postMessage('PONG', e.origin);
+      break;
+    case 'TRACE':
+      const traceViewUrl = await upload(data);
+      e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
+      break;
+    default:
+  }
+});
+
+// If anyone opens trace.cafe as a popup, inform them
+window.addEventListener('load', _ => {
+  window.opener?.postMessage('CAFEOPEN', '*');
+});

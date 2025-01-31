@@ -30,7 +30,7 @@ async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
   const currentRef = (traceId === 'demo') 
-    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp
+    ? ref(storage, `permatraces/web-dev-annot.json.gz`) // loadingtrace-in-opp
     : ref(storage, `traces/${traceId}`);
 
   const bucket =  (traceId === 'demo') 
@@ -66,7 +66,26 @@ async function getAssetUrl(traceId) {
  * 
  * @param {*} fileItem 
  */
-function getNanoId(fileItem) {
+async function getNanoId(fileItem, encoding, buffer) {
+
+
+  // const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", buffer); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  console.log(hashBuffer, hashHex);
+  debugger;
+
+  const hashBuffer1 = await crypto.subtle.digest('SHA-1', buffer);
+  const hashArray1 = Array.from(new Uint8Array(hashBuffer1));
+  // Reduce to a base-36 alpha-numeric hash
+  // FWIW: `hashArray.map(b => String.fromCharCode(b)).join('')` creates a shorter id, but NOT after uri encoding
+  const hash = hashArray1.map(b => b.toString(36)).join('');
+    console.log(hashBuffer1, hash);
+
+
   const allowedIDCharacters = 'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789';
   const nanoid = customAlphabet(allowedIDCharacters, 10);
   return nanoid();
@@ -110,7 +129,9 @@ async function upload(fileItem) {
     },
   };
 
-  const nanoId = getNanoId(fileItem);
+  const nanoId = await getNanoId(fileItem, encoding, buffer);
+  return;
+
   const storageRef = ref(storage, `traces/${nanoId}`);
   const uploadTask = uploadBytesResumable(storageRef, buffer, metadata);
   const traceViewUrl = new URL(`/t/${uploadTask.snapshot.ref.name}`, location.href);

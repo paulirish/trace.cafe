@@ -70,6 +70,11 @@ async function displayTrace(assetUrl, fileData) {
    *  - First decode in `Runtime.Runtime.queryParam()` with the searchParams.get call
    *  - Second decode in TimelinePanel's `handleQueryParam()` for loadTimelineFromURL it happens again.
    * TODO: fix that bug in devtools.
+   *
+   * Also making this more annoying... firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset.
+   * The combo of these two things actually means you can get away with this:
+   *    `?loadTimelineFromURL=https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces${encodeURIComponent(encodeURIComponent('%2F'))}web-dev-annot.json.gz?alt=media&token=10a74a6c-5e3b-46a2-b202-f55032a54766`
+   * Alteratively you can use the %2F and then encode the entire thing twice.
    */
   const encodedAssetUrl = encodeURIComponent(assetUrl);
   const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);

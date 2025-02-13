@@ -18,8 +18,8 @@ const chromiumHashVer = ['07bde3181fa9396ec0ccab4665463c0400a20b60', '135.0.7011
 // - devtools_app            ~= 118 req (5.1 MB)
 // - worker_app              ~= 116 req (5.1 MB)
 // - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-// - rehydrated_devtools_app ~= 104 req (4.9 MB)
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/rehydrated_devtools_app.html`;
+// - rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/worker_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

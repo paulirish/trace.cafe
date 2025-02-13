@@ -9,7 +9,7 @@
     "watch": "mkdir -p dist && rollup --watch -c",
     "build": "mkdir -p dist && rollup -c",
     "tsc": "tsc -p tsconfig.json",
-    "serve": "firebase serve",
+    "serve": "npm run build && firebase serve",
     "deploy": "firebase deploy",
     "predeploy": "pnpm run build",
     "warm": "node scripts/load-appspot-page-for-cachewarming.js",

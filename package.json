@@ -6,7 +6,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "watch": "mkdir -p dist && rollup --watch -c",
+    "watch": "mkdir -p dist && INWATCHBUILD=1 rollup --watch -c",
     "build": "mkdir -p dist && rollup -c",
     "tsc": "tsc -p tsconfig.json",
     "serve": "npm run build && firebase serve",

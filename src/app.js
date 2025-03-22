@@ -53,7 +53,7 @@ async function displayTrace(assetUrl, fileData) {
   document.documentElement.className = 'state--viewing';
 
   // Set human-friendly title
-  const filename = (fileData?.metadata?.oName || fileData.name).replace('.json', '');
+  const filename = (fileData.metadata?.oName || fileData.name).replace('.json', '');
   const date = new Date(fileData.timeCreated);
   const fmter = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'});
   const dateStr = fmter.format(date);
@@ -150,8 +150,16 @@ async function readParams() {
 
   if (!traceId) return;
 
-  // Let's get everyone on the canonical thing.
+
   const canonicalUrl = new URL(`/t/${traceId}`, location.href);
+  // Download convenience fn
+  if (location.href.startsWith(`${canonicalUrl.href}/download`)) {
+    const {assetUrl, fileData} = await getAssetUrl(traceId);
+    void downloadTrace(assetUrl, fileData);
+    return;
+  }
+
+  // Let's get everyone on the canonical thing.
   if (location.href !== canonicalUrl.href) {
     location.href = canonicalUrl.href;
     return;
@@ -210,6 +218,24 @@ function setupFileInput() {
   fileinput.addEventListener('change', e => {
     handleDrop(e.target?.files);
   });
+}
+
+/**
+ * @param {string} assetUrl
+ * @param {FullMetadata} fileData
+ */
+async function downloadTrace(assetUrl, fileData) {
+    const a = document.createElement('a');
+    a.title = assetUrl;
+    const blob = await fetch(assetUrl).then(r => r.blob());
+    if (blob.type !== 'application/json') throw new Error('Unsupported blob type');
+    a.href = URL.createObjectURL(blob);
+
+    const filename = (fileData?.metadata?.oName || fileData.name).replace('.json', '');
+    // TODO: add a compressionstream for gz.
+    a.download = filename.replace('.gz', '');
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 500);
 }
 
 hijackConsole();

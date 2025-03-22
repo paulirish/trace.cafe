@@ -69,8 +69,8 @@ export default {
       template,
       title: 'trace.cafe'
     }),
-    // todo; dont do in development?
-    true && terser({
+    // With this, we dont minify when building via watch.
+    !process.env.INWATCHBUILD && terser({
       ecma: 2021,
       output: {
         comments: (node, comment) => {

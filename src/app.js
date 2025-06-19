@@ -47,6 +47,7 @@ async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
     document.documentElement.className = 'state--landing';
     $('iframe#ifr-perfetto').classList.remove('visible', 'perfetto-tracedatasent');
+    $('iframe#ifr-softnav').classList.remove('visible', 'softnav-tracedatasent');
     return;
   }
 
@@ -129,6 +130,14 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   window.addEventListener('message', onPerfettoMsg);
 }
 
+async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
+
+  const text = await fetch(traceAssetUrl).then(r => r.text());
+  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
+  $('.toolbar-button--softnav-toggle').classList.remove('loading');
+  iframeSoftNav.classList.add('softnav-tracedatasent');
+}
+
 function toggleBetweenPerfettoAndDevTools() {
   const iframePerfetto = $('iframe#ifr-perfetto');
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
@@ -204,6 +213,17 @@ function setupLanding() {
     toggleBetweenPerfettoAndDevTools();
   });
 
+  $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
+    const showSoftNav = !$('.toolbar-button--softnav-toggle').classList.contains('on');
+    $('.toolbar-button--softnav-toggle').classList.toggle('on', showSoftNav);
+    $('.toolbar-button--softnav-toggle').classList.toggle('loading', showSoftNav);
+    $('iframe#ifr-softnav').classList.toggle('visible', showSoftNav);
+    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl).catch(err => {
+      console.error('Error showing trace in SoftNav viewer:', err.message);
+      $('.toolbar-button--softnav-toggle').classList.remove('loading');
+    })
+  });
+
   addEventListener('unhandledrejection', event => {
     console.error('Unhandled rejection: ', event?.reason?.message);
   });
@@ -257,6 +277,9 @@ window.addEventListener('message', async e => {
     case 'TRACE':
       const traceViewUrl = await upload(data);
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
+      break;
+    case 'UPLOADCOMPLETE-softnav':
+      console.log('Trace sent to softnav viewer!')
       break;
     default:
   }

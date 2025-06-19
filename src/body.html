@@ -24,6 +24,7 @@
           <span class="last-log"></span>
           <div class="toolbar-divider"></div>
           <form>
+          <button class="toolbar-button toolbar-button--softnav-toggle" title="Show in Soft Nav Viewer" type="button"></button>
           <button class="toolbar-button toolbar-button--perfetto-toggle" title="Show in Perfetto" type="button"></button>
           <button class="toolbar-button toolbar-button--home" title="Navigate to trace.cafe home" formaction="/" type="submit"></button>
           </form>
@@ -45,3 +46,5 @@
 <input id=fileinput type="file" hidden accept=".json,.gz,application/json">
 <iframe id="ifr-dt" title="DevTools Panel"></iframe>
 <iframe id="ifr-perfetto" title="Perfetto UI" allow="usb"></iframe> <!-- b/291788056 tracks removing this allow attribute-->
+<iframe id="ifr-softnav" title="Soft Nav Viewer" src="/softnav-viewer.html"></iframe>
+

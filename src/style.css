@@ -87,7 +87,8 @@ iframe {
 }
 
 /* not handled with same body state as devtools iframe, but.. thats good */ 
-iframe#ifr-perfetto.visible {  
+iframe#ifr-perfetto.visible, 
+iframe#ifr-softnav.visible {  
   display: block;
   background-color: white;
   padding-top: var(--dt-tabstrip-height);
@@ -398,6 +399,11 @@ ul.recent {
   justify-content: flex-end;
   height: 25px;
   vertical-align: top; /* to prevent a 1px shift on disclosure triangle */
+
+  form {
+    display: flex;
+    align-items: center;
+  }
 }
 .last-log {
   flex-grow: 1;
@@ -406,8 +412,12 @@ ul.recent {
   width: 28px;
   height: 25px;
   border: 0;
-  display: inline;
   padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: none;
   background-size: 20px;
   background-repeat: no-repeat;
@@ -430,7 +440,48 @@ ul.recent {
   background-image: url('https://raw.githubusercontent.com/ChromeDevTools/devtools-logo/master/logos/png/devtools-circle-48.png');
 }
 
+.toolbar-button--softnav-toggle {
+  opacity: 0.4;
+  border-radius: 2px;
 
+  &:hover {
+    background-color: oklch(0.83 0.02 266.09);
+  }
+  &.on {
+    opacity: 1;
+    background-color: oklch(0.73 0.02 266.09);
+  }
+}
+
+.toolbar-button--softnav-toggle:before {
+  content: 'Soft-Nav';
+  width: 100%;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-size: 66%;
+  align-content: center;
+  height: 100%;
+}
+
+.loadingspinner,
+.toolbar-button--softnav-toggle.loading:before {
+  content: '';
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-color: #eee;
+  border-top-color: #3E67EC;
+  border-radius: 50%;
+  animation: loadingspin 1s linear infinite;
+}
+
+
+@keyframes loadingspin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 
 /* a la .console-message */

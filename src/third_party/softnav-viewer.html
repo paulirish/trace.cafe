@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script>
+    const CONTEXT_ID_COLORS = [
+      '#D32F2F',
+      '#C2185B',
+      '#7B1FA2',
+      '#512DA8',
+      '#303F9F',
+      '#1976D2',
+      '#0288D1',
+      '#0097A7',
+      '#00796B',
+      '#388E3C',
+      '#689F38',
+      '#AFB42B',
+      '#FBC02D',
+      '#FFA000',
+      '#F57C00',
+      '#E64A19'
+    ];
+
+    const CONTEXT_ID_HIGHLIGHT_COLORS = [
+      '#FF5252',
+      '#FF4081',
+      '#E040FB',
+      '#7C4DFF',
+      '#536DFE',
+      '#448AFF',
+      '#40C4FF',
+      '#18FFFF',
+      '#64FFDA',
+      '#69F0AE',
+      '#B2FF59',
+      '#EEFF41',
+      '#FFFF00',
+      '#FFD740',
+      '#FFAB40',
+      '#FF6E40',
+    ];
+  </script>
+</head>
+<body>
+  <template id="filmstrip-tooltip-template">
+    <style>
+      .tooltip {
+        display: none;
+        z-index: 1000;
+        position: absolute;
+        top: 0;
+        left: 20px;
+        transform: translateY(var(--yposition));
+        padding: 12px;
+        border-radius: 10px;
+        opacity: 1;
+        color: black;
+        border: 2px solid black;
+        text-align: center;
+        background-color: var(--color);
+      }
+
+      .tooltip.hover, .tooltip.hoverSticky, .tooltip:hover {
+        display: block;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+
+      .data-grid {
+        display: inline-grid;
+        grid-template-columns: max-content auto;
+        gap: 6px 8px;
+        align-items: baseline;
+        text-align: left;
+        font-size: smaller;
+      }
+
+      .data-grid .data-label {
+        text-align: right;
+        overflow-wrap: break-word;
+      }
+    </style>
+    <div class="tooltip">
+      <p class="title"></p>
+      <div class="data-grid"></div>
+    </div>
+  </template>
+  <template id="filmstrip-screenshot-template">
+    <style>
+      .container {
+        position: relative;
+      }
+
+      .screenshot {
+        display: block;
+      }
+
+      .paint-rect {
+        display: block;
+        z-index: 10;
+        position: absolute;
+        opacity: 0.75;
+      }
+
+      .paint-rect.lcp-candidate {
+        border: 3px solid yellow;
+        margin: -3px; /* Make up for border */
+      }
+    </style>
+    <div class="container">
+      <img class="screenshot">
+      <div class="paint-rects-container"></div>
+    </div>
+  </template>
+  <template id="timeline-event-icon">
+    <style>
+      .icon {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        background-color: var(--icon-color);
+        position: relative;
+      }
+      
+      /* Context created (Pointer for user interaction) */
+      .icon-interaction {
+        /*clip-path: polygon(25% 100%, 25% 40%, 30% 30%, 45% 15%, 50% 12%, 55% 15%, 70% 30%, 75% 40%, 75% 100%);*/
+        clip-path: polygon(100% 34%, 69% 52%, 100% 80%, 80% 100%, 52% 69%, 34% 100%, 0 0);
+      }
+
+      /* DOM Modification (Document with folded corner) */
+      .icon-dom-change {
+        clip-path: polygon(15% 0%, 70% 0%, 100% 25%, 100% 100%, 15% 100%);
+      }
+
+      /* Content Painted (Detailed Paintbrush) */
+      .icon-paint {
+        clip-path: polygon(35% 0, 65% 0, 65% 45%, 85% 60%, 85% 100%, 15% 100%, 15% 60%, 35% 45%);
+      }
+
+      /* Soft navigation detected (Marker) */
+      .icon-soft-nav-detected {
+        clip-path: polygon(50% 0%, 82% 37%, 82% 100%, 18% 100%, 18% 37%);
+      }
+
+      /* LCP Candidate (Sharper Star) */
+      .icon-lcp {
+        clip-path: polygon(50% 0%, 63% 38%, 100% 38%, 75% 63%, 88% 100%, 50% 75%, 12% 100%, 25% 63%, 0% 38%, 37% 38%);
+      }
+
+      /* When the 'final' attribute is set on the .icon element */
+      .icon-lcp[final] {
+        background-color: var(--icon-highlight-color);
+      }
+
+      /* Context Exhausted (Curved Hourglass) */
+      .icon-exhausted {
+        clip-path: polygon(0 0, 100% 0, 100% 15%, 65% 45%, 65% 55%, 100% 85%, 100% 100%, 0 100%, 0 85%, 35% 55%, 35% 45%, 0 15%);
+      }
+    </style>
+    <div class="icon"></div>
+    <filmstrip-tooltip></filmstrip-tooltip>
+  </template>
+  <template id="timeline-events">
+    <style>
+      .container {
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px; /* Space between icons */
+        min-height: 24px;
+        padding: 4px; /* Add some padding so icons don't touch the edge */
+      }
+
+      timeline-event-icon {
+        position: relative; /* For tooltip positioning */
+        display: inline-block;
+        --icon-color: #512DA8;
+      }
+    </style>
+    <div class="container">
+    </div>
+  </template>
+  <template id="timeline-timestamp">
+    <style>
+      .timestamp {
+        font-family: sans-serif;
+      }
+    </style>
+    <div class="timestamp"></div>
+  </template>
+  <template id="trace-timeline-template">
+    <style>
+      :host([empty]) {
+        display: none;
+      }
+
+      .container {
+        display: grid;
+        font-family: sans-serif;
+        background-color: black;
+        color: white;
+        overflow: hidden;
+        padding: 15px;
+        border-radius: 5px;
+      }
+
+      .container::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+      }
+
+      .container::-webkit-scrollbar-track {
+        background-color: black;
+      }
+
+      .title {
+        justify-self: start;
+        font-size: x-large;
+        padding: 10px 0 10px;
+        grid-row-start: 1;
+      }
+
+      #timeline {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      #timeline::-webkit-scrollbar {
+        -webkit-appearance: none;
+      }
+
+      #timeline::-webkit-scrollbar:horizontal {
+        height: 11px;
+      }
+
+      #timeline::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        border: 2px solid white;
+        background-color: rgba(0, 0, 0, .5);
+      }
+      #timeline::-webkit-scrollbar-track { 
+        background-color: #fff; 
+        border-radius: 8px; 
+      }
+
+      #timeline[compressed] .filmstrip:has(timeline-events[data-container-empty]) {
+          display: none;
+      }
+
+      .filmstrip {
+        margin-right: 4px;
+      }
+
+      timeline-events {
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+
+      input[type=checkbox] {
+        margin: 10px;
+      }
+
+      label:hover {
+        color: #2196F3;
+      }
+
+      label:hover>input {
+        box-shadow: 0 0 3px 3px #2196F3;
+      }
+
+      timeline-events {
+        display: block;
+        width: 100%;
+      }
+    </style>
+    <div class="container">
+      <h1 class="title"></h1>
+      <div id="timeline"></div>
+      <label for="hide-no-event"><input type="checkbox" id="hide-no-event">Hide screenshots with no soft navigation related events
+        candidates</label>
+    </div>
+  </template>
+  <template id="drop-target-template">
+    <style>
+      .container {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        place-content: center;
+        font-family: sans-serif;
+      }
+
+      .container.secondary {
+        width: fit-content;
+        height: fit-content;
+        padding: 20px;
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      .drop-target-content {
+        border: 2px dashed;
+        border-radius: 10px;
+        width: 800px;
+        height: 500px;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        padding: 20px;
+      }
+
+      .drop-target-content:hover {
+        background-color: #2196F3;
+      }
+
+      .drop-target-content:hover #upload-icon {
+        fill: white;
+      }
+      .drop-target-content:hover #instructions {
+        color: white;
+      }
+
+      .secondary .drop-target-content {
+        width: 200px;
+        height: 200px;
+      }
+
+      .drop-icon {
+        width: 200px;
+        height: 200px;
+      }
+
+      .secondary .drop-icon {
+        width: 100px;
+        height: 100px;
+      }
+
+      .error .drop-target-content {
+        background-color: #FFCDD2;
+        color: #F44336;
+        border-color: #D32F2F;
+      }
+
+      #drop-error {
+        display: none;
+      }
+
+      .error #drop-error, #instructions {
+        display: inline-block;
+        font-size: xx-large;
+        text-align: center;
+        margin: 20px;
+      }
+
+      .secondary.error #drop-error, .secondary #instructions {
+        font-size: medium;
+      }
+
+      .error #upload-icon {
+        fill: #F44336 !important;
+      }
+
+      .error #instructions {
+        display: none;
+      }
+    </style>
+    <div class="container">
+      <input id="file-input" type="file">
+      <label for="file-input" class="drop-target-content">
+        <svg class="drop-icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 -960 960 960">
+          <path id="upload-icon"
+            d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+        </svg>
+        <div id="drop-error"></div>
+        <div id="instructions">Record a trace, save it, and drop the .json file here.
+          <a href="https://github.com/anniesullie/soft-navigation-trace-viewer/blob/main/README.md" target="_blank">Full instructions</a>.</div>
+      </label>
+    </div>
+  </template>
+  <script>
+
+    const filmstripTooltipTemplateContent = document.getElementById("filmstrip-tooltip-template").content;
+    const filmstripScreenshotTemplateContent = document.getElementById("filmstrip-screenshot-template").content;
+    const timelineEventsTemplateContent = document.getElementById("timeline-events").content;
+    const timelineEventIconTemplateContent = document.getElementById("timeline-event-icon").content;
+    const timelineTimestampTemplateContent = document.getElementById("timeline-timestamp").content;
+    const traceTimelineTemplateContent = document.getElementById("trace-timeline-template").content;
+    const dropTargetTemplateContent = document.getElementById("drop-target-template").content;
+
+    class FilmstripTooltip extends HTMLElement {
+      #color;
+      #yposition;
+      #values;
+
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(filmstripTooltipTemplateContent.cloneNode(true));
+        this.updateTooltip();
+        this.updateColor();
+        this.updateYPosition();
+      }
+
+      set values(values) {
+        this.#values = values;
+        this.updateTooltip();
+      }
+
+      set color(color) {
+        this.#color = color;
+        this.updateColor();
+      }
+
+      set yposition(yposition) {
+        this.#yposition = yposition;
+        this.updateYPosition();
+      }
+
+      updateYPosition() {
+        if (!this.#yposition || this.#yposition == 'center') {
+          this.style.setProperty('--yposition', '-50%')
+        }
+        else if (this.#yposition == 'top') {
+          this.style.setProperty('--yposition', '0%');
+        } else {
+          this.style.setProperty('--yposition', '-100%');
+        }
+      }
+
+      updateColor() {
+        if (!this.shadowRoot || !this.#color) {
+          return;
+        }
+        this.style.setProperty('--color', this.#color);
+      }
+
+      set hover(hover) {
+        if (!this.shadowRoot) {
+          return;
+        }
+        if (hover) {
+          this.shadowRoot.querySelector('.tooltip').classList.add('hover');
+        } else {
+          this.shadowRoot.querySelector('.tooltip').classList.remove('hover');
+        }
+      }
+
+      get hoverSticky() {
+        if (!this.shadowRoot) {
+          return false;
+        }
+        return this.shadowRoot.querySelector('.tooltip').classList.contains('hoverSticky');
+      }
+
+      set hoverSticky(hoverSticky) {
+        if (!this.shadowRoot) {
+          return;
+        }
+        if (hoverSticky) {
+          this.shadowRoot.querySelector('.tooltip').classList.add('hoverSticky');
+        } else {
+          this.shadowRoot.querySelector('.tooltip').classList.remove('hoverSticky');
+        }
+      }
+
+      updateTooltip() {
+        if (!this.shadowRoot || !this.#values) {
+          return;
+        }
+        let tooltip = this.shadowRoot.querySelector('.tooltip');
+        if (!tooltip) {
+          return;
+        }
+        tooltip.classList.add('tooltip');
+        let title = this.shadowRoot.querySelector('.title');
+        title.textContent = this.#values.title;
+        let gridElement = this.shadowRoot.querySelector('.data-grid');
+        gridElement.replaceChildren();
+
+        Object.entries(this.#values).forEach(([key, value]) => {
+          if (key == 'title') {
+            return;
+          }
+          let k = document.createElement('span');
+          k.textContent = `${key}:`;
+          k.classList.add('data-label');
+          gridElement.appendChild(k);
+          let v = document.createElement('span');
+          v.classList.add('data-value');
+          if (typeof(value) == 'string' && value.includes('\n')) {
+            v.innerHTML = value.replaceAll('\n', '<br>');
+          } else {
+            v.textContent = value;
+          }
+          gridElement.appendChild(v);
+        });
+      }
+    }
+
+    class FilmstripScreenshot extends HTMLElement {
+      #viewport;
+      #src;
+      #highlightColor;
+      #paintRects;
+
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(filmstripScreenshotTemplateContent.cloneNode(true));
+        this.updateSrc();
+        this.updateHighlightColor();
+      }
+
+      set highlightColor(highlightColor) {
+        this.#highlightColor = highlightColor;
+        this.updateHighlightColor();
+      }
+
+      updateHighlightColor() {
+        if (!this.shadowRoot || !this.#highlightColor) {
+          return;
+        }
+        this.style.setProperty('--highlight-color', this.#highlightColor);
+      }
+
+      set viewport(viewport) {
+        this.#viewport = viewport;
+      }
+
+      set paintRects(paintRects) {
+        this.#paintRects = paintRects;
+        this.updatePaintRects();
+      }
+
+      set src(src) {
+        this.#src = `data:image/png;base64,${src}`;
+        this.updateSrc();
+      }
+
+      updateSrc() {
+        if (!this.shadowRoot || !this.#src) {
+          return;
+        }
+        let el = this.shadowRoot.querySelector('.screenshot');
+        if (el) {
+          el.src = this.#src;
+          el.addEventListener('load', this.updatePaintRects.bind(this));
+        }
+      }
+
+      positionElement(left, top, width, height, element) {
+        // Adjust to screenshot dimensions by converting to fraction of the
+        //  viewport and multiplying by screenshot width and height.
+        let img = this.shadowRoot.querySelector('.screenshot');
+        left = (left / this.#viewport.width) * img.clientWidth;
+        top = (top / this.#viewport.height) * img.clientHeight;
+        width = (width / this.#viewport.width) * img.clientWidth;
+        height = (height / this.#viewport.height) * img.clientHeight;
+        element.style.top = `${top}px`;
+        element.style.left = `${left}px`;
+        element.style.width = `${width}px`;
+        element.style.height = `${height}px`;
+      }
+
+      updatePaintRects() {
+        if (!this.shadowRoot || !this.#viewport || !this.#paintRects) {
+          return;
+        }
+        let container = this.shadowRoot.querySelector('.paint-rects-container');
+        if (!container) {
+          return;
+        }
+        container.replaceChildren();
+        for (let rect of this.#paintRects) {
+          let wrapper = document.createElement('div');
+          wrapper.style.position = 'absolute';
+          this.positionElement(rect.x, rect.y, rect.width, rect.height, wrapper);
+
+          let rectElement = document.createElement('div');
+          rectElement.classList.add('paint-rect');
+          // This doesn't use a CSS var because there could be multiple highlight colors from multiple contexts in a frame.
+          rectElement.style.backgroundColor = CONTEXT_ID_HIGHLIGHT_COLORS[rect.contextId % CONTEXT_ID_HIGHLIGHT_COLORS.length];
+          rectElement.style.width = '100%';
+          rectElement.style.height = '100%';
+          if (rect.lcpCandidate) {
+            rectElement.classList.add('lcp-candidate');
+          }
+          wrapper.appendChild(rectElement);
+          let tooltipInfo = {title: 'Attributed Paint'};
+          Object.entries(rect).forEach(([key, value]) => {
+            if (['x', 'y', 'width', 'height'].includes(key)) {
+              return;
+            }
+            if (key == 'lcpCandidate') {
+              tooltipInfo['LCP Candidate'] = 'True';
+            } else {
+              tooltipInfo[key] = value;
+            }
+          });
+          let tooltip = document.createElement('filmstrip-tooltip');
+          tooltip.values = tooltipInfo;
+          tooltip.color = CONTEXT_ID_HIGHLIGHT_COLORS[rect.contextId % CONTEXT_ID_HIGHLIGHT_COLORS.length];
+          tooltip.yposition = 'center';
+          wrapper.appendChild(tooltip);
+
+          rectElement.addEventListener('mouseenter', () => tooltip.hover = true);
+          rectElement.addEventListener('mouseleave', () => tooltip.hover = false);
+          rectElement.addEventListener('click', () => tooltip.hoverSticky = !tooltip.hoverSticky);
+
+          container.appendChild(wrapper);
+        }
+      }
+    }
+
+    class TimelineEventIcon extends HTMLElement {
+      #event;
+      #tooltipContent;
+      #iconColor;
+      #iconHighlightColor;
+
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(timelineEventIconTemplateContent.cloneNode(true));
+        this.updateEvent();
+        this.updateTooltipContent();
+        this.updateIconColor();
+        this.updateIconHighlightColor();
+
+        this.onMouseEnterIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = true;
+        this.onMouseLeaveIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = false
+        this.onElemClick = () => this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky = !this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky;
+        this.shadowRoot.querySelector('.icon').addEventListener('mouseenter', this.onMouseEnterIcon);
+        this.shadowRoot.querySelector('.icon').addEventListener('mouseleave', this.onMouseLeaveIcon);
+        this.addEventListener('click', this.onElemClick);
+      }
+
+      disconnectedCallback() {
+        this.removeEventListener('click', this.onElemClick);
+        this.shadowRoot.querySelector('icon').removeEventListener('mouseenter', this.onMouseEnterIcon);
+        this.shadowRoot.querySelector('icon').removeEventListener('mouseleave', this.onMouseLeaveIcon);
+      }
+
+      set iconColor(iconColor) {
+        this.#iconColor = iconColor;
+        this.updateIconColor();
+      }
+
+      set iconHighlightColor(iconHighlightColor) {
+        this.#iconHighlightColor = iconHighlightColor;
+        this.updateIconHighlightColor();
+      }
+
+      set event(event) {
+        this.#event = event;
+        this.updateEvent();
+      }
+
+      set tooltipContent(tooltipContent) {
+        this.#tooltipContent = tooltipContent;
+        this.updateTooltipContent();
+      }
+
+      updateEvent() {
+        if (!this.shadowRoot || !this.#event) {
+          return;
+        }
+        let el = this.shadowRoot.querySelector('.icon');
+        if (el) {
+          el.classList.add(`icon-${this.#event}`);
+        }
+      }
+
+      updateTooltipContent() {
+        if (!this.shadowRoot || !this.#tooltipContent) {
+          return;
+        }
+        let tooltip = this.shadowRoot.querySelector('filmstrip-tooltip');
+        if (!tooltip) {
+          return;
+        }
+        tooltip.values = this.#tooltipContent;
+        if (this.#tooltipContent.Final) {
+          this.shadowRoot.querySelector('.icon').setAttribute('final', '');
+        }
+      }
+
+      updateIconColor() {
+        if (!this.shadowRoot || !this.#iconColor) {
+          return;
+        }
+        this.style.setProperty('--icon-color', this.#iconColor);
+        this.shadowRoot.querySelector('filmstrip-tooltip').color = this.#iconColor;
+        this.shadowRoot.querySelector('filmstrip-tooltip').yposition = 'bottom';
+      }
+
+      updateIconHighlightColor() {
+        if (!this.shadowRoot || !this.#iconHighlightColor) {
+          return;
+        }
+        this.style.setProperty('--icon-highlight-color', this.#iconHighlightColor);
+      }
+    }
+
+    class TimelineEvents extends HTMLElement {
+      #icons = [];
+
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(timelineEventsTemplateContent.cloneNode(true));
+        this.updateIcons();
+      }
+
+      addIcon(icon) {
+        this.#icons.push(icon);
+        this.updateIcons();
+      }
+
+      updateIcons() {
+        if (!this.shadowRoot) {
+          return;
+        }
+        if (this.#icons == null || this.#icons.length == 0) {
+          this.setAttribute('data-container-empty', '');
+          return;
+        }
+        this.removeAttribute('data-container-empty');
+        let container = this.shadowRoot.querySelector('.container');
+        container.replaceChildren();
+        for (let icon of this.#icons) {
+          container.appendChild(icon);
+        }
+      }
+
+    }
+
+    class TimelineTimestamp extends HTMLElement {
+      #timestamp;
+
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(timelineTimestampTemplateContent.cloneNode(true));
+        this.updateTimestamp();
+      }
+
+      set timestamp(timestamp) {
+        this.#timestamp = timestamp;
+        this.updateTimestamp();
+      }
+
+      updateTimestamp() {
+        if (!this.shadowRoot || this.#timestamp == null) {
+          return;
+        }
+        let el = this.shadowRoot.querySelector('.timestamp');
+        if (el) {
+          el.textContent = this.#timestamp;
+        }
+      }
+
+    }
+
+    const TRACE_EVENT_NAMES = {
+      SCREENSHOT: 'Screenshot',
+      LCP_CANDIDATE: 'largestContentfulPaint::Candidate',
+      SOFT_NAV_DETECTED: 'SoftNavigationHeuristics::EmitSoftNavigationEntry',
+      TRACING_STARTED: 'TracingStartedInBrowser',
+      VIEWPORT: 'PaintTimingVisualizer::Viewport',
+      SOFT_NAV_CONTEXT_CREATED: "SoftNavigationHeuristics::CreateNewContext",
+      SOFT_NAV_CONTEXT_MODIFIED_NODE: "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
+      SOFT_NAV_CONTEXT_PAINT_IN_FRAME: "SoftNavigationContext::AttributablePaintInAnimationFrame",
+      SOFT_NAV_CONTEXT_EXHAUSTED: 'SoftNavigationHeuristics::SoftNavigationContextWasExhausted'
+    }
+
+    class TraceTimeline extends HTMLElement {
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(traceTimelineTemplateContent.cloneNode(true));
+        shadowRoot.querySelector('#hide-no-event').addEventListener('change', this.onchange.bind(this));
+      }
+
+      onchange(event) {
+        const isChecked = event.target.checked;
+        this.shadowRoot.querySelector('#timeline').toggleAttribute('compressed', isChecked);
+      }
+
+      set title(title) {
+        this.shadowRoot.querySelector('.title').textContent = title;
+      }
+
+      getTooltipContent(title, args, navigationId, adjustedTimestamp) {
+        return {
+            'title': title,
+            'URL': args?.context?.mostRecentURL,
+            'Navigation ID': navigationId,
+            'Context ID': args?.context?.softNavContextId,
+            'DOM Modifications': args?.context?.domModifications,
+            'Painted Area': args?.context?.paintedArea,
+            'Timestamp': adjustedTimestamp,
+        };
+      }
+
+      createIcon(event, tooltipContent, contextId) {
+        let icon = document.createElement('timeline-event-icon');
+        icon.event = event;
+        icon.tooltipContent = tooltipContent;
+        icon.iconColor = CONTEXT_ID_COLORS[contextId % CONTEXT_ID_COLORS.length];
+        icon.iconHighlightColor = CONTEXT_ID_HIGHLIGHT_COLORS[contextId % CONTEXT_ID_COLORS.length];
+        icon.timestamp = tooltipContent['Timestamp'];
+        return icon;
+      }
+
+      set traceData(traceData) {
+        // Clear previous timeline
+        this.removeAttribute('empty');
+        let timelineContainer = this.shadowRoot.querySelector('#timeline');
+        timelineContainer.replaceChildren();
+        // Parse trase JSON from text data
+        let traceJson = JSON.parse(traceData);
+        let traceEvents = traceJson.traceEvents;
+        traceEvents.sort((a, b) => a.ts - b.ts);
+        // Tracing Started event has original URL in args.data.frames[0].url
+        let traceStartedEvent = traceEvents.find((e) => e.name == TRACE_EVENT_NAMES.TRACING_STARTED);
+        let startUrl = traceStartedEvent?.args?.data?.frames?.[0]?.url ?? 'Unknown URL';
+
+        this.title = `Soft navigations from ${startUrl}`;
+        // Find viewport rect
+        let viewportEvent = traceEvents.find((e) => e.name == TRACE_EVENT_NAMES.VIEWPORT);
+        if (!viewportEvent) {
+          throw new Error('No PaintTimingVisualizer::Viewport event in trace.');
+        }
+        let viewport = {
+          width: viewportEvent.args.data.viewport_rect[2], // x2
+          height: viewportEvent.args.data.viewport_rect[5] // y3 (assuming rect is x1,y1,x2,y1,x2,y2,x1,y2)
+        };
+
+        // Make a map of navigation id -> context id
+        const navigationIdToContextId = traceEvents.reduce((acc, e) => {
+          if (e.args.navigationId && e.args?.context?.softNavContextId) {
+            acc[e.args.navigationId] = e.args.context.softNavContextId;
+          }
+          return acc;
+        }, {});
+
+        // Make a map of (context id, node id) -> LCP timestamp, LCP final
+        let lcpTimestamps = {};
+        traceEvents.filter((e) => e.name == TRACE_EVENT_NAMES.LCP_CANDIDATE).forEach((e, i) => {
+          let contextId = navigationIdToContextId[e.args.data.navigationId];
+          lcpTimestamps[contextId] = lcpTimestamps[contextId] || {};
+          lcpTimestamps[contextId][e.args.data.nodeId] = e.ts;
+        });
+        let lcpCandidates = {}
+        for (let contextId of Object.keys(lcpTimestamps)) {
+          lcpCandidates[contextId] = {};
+          let lastTimestamp = Math.max(...Object.values(lcpTimestamps[contextId]));
+          for (let nodeId of Object.keys(lcpTimestamps[contextId])) {
+            lcpCandidates[contextId][nodeId] = lcpTimestamps[contextId][nodeId] == lastTimestamp;
+          }
+        }
+
+        // Filter to relevant trace events
+        traceEvents = traceEvents.filter((e) => [
+          TRACE_EVENT_NAMES.SCREENSHOT,
+          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_CREATED,
+          TRACE_EVENT_NAMES.SOFT_NAV_DETECTED,
+          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_MODIFIED_NODE,
+          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_PAINT_IN_FRAME,
+          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_EXHAUSTED
+        ].includes(e.name));
+
+        // Find the first soft navigation event.
+        let firstSoftNavIndex = traceEvents.findIndex((e) => e.name == TRACE_EVENT_NAMES.SOFT_NAV_DETECTED);
+        if (firstSoftNavIndex == -1) {
+          throw new Error('No soft navigations found in trace!');
+        }
+        // Clip frames to the first one before the soft nav.
+        let index = 0;
+        for (index = firstSoftNavIndex - 1; index >= 0; index--) {
+          if (traceEvents[index].name == TRACE_EVENT_NAMES.SCREENSHOT) {
+            break;
+          }
+        }
+        traceEvents.splice(0, index);
+        let timeStart = traceEvents[0].ts;
+        let lastSnapshot = null;
+        let lastSoftNavId = null;
+        let nextIcons = [];
+        let nextDomModifications = [];
+        let nextPaints = [];
+        for (let e of traceEvents) {
+          let eventsElement = document.createElement('timeline-events');
+          let adjustedTimestamp = Math.floor((e.ts - timeStart) / 1000);
+          let timestampElement = document.createElement('timeline-timestamp');
+          timestampElement.timestamp = adjustedTimestamp;
+          let containerDiv = document.createElement('div');
+          containerDiv.classList.add('filmstrip');
+          if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_CREATED) {
+            if (!e.args?.context) {
+              continue;
+            }
+            nextIcons.push(this.createIcon(
+              'interaction',
+              this.getTooltipContent('Soft Navigation Context Created', e.args, e.args.navigationId, adjustedTimestamp),
+              e.args?.context?.softNavContextId));
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_DETECTED) {
+            lastSoftNavId = e.args.navigationId;
+            let contextId = e.args?.context?.softNavContextId;
+            nextIcons.push(this.createIcon(
+              'soft-nav-detected',
+              this.getTooltipContent('Soft Navigation Detected', e.args, lastSoftNavId, adjustedTimestamp),
+              contextId));
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_MODIFIED_NODE) {
+            nextDomModifications.push({
+              'timestamp': adjustedTimestamp,
+              'contextId': e.args?.context?.softNavContextId,
+              'nodeDebugName': e.args?.nodeDebugName,
+              'nodeId': e.args?.nodeId,
+              'domModifications': e.args?.context?.domModifications,
+            });
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_PAINT_IN_FRAME) {
+            let contextId = e.args?.context?.softNavContextId;
+            let nodeId = e.args?.nodeId;
+            let lcpCandidate = nodeId in (lcpTimestamps[contextId] || {});
+            let final = lcpCandidate && lcpCandidates[contextId][nodeId];
+            nextPaints.push({
+              'timestamp': adjustedTimestamp,
+              'contextId': contextId,
+              'nodeDebugName': e.args?.nodeDebugName,
+              'nodeId': nodeId,
+              'x': e.args?.rect_x,
+              'y': e.args?.rect_y,
+              'width': e.args?.rect_width,
+              'height': e.args?.rect_height,
+              'paintedArea': e.args?.context?.paintedArea,
+              'lcpCandidate': lcpCandidate,
+              'final': final
+            });
+            if (lcpCandidate) {
+            nextIcons.push(this.createIcon(
+                'lcp',
+                {
+                  'title': 'Largest Contentful Paint',
+                  'Context ID': contextId,
+                  'Node ID': nodeId,
+                  'Timestamp': adjustedTimestamp,
+                  'Final': final,
+                },
+                contextId));
+            }
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_EXHAUSTED) {
+            nextIcons.push(this.createIcon(
+              'exhausted',
+              this.getTooltipContent('Soft Context Exhausted', e.args, lastSoftNavId, adjustedTimestamp),
+              e.args?.context?.softNavContextId));
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SCREENSHOT) {
+            let snapshot = e.args.snapshot;
+            if (snapshot == lastSnapshot) {
+              // Nothing new painted.
+              continue;
+            }
+            lastSnapshot = snapshot;
+            let screenshotElement = document.createElement("filmstrip-screenshot");
+            screenshotElement.src = lastSnapshot;
+            screenshotElement.viewport = viewport;
+            if (nextDomModifications.length > 0) {
+              const groupedByContextId = Object.groupBy(nextDomModifications, obj => obj.contextId);
+              for (const contextId in groupedByContextId) {
+                let modificationsForContext = groupedByContextId[contextId];
+                nextIcons.push(this.createIcon(
+                  'dom-change',
+                  {
+                      'title': 'DOM Modifications',
+                      'Context ID': contextId,
+                      'Node IDs': modificationsForContext.map(node => node.nodeId).join(', '),
+                      'Node Debug Names': modificationsForContext.map(node => node.nodeDebugName).join('\n'),
+                      'DOM Modifications': Math.max(...modificationsForContext.map(item => item.domModifications)),
+                      'Timestamp': modificationsForContext[0].timestamp
+                  },
+                  contextId
+                ));
+              }
+              nextDomModifications = [];
+            }
+            if (nextPaints.length > 0) {
+              screenshotElement.paintRects = nextPaints;
+              const groupedByContextId = Object.groupBy(nextPaints, obj => obj.contextId);
+              for (const contextId in groupedByContextId) {
+                let paintsForContext = groupedByContextId[contextId];
+                nextIcons.push(this.createIcon(
+                  'paint',
+                  {
+                      'title': 'Paint Attributed',
+                      'Context ID': contextId,
+                      'Node IDs': paintsForContext.map(node => node.nodeId).join(','),
+                      'Node Debug Names': paintsForContext.map(node => node.nodeDebugName).join('\n'),
+                      'Painted Area': Math.max(...paintsForContext.map(item => item.paintedArea)),
+                      'Timestamp': paintsForContext[0].timestamp
+                  },
+                  contextId
+                ));
+              }
+              nextPaints = [];
+            }
+            containerDiv.append(screenshotElement);
+          }
+          nextIcons.sort((a, b) => a.timestamp - b.timestamp);
+          for (let eventIcon of nextIcons) {
+            eventsElement.addIcon(eventIcon);
+          }
+          nextIcons = [];
+          containerDiv.appendChild(eventsElement);
+          containerDiv.appendChild(timestampElement);
+          timelineContainer.appendChild(containerDiv);
+        }
+      }
+    }
+
+    class DropTarget extends HTMLElement {
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        shadowRoot.appendChild(dropTargetTemplateContent.cloneNode(true));
+
+        shadowRoot.querySelector(".drop-target-content").addEventListener("dragover", this.handleDragover.bind(this));
+        shadowRoot.querySelector(".drop-target-content").addEventListener("drop", this.handleDrop.bind(this));
+        shadowRoot.querySelector("#file-input").addEventListener("change", this.handleChange.bind(this));
+      }
+
+      handleDragover(event) {
+        event.preventDefault();
+      }
+
+      handleDrop(event) {
+        event.preventDefault();
+        this.clearDropError();
+
+        let textPromise = null;
+        if (event.dataTransfer.items) {
+          // Use DataTransferItemList interface to access the file(s)
+          [...event.dataTransfer.items].forEach((item, i) => {
+            // If dropped items aren't files, reject them
+            if (item.kind === "file") {
+              const file = item.getAsFile();
+              textPromise = file.text();
+            }
+          });
+        } else {
+          // Use DataTransfer interface to access the file(s)
+          [...event.dataTransfer.files].forEach((file, i) => {
+            textPromise = file.text();
+          });
+        }
+        if (!textPromise) {
+          this.showDropError('No trace file dropped');
+          return;
+        }
+        textPromise.then(this.generateTimeline.bind(this)).catch(this.showDropError.bind(this));
+      }
+
+      handleChange(event) {
+        let file = event.target.files[0];
+        file.text().then(this.generateTimeline.bind(this)).catch(this.showDropError.bind(this));
+      }
+
+      generateTimeline(text) {
+        document.querySelector('trace-timeline').traceData = text;
+        this.shadowRoot.querySelector('.container').classList.add('secondary');
+      }
+
+      showDropError(message) {
+        console.error(message);
+        document.querySelector('trace-timeline').setAttribute('empty', 'true');
+        this.shadowRoot.querySelector('#drop-error').textContent = message;
+        this.shadowRoot.querySelector('.container').classList.add('error');
+        this.shadowRoot.querySelector('.container').classList.remove('secondary');
+      }
+
+      clearDropError() {
+        this.shadowRoot.querySelector('#drop-error').textContent = '';
+        this.shadowRoot.querySelector('.container').classList.remove('error');
+      }
+    }
+
+    customElements.define(
+      "filmstrip-tooltip",
+      FilmstripTooltip,
+    );
+    customElements.define(
+      "drop-target",
+      DropTarget,
+    );
+    customElements.define(
+      "trace-timeline",
+      TraceTimeline,
+    );
+    customElements.define(
+      "timeline-event-icon",
+      TimelineEventIcon,
+    );
+    customElements.define(
+      "timeline-events",
+      TimelineEvents,
+    );
+    customElements.define(
+      "timeline-timestamp",
+      TimelineTimestamp,
+    );
+    customElements.define(
+      "filmstrip-screenshot",
+      FilmstripScreenshot
+    );
+  </script>
+  <trace-timeline empty></trace-timeline>
+  <drop-target></drop-target>
+  
+  
+  
+  <!-- -------------------------------------------------
+  ------------------------------------------------------
+                  additions from trace.cafe 
+  ------------------------------------------------------
+  -->
+  <script>
+
+// Allow receiving traces over postMessage
+window.addEventListener('message', async e => {
+  const msg = e.data.msg ?? e.data;
+  const data = e.data.data;
+  console.log('postMessage received', msg, data ? 'with data' : '');
+
+  switch (msg) {
+    case 'PING':
+      e.source?.postMessage('PONG', e.origin);
+      break;
+    case 'TRACE':
+      const traceData = data;
+      document.querySelector('trace-timeline').traceData = traceData;
+      e.source?.postMessage({msg: 'UPLOADCOMPLETE-softnav'}, e.origin);
+      break;
+    default:
+  }
+});
+  </script>
+<style>
+  drop-target { display: none; }
+</style>
+
+<!-- also i fixed some removeEventLister calls.. -->
+
+</body>
+</html>

@@ -439,6 +439,7 @@ ul.recent {
     background-color: oklch(0.83 0.02 266.09);
   }
   &.on {
+    opacity: 1;
     background-color: oklch(0.73 0.02 266.09);
   }
 }

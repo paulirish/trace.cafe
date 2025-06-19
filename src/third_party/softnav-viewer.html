@@ -639,15 +639,19 @@
         this.updateTooltipContent();
         this.updateIconColor();
         this.updateIconHighlightColor();
-        this.shadowRoot.querySelector('.icon').addEventListener('mouseenter', () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = true);
-        this.shadowRoot.querySelector('.icon').addEventListener('mouseleave', () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = false);
-        this.addEventListener('click', () => this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky = !this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky);
+
+        this.onMouseEnterIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = true;
+        this.onMouseLeaveIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = false
+        this.onElemClick = () => this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky = !this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky;
+        this.shadowRoot.querySelector('.icon').addEventListener('mouseenter', this.onMouseEnterIcon);
+        this.shadowRoot.querySelector('.icon').addEventListener('mouseleave', this.onMouseLeaveIcon);
+        this.addEventListener('click', this.onElemClick);
       }
 
       disconnectedCallback() {
-        this.removeEventListener('click');
-        this.shadowRoot.querySelector('icon').removeEventListener('mouseenter');
-        this.shadowRoot.querySelector('icon').removeEventListener('mouseleave');
+        this.removeEventListener('click', this.onElemClick);
+        this.shadowRoot.querySelector('icon').removeEventListener('mouseenter', this.onMouseEnterIcon);
+        this.shadowRoot.querySelector('icon').removeEventListener('mouseleave', this.onMouseLeaveIcon);
       }
 
       set iconColor(iconColor) {
@@ -1157,6 +1161,8 @@ window.addEventListener('message', async e => {
 <style>
   drop-target { display: none; }
 </style>
+
+<!-- also i fixed some removeEventLister calls.. -->
 
 </body>
 </html>

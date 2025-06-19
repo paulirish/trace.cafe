@@ -47,6 +47,7 @@ async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
     document.documentElement.className = 'state--landing';
     $('iframe#ifr-perfetto').classList.remove('visible', 'perfetto-tracedatasent');
+    $('iframe#ifr-softnav').classList.remove('visible', 'softnav-tracedatasent');
     return;
   }
 

@@ -98,3 +98,6 @@ export default {
     }
   ],
 };
+
+// Where do i copy html files to dist?  index is done by this html plugin.. but the rest??
+// hmm.. .well in the meantime, adding into npm build script.

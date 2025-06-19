@@ -130,6 +130,14 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   window.addEventListener('message', onPerfettoMsg);
 }
 
+async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl, traceTitle) {
+
+  const blob = await fetch(traceAssetUrl).then(r => r.blob());
+
+  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: blob}, 'https://trace.cafe');
+  iframeSoftNav.classList.add('perfetto-tracedatasent');
+}
+
 function toggleBetweenPerfettoAndDevTools() {
   const iframePerfetto = $('iframe#ifr-perfetto');
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
@@ -205,9 +213,13 @@ function setupLanding() {
     toggleBetweenPerfettoAndDevTools();
   });
 
-  addEventListener('unhandledrejection', event => {
-    console.error('Unhandled rejection: ', event?.reason?.message);
+  $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
+    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl, globalThis.traceTitle);
   });
+
+  // addEventListener('unhandledrejection', event => {
+  //   console.error('Unhandled rejection: ', event?.reason?.message);
+  // });
 }
 
 function setupFileInput() {
@@ -258,6 +270,9 @@ window.addEventListener('message', async e => {
     case 'TRACE':
       const traceViewUrl = await upload(data);
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
+      break;
+    case 'UPLOADCOMPLETE-softnav':
+      console.log('Trace uploaded to softnav viewer successfully.', data.url)
       break;
     default:
   }

@@ -24,6 +24,10 @@
         "destination": "/app.js.map"
       },
       {
+        "source": "**/softnav-viewer.html",
+        "destination": "/softnav-viewer.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

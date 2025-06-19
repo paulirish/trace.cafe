@@ -130,11 +130,10 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
   window.addEventListener('message', onPerfettoMsg);
 }
 
-async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl, traceTitle) {
+async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
 
-  const blob = await fetch(traceAssetUrl).then(r => r.blob());
-
-  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: blob}, 'https://trace.cafe');
+  const text = await fetch(traceAssetUrl).then(r => r.text());
+  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
   iframeSoftNav.classList.add('perfetto-tracedatasent');
 }
 
@@ -214,7 +213,10 @@ function setupLanding() {
   });
 
   $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
-    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl, globalThis.traceTitle);
+    const showSoftNav = $('.toolbar-button--softnav-toggle').classList.contains('on');
+    $('.toolbar-button--softnav-toggle').classList.toggle('on', !showSoftNav);
+    $('iframe#ifr-softnav').classList.toggle('visible', !showSoftNav);
+    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl);
   });
 
   // addEventListener('unhandledrejection', event => {
@@ -272,7 +274,7 @@ window.addEventListener('message', async e => {
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
     case 'UPLOADCOMPLETE-softnav':
-      console.log('Trace uploaded to softnav viewer successfully.', data.url)
+      console.log('Trace uploaded to softnav viewer successfully.')
       break;
     default:
   }

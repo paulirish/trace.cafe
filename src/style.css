@@ -87,7 +87,8 @@ iframe {
 }
 
 /* not handled with same body state as devtools iframe, but.. thats good */ 
-iframe#ifr-perfetto.visible {  
+iframe#ifr-perfetto.visible, 
+iframe#ifr-softnav.visible {  
   display: block;
   background-color: white;
   padding-top: var(--dt-tabstrip-height);
@@ -429,6 +430,31 @@ ul.recent {
 .toolbar-button--perfetto-toggle-devtools {
   background-image: url('https://raw.githubusercontent.com/ChromeDevTools/devtools-logo/master/logos/png/devtools-circle-48.png');
 }
+
+.toolbar-button--softnav-toggle {
+  opacity: 0.4;
+  border-radius: 2px;
+
+  &:hover {
+    background-color: oklch(0.83 0.02 266.09);
+  }
+  &.on {
+    background-color: oklch(0.73 0.02 266.09);
+  }
+}
+
+.toolbar-button--softnav-toggle:before {
+  content: 'Soft-Nav';
+  width: 100%;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-size: 66%;
+  align-content: center;
+  height: 100%;
+  vertical-align: super;
+  
+}
+
 
 
 

@@ -134,7 +134,8 @@ async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
 
   const text = await fetch(traceAssetUrl).then(r => r.text());
   iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
-  iframeSoftNav.classList.add('perfetto-tracedatasent');
+  $('.toolbar-button--softnav-toggle').classList.remove('loading');
+  iframeSoftNav.classList.add('softnav-tracedatasent');
 }
 
 function toggleBetweenPerfettoAndDevTools() {
@@ -213,15 +214,19 @@ function setupLanding() {
   });
 
   $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
-    const showSoftNav = $('.toolbar-button--softnav-toggle').classList.contains('on');
-    $('.toolbar-button--softnav-toggle').classList.toggle('on', !showSoftNav);
-    $('iframe#ifr-softnav').classList.toggle('visible', !showSoftNav);
-    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl);
+    const showSoftNav = !$('.toolbar-button--softnav-toggle').classList.contains('on');
+    $('.toolbar-button--softnav-toggle').classList.toggle('on', showSoftNav);
+    $('.toolbar-button--softnav-toggle').classList.toggle('loading', showSoftNav);
+    $('iframe#ifr-softnav').classList.toggle('visible', showSoftNav);
+    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl).catch(err => {
+      console.error('Error showing trace in SoftNav viewer:', err.message);
+      $('.toolbar-button--softnav-toggle').classList.remove('loading');
+    })
   });
 
-  // addEventListener('unhandledrejection', event => {
-  //   console.error('Unhandled rejection: ', event?.reason?.message);
-  // });
+  addEventListener('unhandledrejection', event => {
+    console.error('Unhandled rejection: ', event?.reason?.message);
+  });
 }
 
 function setupFileInput() {
@@ -274,7 +279,7 @@ window.addEventListener('message', async e => {
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
     case 'UPLOADCOMPLETE-softnav':
-      console.log('Trace uploaded to softnav viewer successfully.')
+      console.log('Trace sent to softnav viewer!')
       break;
     default:
   }

@@ -29,14 +29,13 @@ const storage = getStorage(app);
 async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
-  const currentRef =
-    traceId === 'demo'
-      ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp
-      : traceId === 'softnav'
-        ? ref(storage, 'softnav')
-        : ref(storage, `traces/${traceId}`);
+  const currentRef = (traceId === 'demo') 
+    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp
+    : ref(storage, `traces/${traceId}`);
 
-  const bucket = traceId === 'demo' || traceId === 'softnav' ? 'tum-permatraces2' : firebaseConfig.storageBucket;
+  const bucket =  (traceId === 'demo') 
+    ? 'tum-permatraces2'
+    : firebaseConfig.storageBucket;
 
   // Could use getDownloadURL(currentRef) and getMetadata(currentRef) but at the REST level they're the same request and it adds ~300ms of extra latency
   // So instead we fetch this data ourselves (instead of firebase JS API)

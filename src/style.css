@@ -399,6 +399,11 @@ ul.recent {
   justify-content: flex-end;
   height: 25px;
   vertical-align: top; /* to prevent a 1px shift on disclosure triangle */
+
+  form {
+    display: flex;
+    align-items: center;
+  }
 }
 .last-log {
   flex-grow: 1;
@@ -407,8 +412,12 @@ ul.recent {
   width: 28px;
   height: 25px;
   border: 0;
-  display: inline;
   padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: none;
   background-size: 20px;
   background-repeat: no-repeat;
@@ -452,12 +461,27 @@ ul.recent {
   font-size: 66%;
   align-content: center;
   height: 100%;
-  vertical-align: super;
-  
+}
+
+.loadingspinner,
+.toolbar-button--softnav-toggle.loading:before {
+  content: '';
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-color: #eee;
+  border-top-color: #3E67EC;
+  border-radius: 50%;
+  animation: loadingspin 1s linear infinite;
 }
 
 
-
+@keyframes loadingspin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 
 /* a la .console-message */

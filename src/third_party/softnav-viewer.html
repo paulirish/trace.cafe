@@ -823,6 +823,14 @@
         return icon;
       }
 
+      navigationIdForSoftNavigationEvent(event) {
+        // Navigation id has been moved a few times; it might be in any of these places in args:
+        // * context.performanceTimelineNavigationId
+        // * navigationId
+        // * context.navigationId
+        return event.args?.context?.performanceTimelineNavigationId || event.args?.context?.navigationId || event.args?.navigationId;
+      }
+
       set traceData(traceData) {
         // Clear previous timeline
         this.removeAttribute('empty');
@@ -847,10 +855,12 @@
           height: viewportEvent.args.data.viewport_rect[5] // y3 (assuming rect is x1,y1,x2,y1,x2,y2,x1,y2)
         };
 
-        // Make a map of navigation id -> context id
+        // Make a map of navigation id -> context id.
         const navigationIdToContextId = traceEvents.reduce((acc, e) => {
-          if (e.args.navigationId && e.args?.context?.softNavContextId) {
-            acc[e.args.navigationId] = e.args.context.softNavContextId;
+          let navigationId = this.navigationIdForSoftNavigationEvent(e);
+          let contextId = e.args?.context?.softNavContextId;
+          if (navigationId && contextId) {
+            acc[navigationId] = contextId;
           }
           return acc;
         }, {});
@@ -858,7 +868,8 @@
         // Make a map of (context id, node id) -> LCP timestamp, LCP final
         let lcpTimestamps = {};
         traceEvents.filter((e) => e.name == TRACE_EVENT_NAMES.LCP_CANDIDATE).forEach((e, i) => {
-          let contextId = navigationIdToContextId[e.args.data.navigationId];
+          let navigationId = e.args.data.performanceTimelineNavigationId || e.args.data.navigationId;
+          let contextId = navigationIdToContextId[navigationId];
           lcpTimestamps[contextId] = lcpTimestamps[contextId] || {};
           lcpTimestamps[contextId][e.args.data.nodeId] = e.ts;
         });
@@ -911,13 +922,14 @@
             if (!e.args?.context) {
               continue;
             }
+            let navigationId = this.navigationIdForSoftNavigationEvent(e);
             nextIcons.push(this.createIcon(
               'interaction',
-              this.getTooltipContent('Soft Navigation Context Created', e.args, e.args.navigationId, adjustedTimestamp),
+              this.getTooltipContent('Soft Navigation Context Created', e.args, navigationId, adjustedTimestamp),
               e.args?.context?.softNavContextId));
             continue;
           } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_DETECTED) {
-            lastSoftNavId = e.args.navigationId;
+            lastSoftNavId = this.navigationIdForSoftNavigationEvent(e);
             let contextId = e.args?.context?.softNavContextId;
             nextIcons.push(this.createIcon(
               'soft-nav-detected',

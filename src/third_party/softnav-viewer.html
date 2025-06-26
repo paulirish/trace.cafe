@@ -1166,38 +1166,24 @@
   </script>
   <trace-timeline empty></trace-timeline>
   <drop-target></drop-target>
-  
-  <!-- -------------------------------------------------
-  ------------------------------------------------------
-                  additions from trace.cafe 
-  ------------------------------------------------------
-  -->
-  <script>
 
-// Allow receiving traces over postMessage
-window.addEventListener('message', async e => {
-  const msg = e.data.msg ?? e.data;
-  const data = e.data.data;
-  console.log('postMessage received', msg, data ? 'with data' : '');
-
-  switch (msg) {
-    case 'PING':
-      e.source?.postMessage('PONG', e.origin);
-      break;
-    case 'TRACE':
-      const traceData = data;
-      document.querySelector('trace-timeline').traceData = traceData;
-      e.source?.postMessage({msg: 'UPLOADCOMPLETE-softnav'}, e.origin);
-      break;
-    default:
-  }
+<!-- trace.cafe additions below -->
+<script>
+window.addEventListener('message', ({ data, source, origin }) => {
+  const msg = data.msg ?? data;
+  const payload = data.data;
+  console.log('postMessage received', msg, payload ? 'with data' : '');
+  const actions = {
+    PING: () => source?.postMessage('PONG', origin),
+    TRACE: () => {
+      document.querySelector('trace-timeline').traceData = payload;
+      source?.postMessage({ msg: 'UPLOADCOMPLETE-softnav' }, origin);
+    },
+  };
+  actions[msg]?.();
 });
-  </script>
-<style>
-  drop-target { display: none; }
-</style>
+</script>
+<style> drop-target { display: none; } </style>
+</body></html>
 
-<!-- also i fixed some removeEventLister calls.. -->
-
-</body>
 </html>

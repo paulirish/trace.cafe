@@ -28,7 +28,6 @@ export async function main() {
   fs.writeFileSync('./src/app.js', text);
 
   console.log('app.js updated.\n');
-
   console.log('Whats new in this version: ➡️', `https://chromium.googlesource.com/devtools/devtools-frontend/+log/${devtoolsHash}`);
 
   await updateSoftNavViewer();

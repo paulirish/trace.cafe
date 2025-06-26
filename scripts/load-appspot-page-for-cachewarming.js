@@ -31,11 +31,14 @@ export async function attemptLoad(hash) {
       await page.waitForLoadState('networkidle', {timeout: 5 * 60_000});
       console.log('\n    😊 Network is quiet!');
 
-      // Handle iframe case of trace.cafe or just a direct nav to the appspot
-      // TODO: make this work...
-      // const frame = page.frame({url: /chrome-devtools-frontend.appspot.com/}) ?? page.mainFrame();
-      // await page.getByText('Bottom-up').click();
-      // console.log('    ✅ Clicked Bottom-up!');
+      // Wait for the RPP UI to load
+      const frame = url.includes('trace.cafe') ? page.frame({url: /chrome-devtools-frontend.appspot.com/}) : page.mainFrame();
+      console.log('    Waiting for RPP UI (bottom-up) to load');
+      await frame.waitForSelector('#tab-bottom-up', {timeout: 10_000});
+      console.log('    RPP UI (bottom-up) is loaded!');
+      await frame.getByText('Bottom-up').click();
+      console.log('    ✅ Clicked Bottom-up!');
+
       break;
     } catch (error) {
       console.log('    error', error);

@@ -20,6 +20,7 @@
       '#F57C00',
       '#E64A19'
     ];
+    const NO_CONTEXT_COLOR = '#F44336';
 
     const CONTEXT_ID_HIGHLIGHT_COLORS = [
       '#FF5252',
@@ -39,7 +40,8 @@
       '#FFAB40',
       '#FF6E40',
     ];
-  </script>
+    const NO_CONTEXT_HIGHLIGHT_COLOR = '#FF5252';
+</script>
 </head>
 <body>
   <template id="filmstrip-tooltip-template">
@@ -159,6 +161,13 @@
       .icon-exhausted {
         clip-path: polygon(0 0, 100% 0, 100% 15%, 65% 45%, 65% 55%, 100% 85%, 100% 100%, 0 100%, 0 85%, 35% 55%, 35% 45%, 0 15%);
       }
+
+      /* Committed without Context (X) */
+      .icon-committed-without-context {
+      clip-path: polygon(
+        20% 0%, 50% 30%, 80% 0%, 100% 20%, 70% 50%, 100% 80%, 80% 100%, 50% 70%, 20% 100%, 0% 80%, 30% 50%, 0% 20%
+      );
+}
     </style>
     <div class="icon"></div>
     <filmstrip-tooltip></filmstrip-tooltip>
@@ -639,7 +648,7 @@
         this.updateTooltipContent();
         this.updateIconColor();
         this.updateIconHighlightColor();
-
+        
         this.onMouseEnterIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = true;
         this.onMouseLeaveIcon = () => this.shadowRoot.querySelector('filmstrip-tooltip').hover = false
         this.onElemClick = () => this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky = !this.shadowRoot.querySelector('filmstrip-tooltip').hoverSticky;
@@ -779,10 +788,11 @@
       SOFT_NAV_DETECTED: 'SoftNavigationHeuristics::EmitSoftNavigationEntry',
       TRACING_STARTED: 'TracingStartedInBrowser',
       VIEWPORT: 'PaintTimingVisualizer::Viewport',
-      SOFT_NAV_CONTEXT_CREATED: "SoftNavigationHeuristics::CreateNewContext",
-      SOFT_NAV_CONTEXT_MODIFIED_NODE: "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
-      SOFT_NAV_CONTEXT_PAINT_IN_FRAME: "SoftNavigationContext::AttributablePaintInAnimationFrame",
-      SOFT_NAV_CONTEXT_EXHAUSTED: 'SoftNavigationHeuristics::SoftNavigationContextWasExhausted'
+      SOFT_NAV_CONTEXT_CREATED: 'SoftNavigationHeuristics::CreateNewContext',
+      SOFT_NAV_CONTEXT_MODIFIED_NODE: 'SoftNavigationContext::AddedModifiedNodeInAnimationFrame',
+      SOFT_NAV_CONTEXT_PAINT_IN_FRAME: 'SoftNavigationContext::AttributablePaintInAnimationFrame',
+      SOFT_NAV_CONTEXT_EXHAUSTED: 'SoftNavigationHeuristics::SoftNavigationContextWasExhausted',
+      SOFT_NAV_COMMITTED_WITHOUT_CONTEXT: 'SoftNavigationHeuristics::SameDocumentNavigationCommittedWithoutContext',
     }
 
     class TraceTimeline extends HTMLElement {
@@ -817,8 +827,13 @@
         let icon = document.createElement('timeline-event-icon');
         icon.event = event;
         icon.tooltipContent = tooltipContent;
-        icon.iconColor = CONTEXT_ID_COLORS[contextId % CONTEXT_ID_COLORS.length];
-        icon.iconHighlightColor = CONTEXT_ID_HIGHLIGHT_COLORS[contextId % CONTEXT_ID_COLORS.length];
+        if (contextId != null) {
+          icon.iconColor = CONTEXT_ID_COLORS[contextId % CONTEXT_ID_COLORS.length];
+          icon.iconHighlightColor = CONTEXT_ID_HIGHLIGHT_COLORS[contextId % CONTEXT_ID_COLORS.length];
+        } else {
+          icon.iconColor = NO_CONTEXT_COLOR;
+          icon.iconHighlightColor = NO_CONTEXT_HIGHLIGHT_COLOR;
+        }
         icon.timestamp = tooltipContent['Timestamp'];
         return icon;
       }
@@ -889,11 +904,12 @@
           TRACE_EVENT_NAMES.SOFT_NAV_DETECTED,
           TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_MODIFIED_NODE,
           TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_PAINT_IN_FRAME,
-          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_EXHAUSTED
+          TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_EXHAUSTED,
+          TRACE_EVENT_NAMES.SOFT_NAV_COMMITTED_WITHOUT_CONTEXT
         ].includes(e.name));
 
         // Find the first soft navigation event.
-        let firstSoftNavIndex = traceEvents.findIndex((e) => e.name == TRACE_EVENT_NAMES.SOFT_NAV_DETECTED);
+        let firstSoftNavIndex = traceEvents.findIndex((e) => e.name != TRACE_EVENT_NAMES.SCREENSHOT);
         if (firstSoftNavIndex == -1) {
           throw new Error('No soft navigations found in trace!');
         }
@@ -975,6 +991,15 @@
                 },
                 contextId));
             }
+            continue;
+          } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_COMMITTED_WITHOUT_CONTEXT) {
+            nextIcons.push(this.createIcon(
+                'committed-without-context',
+                {
+                  'title': 'Soft Nav Committed Without Context',
+                  'Timestamp': adjustedTimestamp,
+                  'URL': e.args?.url
+                }, null));
             continue;
           } else if (e.name == TRACE_EVENT_NAMES.SOFT_NAV_CONTEXT_EXHAUSTED) {
             nextIcons.push(this.createIcon(
@@ -1141,8 +1166,6 @@
   </script>
   <trace-timeline empty></trace-timeline>
   <drop-target></drop-target>
-  
-  
   
   <!-- -------------------------------------------------
   ------------------------------------------------------

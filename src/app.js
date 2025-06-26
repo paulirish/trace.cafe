@@ -131,7 +131,7 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
 }
 
 async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
-  // demo: trace.cafe/t/qvYZmG22OT
+  // demo: https://trace.cafe/t/qvYZmG22OT
   const text = await fetch(traceAssetUrl).then(r => r.text());
   iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
   $('.toolbar-button--softnav-toggle').classList.remove('loading');

@@ -52,14 +52,19 @@
         position: absolute;
         top: 0;
         left: 20px;
+        right: auto;
         transform: translateY(var(--yposition));
         padding: 12px;
         border-radius: 10px;
         opacity: 1;
         color: black;
         border: 2px solid black;
-        text-align: center;
         background-color: var(--color);
+        max-height: 400px;
+        width: max-content;
+        max-width: 400px;
+        overflow-y: auto;
+        word-break: break-word;
       }
 
       .tooltip.hover, .tooltip.hoverSticky, .tooltip:hover {
@@ -68,11 +73,13 @@
 
       .title {
         font-weight: bold;
+        text-align: left;
+        margin-left: 20px;
       }
 
       .data-grid {
-        display: inline-grid;
-        grid-template-columns: max-content auto;
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
         gap: 6px 8px;
         align-items: baseline;
         text-align: left;
@@ -80,8 +87,13 @@
       }
 
       .data-grid .data-label {
-        text-align: right;
         overflow-wrap: break-word;
+        text-align: right;
+      }
+
+      .data-value {
+        overflow-wrap: break-word; /* Ensures long words break and wrap within the div */
+        min-width: 0; /* Important for flexible grid items in auto/fr columns; allows shrinking below content size */
       }
     </style>
     <div class="tooltip">
@@ -164,10 +176,15 @@
 
       /* Committed without Context (X) */
       .icon-committed-without-context {
-      clip-path: polygon(
-        20% 0%, 50% 30%, 80% 0%, 100% 20%, 70% 50%, 100% 80%, 80% 100%, 50% 70%, 20% 100%, 0% 80%, 30% 50%, 0% 20%
-      );
-}
+        clip-path: polygon(20% 0%, 50% 30%, 80% 0%, 100% 20%, 70% 50%, 100% 80%, 80% 100%, 50% 70%, 20% 100%, 0% 80%, 30% 50%, 0% 20%);
+      }
+
+      filmstrip-tooltip {
+        display: block; /* Make the custom element a block-level element so it takes up space */
+        position: static;
+        width: auto; /* Allow it to take up available width */
+      }
+
     </style>
     <div class="icon"></div>
     <filmstrip-tooltip></filmstrip-tooltip>
@@ -501,11 +518,11 @@
           if (key == 'title') {
             return;
           }
-          let k = document.createElement('span');
+          let k = document.createElement('div');
           k.textContent = `${key}:`;
           k.classList.add('data-label');
           gridElement.appendChild(k);
-          let v = document.createElement('span');
+          let v = document.createElement('div');
           v.classList.add('data-value');
           if (typeof(value) == 'string' && value.includes('\n')) {
             v.innerHTML = value.replaceAll('\n', '<br>');
@@ -1046,7 +1063,7 @@
                   {
                       'title': 'Paint Attributed',
                       'Context ID': contextId,
-                      'Node IDs': paintsForContext.map(node => node.nodeId).join(','),
+                      'Node IDs': paintsForContext.map(node => node.nodeId).join(', '),
                       'Node Debug Names': paintsForContext.map(node => node.nodeDebugName).join('\n'),
                       'Painted Area': Math.max(...paintsForContext.map(item => item.paintedArea)),
                       'Timestamp': paintsForContext[0].timestamp

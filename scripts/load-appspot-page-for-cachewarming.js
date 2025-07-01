@@ -36,7 +36,7 @@ export async function attemptLoad(hash) {
       console.log('    Waiting for RPP UI (bottom-up) to load');
       await frame.waitForSelector('#tab-bottom-up', {timeout: 10_000});
       console.log('    RPP UI (bottom-up) is loaded!');
-      await frame.getByText('Bottom-up').click();
+      await frame.getByText('Bottom-up').click({force: true});
       console.log('    ✅ Clicked Bottom-up!');
 
       break;

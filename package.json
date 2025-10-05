@@ -27,7 +27,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "playwright": "^1.48.2",
-    "rollup": "^4.14.0",
+    "rollup": "^4.22.4",
     "typed-query-selector": "^2.11.2",
     "typescript": "^5.4.4"
   }

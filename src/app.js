@@ -15,11 +15,11 @@ const chromiumHashVer = ['79706885d5e7232d7e4e0814ee95044b79e77380', '143.0.7475
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
 // There are multiple "entrypoints". We go for a smaller one (even tho it still loads LOTS that we don't need)
-// - devtools_app            ~= 118 req (5.1 MB)
-// - worker_app              ~= 116 req (5.1 MB)
-// - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
-// - rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`
-// - trace_app               ~= ??
+// - devtools_app             ~= 139 req (6.5 MB resources)
+// - worker_app               ~= 134 req (6.5 MB)
+// - js_app                   ~= 131 req (6.5 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
+// - ~rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`~   removed in Oct 2025.
+// - trace_app                ~= 128 req (6.2 MB)
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
 
 /**
@@ -68,20 +68,18 @@ async function displayTrace(assetUrl, fileData) {
   }, 1_000);
 
   /**
-   * For the object data URL (in getAssetUrl) we just encode the traces/traceid path once. but here we do it TWICE. Why????!
-   * Because DevTools incorrectly double decodes the path.
-   *  - First decode in `Runtime.Runtime.queryParam()` with the searchParams.get call
-   *  - Second decode in TimelinePanel's `handleQueryParam()` for loadTimelineFromURL it happens again.
-   * TODO: fix that bug in devtools.
-   *
-   * Also making this more annoying... firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset.
-   * The combo of these two things actually means you can get away with this:
-   *    `?loadTimelineFromURL=https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces${encodeURIComponent(encodeURIComponent('%2F'))}web-dev-annot.json.gz?alt=media&token=10a74a6c-5e3b-46a2-b202-f55032a54766`
-   * Alteratively you can use the %2F and then encode the entire thing twice.
+   * `loadTimelineFromURL` required double-encoded values, but we fixed that when introducing its replacement `traceURL`. :)
+   * This means the normal `searchParam.set('traceURL', actualURL)` will work fine, but there's a small wrinkle for trace.cafe's firebase URLs…
+   * 
+   * Our Firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset. (essentially the folder path is treated as part of the filename)
+   * A tad more explictly:
+   * ```js
+   * copy(`trace_app.html?traceURL=${encodeURIComponent(`https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces${encodeURIComponent('/')}web-dev-annot.json.gz?alt=media&token=10a74a6c-5e3b-46a2-b202-f55032a54766`)}`)
+   * ```
+   * That'll work.
    */
-  const encodedAssetUrl = encodeURIComponent(assetUrl);
   const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
-  hostedDtViewingTraceUrl.searchParams.set('loadTimelineFromURL', encodedAssetUrl);
+  hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr-dt');
@@ -184,7 +182,7 @@ function setupLanding() {
   // // Preload iframe
   // TODO: use Navigation API to avoid the preload from adding a history entry.
   // const iframe = $('iframe#ifr-dt');
-  // iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=`;
+  // iframe.src = `${devtoolsBaseUrl}?traceURL=`;
 
   $('.landing-ui').appendChild(recentlyViewed.listAsDOM());
 

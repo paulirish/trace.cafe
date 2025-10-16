@@ -68,12 +68,10 @@ window.addEventListener('message', ({ data, source, origin }) => {
 }
 
 const singleEncodedDemoTraceUrl = encodeURIComponent('https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces%2F7qvReGZ6RU?alt=media&token=934388e9-421b-471b-8f26-eebbf97d75e0')
-// const doubleEncodedDemoTraceUrl = `https%253A%252F%252Ffirebasestorage.googleapis.com%252Fv0%252Fb%252Ftum-permatraces2%252Fo%252Fpermatraces%25252F7qvReGZ6RU%253Falt%253Dmedia%2526token%253D934388e9-421b-471b-8f26-eebbf97d75e0`;
-const doubleEncodedDemoTraceUrl = encodeURIComponent(singleEncodedDemoTraceUrl);
 
 
 export const appspotUrl = hash =>
-  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?loadTimelineFromURL=${singleEncodedDemoTraceUrl}`;
+  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?traceURL=${singleEncodedDemoTraceUrl}`;
 
 
 

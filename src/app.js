@@ -10,7 +10,7 @@ import {upload} from './storage';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['62653449680ee642281f34673cd73a3ca0620650', '143.0.7452.0'];
+const chromiumHashVer = ['79706885d5e7232d7e4e0814ee95044b79e77380', '143.0.7475.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -19,7 +19,8 @@ const chromiumHashVer = ['62653449680ee642281f34673cd73a3ca0620650', '143.0.7452
 // - worker_app              ~= 116 req (5.1 MB)
 // - js_app                  ~= 118 req (5.1 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
 // - rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/worker_app.html`;
+// - trace_app               ~= ??
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

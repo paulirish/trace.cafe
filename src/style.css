@@ -84,6 +84,7 @@ iframe {
 
 .state--viewing iframe#ifr-dt {
   display: block;
+  padding-top: var(--dt-tabstrip-height); /* show the panel tabstrip. why this doesnt work with top/margin-top is BEYOND me. whatthe. */
 }
 
 /* not handled with same body state as devtools iframe, but.. thats good */ 

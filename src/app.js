@@ -10,7 +10,7 @@ import {upload} from './storage';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['79706885d5e7232d7e4e0814ee95044b79e77380', '143.0.7475.0'];
+const chromiumHashVer = ['a94bc13ae25c4da6f4afad57d3030fc06d825321', '143.0.7480.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..

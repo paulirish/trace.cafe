@@ -288,3 +288,14 @@ window.addEventListener('message', async e => {
 window.addEventListener('load', _ => {
   window.opener?.postMessage('CAFEOPEN', '*');
 });
+
+// Handle pasting of trace file contents. (weird edge case but mostly for me :)
+document.body.addEventListener('paste', async e => {
+  const pastedText = e.clipboardData?.getData('text/plain');
+  if (!pastedText) return;
+  if (!(pastedText.startsWith('[') || pastedText.startsWith('{'))) return;
+
+  const traceText = pastedText;
+  const file = new File([traceText], 'pasted-trace.json', {type: 'application/json'});
+  upload(file).catch(err => console.error('Error uploading pasted trace:', err.message));
+});

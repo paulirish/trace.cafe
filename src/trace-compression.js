@@ -94,7 +94,9 @@ async function verifyItLooksLikeATrace(textData) {
 
   // Old bare array style.
   if (Array.isArray(traceFile)) {
-    return;
+    if (traceFile[0].cat && traceFile[0].ph) {
+      return;
+    }
   }
   // Modern style
   if (Array.isArray(traceFile.traceEvents)) {

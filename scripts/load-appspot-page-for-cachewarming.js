@@ -42,15 +42,26 @@ export async function attemptLoad(hash) {
 
       // await page.getByRole('dialog').click();
 
-  await page.getByRole('button', { name: 'Hide sidebar' }).click();
-  // await page.getByRole('button', { name: 'Show sidebar' }).click();
-  await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
-  await page.getByRole('button', { name: 'Style recalculation (3502' }).click();
-  await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
-  await page.getByRole('button', { name: 'More options' }).click();
-  await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
+      await page.getByRole('button', { name: 'Hide sidebar' }).click();
+      await page.getByRole('button', { name: 'Show sidebar' }).click();
+      await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
+      
+      await frame.getByText(/Style recalculation/).first().click();
 
-  
+
+      await page.getByRole('button', { name: 'Style recalculation (' }).first().click();
+      await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
+      await page.getByRole('button', { name: 'More options' }).click();
+      await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
+
+      
+      const text = await page.locator('.cm-content').textContent();
+
+      if (!text.includes('scrollTop: number,') || !text.includes('const currentY = target.getBoundingClientRect().y')) {
+        throw new Error('Code content does not match expected content.', text);
+      }
+
+
       // console.log('    Waiting for "Optimize DOM size"');
       // await frame.getByText('Optimize DOM size').click({ position: { x: 107, y: 2 } });
       // console.log('    ✅ Clicked "Optimize DOM size"!');

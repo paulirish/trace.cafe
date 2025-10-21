@@ -80,6 +80,7 @@ async function displayTrace(assetUrl, fileData) {
    */
   const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
   hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
+  hostedDtViewingTraceUrl.searchParams.set('panel', 'timeline');
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr-dt');

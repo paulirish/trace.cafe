@@ -39,6 +39,38 @@ export async function attemptLoad(hash) {
       await frame.getByText('Bottom-up').click({force: true});
       console.log('    ✅ Clicked Bottom-up!');
 
+      // quit if we're not doing enhanced trace
+      if (url === 'https://trace.cafe/t/demo') {
+        break;
+      }
+ 
+      // Now go into Sources panel via insights.
+      const showSidebarButton = page.getByRole('button', { name: 'Show sidebar' });
+      if (await showSidebarButton.isVisible({timeout: 100})) {
+        await showSidebarButton.click();
+      }
+      await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
+      console.log('    ✅ Clicked "View details for Optimize DOM"!');
+      
+      await frame.getByText(/Style recalculation/).first().click();
+      console.log('    ✅ Clicked "Style recalculation" in insight!');
+
+      await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
+      console.log('    ✅ Clicked line-observer.ts source link!');
+      console.log('    ℹ️ Waiting for source code to load');
+      await page.getByRole('button', { name: 'More options' }).click();
+      await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
+
+      
+      const text = await page.locator('.cm-content').textContent();
+
+      if (!text.includes('previousY: number,') || !text.includes('lineIsAboveBottomOfScreen')) {
+        throw new Error('Code content does not match expected content.', text);
+      }
+      console.log('    ✅✅✅✅✅ Source code looks good!');
+
+
+
       break;
     } catch (error) {
       console.log('    error', error);

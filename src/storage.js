@@ -30,7 +30,7 @@ async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
   const currentRef = (traceId === 'demo') 
-    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp
+    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp. Alternatively `gh-chained.fetches-anno.gz` works as an enhnanced trace.
     : ref(storage, `traces/${traceId}`);
 
   const bucket =  (traceId === 'demo') 

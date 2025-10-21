@@ -67,11 +67,11 @@ window.addEventListener('message', ({ data, source, origin }) => {
   console.log('softnav-viewer.html updated.\n');
 }
 
-const singleEncodedDemoTraceUrl = encodeURIComponent('https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces%2F7qvReGZ6RU?alt=media&token=934388e9-421b-471b-8f26-eebbf97d75e0')
+const singleEncodedDemoTraceUrl = encodeURIComponent('https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces%2Fgh-chained.fetches-anno.gz?alt=media&token=cd9a083b-8bfc-48f8-af13-9cf22c80a970')
 
 
 export const appspotUrl = hash =>
-  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?traceURL=${singleEncodedDemoTraceUrl}`;
+  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?panel=timeline&traceURL=${singleEncodedDemoTraceUrl}`;
 
 
 

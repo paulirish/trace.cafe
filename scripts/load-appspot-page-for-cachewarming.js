@@ -10,7 +10,7 @@ export async function attemptLoad(hash) {
     url = appspotUrl(chromiumHashVer);
   }
 
-  const attempts = 8;
+  const attempts = 10;
   const browser = await chromium.launch({
     // headless: false,
   });

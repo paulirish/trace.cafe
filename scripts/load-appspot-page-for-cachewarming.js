@@ -10,9 +10,9 @@ export async function attemptLoad(hash) {
     url = appspotUrl(chromiumHashVer);
   }
 
-  const attempts = 10;
+  const attempts = 1;
   const browser = await chromium.launch({
-    // headless: false,
+    headless: false,
   });
   const page = await browser.newPage();
   page.on('request', () => process.stdout.write('•'));
@@ -38,6 +38,31 @@ export async function attemptLoad(hash) {
       console.log('    RPP UI (bottom-up) is loaded!');
       await frame.getByText('Bottom-up').click({force: true});
       console.log('    ✅ Clicked Bottom-up!');
+
+
+      // await page.getByRole('dialog').click();
+
+  await page.getByRole('button', { name: 'Hide sidebar' }).click();
+  // await page.getByRole('button', { name: 'Show sidebar' }).click();
+  await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
+  await page.getByRole('button', { name: 'Style recalculation (3502' }).click();
+  await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
+  await page.getByRole('button', { name: 'More options' }).click();
+  await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
+
+  
+      // console.log('    Waiting for "Optimize DOM size"');
+      // await frame.getByText('Optimize DOM size').click({ position: { x: 107, y: 2 } });
+      // console.log('    ✅ Clicked "Optimize DOM size"!');
+
+      // console.log('    Waiting for "Style recalculation"');
+      // // There are other elements with that text but we want the first one in the insights
+      // await frame.getByText(/Style recalculation/).first().click({ position: { x: 84, y: 8 } });
+      // console.log('    ✅ Clicked "Style recalculation"!');
+
+      // console.log('    Waiting for code link');
+      // await frame.getByRole('link', { name: /use-code-line-observer\.ts/ }).click({ position: { x: 34, y: 5 } });
+      // console.log('    ✅ Clicked code link!');
 
       break;
     } catch (error) {

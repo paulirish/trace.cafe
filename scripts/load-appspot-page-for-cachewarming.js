@@ -12,7 +12,7 @@ export async function attemptLoad(hash) {
 
   const attempts = 10;
   const browser = await chromium.launch({
-    headless: false,
+    // headless: false,
   });
   const page = await browser.newPage();
   page.on('request', () => process.stdout.write('•'));

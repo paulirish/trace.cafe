@@ -71,7 +71,7 @@ const singleEncodedDemoTraceUrl = encodeURIComponent('https://firebasestorage.go
 
 
 export const appspotUrl = hash =>
-  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?traceURL=${singleEncodedDemoTraceUrl}`;
+  `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?panel=timeline&traceURL=${singleEncodedDemoTraceUrl}`;
 
 
 

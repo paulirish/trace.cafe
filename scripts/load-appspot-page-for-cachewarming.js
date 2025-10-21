@@ -10,7 +10,7 @@ export async function attemptLoad(hash) {
     url = appspotUrl(chromiumHashVer);
   }
 
-  const attempts = 1;
+  const attempts = 10;
   const browser = await chromium.launch({
     headless: false,
   });
@@ -39,41 +39,37 @@ export async function attemptLoad(hash) {
       await frame.getByText('Bottom-up').click({force: true});
       console.log('    ✅ Clicked Bottom-up!');
 
-
-      // await page.getByRole('dialog').click();
-
-      await page.getByRole('button', { name: 'Hide sidebar' }).click();
-      await page.getByRole('button', { name: 'Show sidebar' }).click();
+      // quit if we're not doing enhanced trace
+      if (url === 'https://trace.cafe/t/demo') {
+        break;
+      }
+ 
+      // Now go into Sources panel via insights.
+      const showSidebarButton = page.getByRole('button', { name: 'Show sidebar' });
+      if (await showSidebarButton.isVisible({timeout: 100})) {
+        await showSidebarButton.click();
+      }
       await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
+      console.log('    ✅ Clicked "View details for Optimize DOM"!');
       
       await frame.getByText(/Style recalculation/).first().click();
+      console.log('    ✅ Clicked "Style recalculation" in insight!');
 
-
-      await page.getByRole('button', { name: 'Style recalculation (' }).first().click();
       await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
+      console.log('    ✅ Clicked line-observer.ts source link!');
+      console.log('    ℹ️ Waiting for source code to load');
       await page.getByRole('button', { name: 'More options' }).click();
       await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
 
       
       const text = await page.locator('.cm-content').textContent();
 
-      if (!text.includes('scrollTop: number,') || !text.includes('const currentY = target.getBoundingClientRect().y')) {
+      if (!text.includes('previousY: number,') || !text.includes('lineIsAboveBottomOfScreen')) {
         throw new Error('Code content does not match expected content.', text);
       }
+      console.log('    ✅✅✅✅✅ Source code looks good!');
 
 
-      // console.log('    Waiting for "Optimize DOM size"');
-      // await frame.getByText('Optimize DOM size').click({ position: { x: 107, y: 2 } });
-      // console.log('    ✅ Clicked "Optimize DOM size"!');
-
-      // console.log('    Waiting for "Style recalculation"');
-      // // There are other elements with that text but we want the first one in the insights
-      // await frame.getByText(/Style recalculation/).first().click({ position: { x: 84, y: 8 } });
-      // console.log('    ✅ Clicked "Style recalculation"!');
-
-      // console.log('    Waiting for code link');
-      // await frame.getByRole('link', { name: /use-code-line-observer\.ts/ }).click({ position: { x: 34, y: 5 } });
-      // console.log('    ✅ Clicked code link!');
 
       break;
     } catch (error) {

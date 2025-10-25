@@ -6,7 +6,7 @@ import {readFileSync, writeFileSync} from 'node:fs';
 
 
 // stolen from https://github.com/rollup/plugins/blob/master/packages/html/src/index.ts
-const template = ({attributes, files, meta, publicPath, title }) => { 
+const template = ({attributes, files, meta, publicPath, title }) => {
 
   // console.log({attributes}, files);
   const scripts = (files.js || [])
@@ -110,8 +110,6 @@ ${code}
     },
   }
 ];
-
-
 
 export default [{
   input: 'src/app.js',

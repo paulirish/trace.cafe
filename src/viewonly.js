@@ -1,6 +1,6 @@
 import {setupDragAndDrop} from './dragndrop';
 
-const chromiumHashVer = ['681dfb8a5521ddd46f837577e3696ca477812f17', '143.0.7485.0'];
+const chromiumHashVer = ['afb989e0e1cd54ffc8edd6b4865e32aef9ae3245', '143.0.7494.0'];
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
 
 /**
@@ -18,6 +18,17 @@ globalThis.$ = function (query, context) {
   return /** @type {import('typed-query-selector/parser').ParseSelector<T, Element>} */ (result);
 };
 
+
+const iframeReady = new Promise(resolve => {
+  window.addEventListener('message', e => {
+    if (e.data === 'REHYDRATING_IFRAME_READY') {
+      console.log('iframe is ready');
+      resolve();
+    }
+  });
+});
+
+
 /**
  * @param {string} traceContent
  */
@@ -25,14 +36,15 @@ async function displayTrace(traceContent) {
   document.documentElement.className = 'state--viewing';
 
   const iframe = $('iframe#ifr-dt');
-  iframe.src = `${devtoolsBaseUrl}?loadTimelineFromURL=data:`;
+  iframe.src = `${devtoolsBaseUrl}`; // ?loadTimelineFromURL=data:
 
-  iframe.onload = () => {
-    iframe.contentWindow.postMessage({
-      method: 'loadTimelineFromURL',
-      params: [traceContent],
-    }, '*');
-  };
+  // await new Promise(resolve => {iframe.onload = resolve});
+  // await iframeReady;
+  const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
+  await wait(1500);
+
+  // Thanks Sam! https://crrev.com/c/7076796 "Add targetOrigin parameter to postMessage in RehydratingConnection (7076796)"
+  iframe.contentWindow?.postMessage({type: 'REHYDRATING_TRACE_FILE', traceJson: traceContent}, '*');
 }
 
 /**
@@ -69,8 +81,4 @@ document.body.addEventListener('paste', async e => {
   displayTrace(pastedText);
 });
 
-window.addEventListener('message', async e => {
-  if (e.data.msg === 'PING') {
-    e.source?.postMessage('PONG', e.origin);
-  }
-});
+

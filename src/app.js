@@ -236,7 +236,7 @@ function setupFileInput() {
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
-    const {handleDrop} = setupDragAndDrop();
+    const {handleDrop} = setupDragAndDrop(upload);
     handleDrop(e.target?.files);
   });
 }
@@ -262,7 +262,7 @@ async function downloadTrace(assetUrl, fileData) {
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
-setupDragAndDrop();
+setupDragAndDrop(upload);
 setupFileInput();
 
 // Allow receiving traces over postMessage

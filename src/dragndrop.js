@@ -1,5 +1,3 @@
-import {upload} from './storage';
-
 // Thx Lighthouse viewer drag-and-drop.js
 function setupDragAndDrop(callback) {
   let dragging = false;
@@ -16,8 +14,6 @@ function setupDragAndDrop(callback) {
     console.log('Received file: ', fileItem.name);
     if (callback) {
       callback(fileItem);
-    } else {
-      upload(fileItem);
     }
   }
 

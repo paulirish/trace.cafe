@@ -1,6 +1,7 @@
 import {setupDragAndDrop} from './dragndrop';
 
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@681dfb8a5521ddd46f837577e3696ca477812f17/trace_app.html`;
+const chromiumHashVer = ['681dfb8a5521ddd46f837577e3696ca477812f17', '143.0.7485.0'];
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

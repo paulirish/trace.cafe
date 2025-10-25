@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import { attemptLoad } from './load-appspot-page-for-cachewarming.js';
+import {attemptLoad} from './load-appspot-page-for-cachewarming.js';
 
 // see go/hyvwn
 
@@ -23,19 +23,22 @@ export async function main() {
   console.log('Found', {version, hash, devtoolsHash});
   const declaration = `const chromiumHashVer = ['${hash}', '${version}'];`;
 
-  let text = fs.readFileSync('./src/app.js', 'utf-8');
-  text = text.replace(/const chromiumHashVer.*/, declaration);
-  fs.writeFileSync('./src/app.js', text);
+  updateChromiumHashVer('./src/app.js', declaration);
+  updateChromiumHashVer('./src/viewonly.js', declaration);
 
-  console.log('app.js updated.\n');
   console.log('Whats new in this version: ➡️', `https://chromium.googlesource.com/devtools/devtools-frontend/+log/${devtoolsHash}`);
 
   await updateSoftNavViewer();
 
-
   console.log('node scripts/load-appspot-page-for-cachewarming.js', hash);
   attemptLoad(hash);
+}
 
+function updateChromiumHashVer(path, declaration) {
+  let text = fs.readFileSync(path, 'utf-8');
+  text = text.replace(/const chromiumHashVer.*/, declaration);
+  fs.writeFileSync(path, text);
+  console.log(`${path} updated.`);
 }
 
 async function updateSoftNavViewer() {
@@ -43,7 +46,9 @@ async function updateSoftNavViewer() {
   console.log(`Fetching softnav-viewer.html from ${url}`);
   let text = await fetch(url).then(r => r.text());
   // In the future this snippet shoould probably be its own html file or some something.
-  text = text.replace('</body>', `
+  text = text.replace(
+    '</body>',
+    `
 <!-- trace.cafe additions below -->
 <script>
 window.addEventListener('message', ({ data, source, origin }) => {
@@ -62,21 +67,20 @@ window.addEventListener('message', ({ data, source, origin }) => {
 </script>
 <style> drop-target { display: none; } </style>
 </body></html>
-`);
+`
+  );
   fs.writeFileSync('./src/third_party/softnav-viewer.html', text);
   console.log('softnav-viewer.html updated.\n');
 }
 
-const singleEncodedDemoTraceUrl = encodeURIComponent('https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces%2Fgh-chained.fetches-anno.gz?alt=media&token=cd9a083b-8bfc-48f8-af13-9cf22c80a970')
-
+const singleEncodedDemoTraceUrl = encodeURIComponent(
+  'https://firebasestorage.googleapis.com/v0/b/tum-permatraces2/o/permatraces%2Fgh-chained.fetches-anno.gz?alt=media&token=cd9a083b-8bfc-48f8-af13-9cf22c80a970'
+);
 
 export const appspotUrl = hash =>
   `https://chrome-devtools-frontend.appspot.com/serve_rev/@${hash}/trace_app.html?panel=timeline&traceURL=${singleEncodedDemoTraceUrl}`;
-
-
 
 // CLI direct invocation?
 if (import.meta.url.endsWith(process?.argv[1])) {
   main();
 }
-

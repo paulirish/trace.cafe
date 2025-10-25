@@ -70,7 +70,7 @@ async function displayTrace(assetUrl, fileData) {
   /**
    * `loadTimelineFromURL` required double-encoded values, but we fixed that when introducing its replacement `traceURL`. :)
    * This means the normal `searchParam.set('traceURL', actualURL)` will work fine, but there's a small wrinkle for trace.cafe's firebase URLs…
-   * 
+   *
    * Our Firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset. (essentially the folder path is treated as part of the filename)
    * A tad more explictly:
    * ```js
@@ -298,5 +298,6 @@ document.body.addEventListener('paste', async e => {
 
   const traceText = pastedText;
   const file = new File([traceText], 'pasted-trace.json', {type: 'application/json'});
-  upload(file).catch(err => console.error('Error uploading pasted trace:', err.message));
+  // upload(file).catch(err => console.error('Error uploading pasted trace:', err.message));
+  displayTrace('pasted content', {name: 'pasted', bucket: '', fullPath: '', generation: '', metageneration: '', size: traceText.length, timeCreated: new Date().toISOString(), updated: new Date().toISOString(), downloadTokens: undefined})
 });

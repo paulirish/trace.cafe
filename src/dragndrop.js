@@ -1,8 +1,25 @@
 import {upload} from './storage';
 
 // Thx Lighthouse viewer drag-and-drop.js
-function setupDragAndDrop() {
+function setupDragAndDrop(callback) {
   let dragging = false;
+
+  /**
+   * @param {FileList} fileList
+   */
+  function handleDrop(fileList) {
+    if (fileList.length === 0) return;
+    if (fileList.length !== 1) {
+      throw console.error('Can only upload 1 trace at a time');
+    }
+    const fileItem = fileList.item(0);
+    console.log('Received file: ', fileItem.name);
+    if (callback) {
+      callback(fileItem);
+    } else {
+      upload(fileItem);
+    }
+  }
 
   // Setup drag n drop
   const dropArea = $('body');
@@ -45,22 +62,11 @@ function setupDragAndDrop() {
     dropArea.classList.remove('dropping');
     dragging = false;
   }
+
+  return {handleDrop};
 }
 
-/**
- * @param {FileList} fileList
- */
-function handleDrop(fileList) {
-  if (fileList.length === 0) return;
-  if (fileList.length !== 1) {
-    throw console.error('Can only upload 1 trace at a time');
-  }
-  const fileItem = fileList.item(0);
-  console.log('Received file: ', fileItem.name);
-  upload(fileItem);
-}
 
 export {
   setupDragAndDrop,
-  handleDrop,
 };

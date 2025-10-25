@@ -1,4 +1,4 @@
-import {setupDragAndDrop, handleDrop} from './dragndrop';
+import {setupDragAndDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
@@ -236,6 +236,7 @@ function setupFileInput() {
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
+    const {handleDrop} = setupDragAndDrop();
     handleDrop(e.target?.files);
   });
 }

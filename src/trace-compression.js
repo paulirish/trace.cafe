@@ -18,7 +18,7 @@ function codec(buffer, codecStream) {
 }
 
 /**
- * @param {string} str 
+ * @param {string} str
  */
 async function gzipString(str) {
   /** @param {number} num */
@@ -37,7 +37,7 @@ async function gzipString(str) {
 }
 
 /**
- * @param {ArrayBuffer} gzippedBuffer 
+ * @param {ArrayBuffer} gzippedBuffer
  */
 async function decodeGzipBufferToString(gzippedBuffer) {
   console.log('Decompressing gzip data…');
@@ -85,6 +85,34 @@ async function compressTrace(fileItem) {
 }
 
 /**
+ * Decodes a buffer to a string. Handles gzip compressed buffers.
+ * @param {ArrayBuffer} buffer
+ * @returns {Promise<string>}
+ */
+async function arrayBufferToString(buffer) {
+  const buf = new Uint8Array(buffer);
+  // https://www.rfc-editor.org/rfc/rfc1952#page-6
+  const isGzip = buf.length >= 3 && buf[0] === 0x1f && buf[1] === 0x8b && buf[2] === 0x08;
+
+  if (!isGzip) {
+    return new TextDecoder('utf-8').decode(buffer);
+  }
+
+  const decompressionStream = new DecompressionStream('gzip');
+  const readable = new ReadableStream({
+    start(controller) {
+      controller.enqueue(buffer);
+      controller.close();
+    },
+  });
+  const decompressedReadable = readable.pipeThrough(decompressionStream);
+  // A response is a convenient way to get an ArrayBuffer from a ReadableStream.
+  const decompressedBuffer = await new Response(decompressedReadable).arrayBuffer();
+  return new TextDecoder('utf-8').decode(decompressedBuffer);
+}
+
+
+/**
  * Old OPP traces were just `traceEvent[]`, but RPP/NPP/traceviewer traces are `{traceEvents, metadata}`
  * Just basic clientside validation.
  * @param {string} textData
@@ -105,4 +133,4 @@ async function verifyItLooksLikeATrace(textData) {
   throw console.error('Unexpected gzip trace file');
 }
 
-export {compressTrace};
+export {compressTrace, arrayBufferToString};

@@ -1,4 +1,5 @@
-import {setupDragAndDrop} from './dragndrop';
+import {setupDragAndDrop} from './dragndrop.js';
+import {arrayBufferToString} from './trace-compression.js';
 
 const chromiumHashVer = ['afb989e0e1cd54ffc8edd6b4865e32aef9ae3245', '143.0.7494.0'];
 const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
@@ -59,7 +60,8 @@ async function displayTrace(traceContent) {
  * @param {File} file
  */
 async function handleFile(file) {
-  const traceContent = await file.text();
+  const traceBuffer = await file.arrayBuffer();
+  const traceContent = await arrayBufferToString(traceBuffer);
   displayTrace(traceContent);
 }
 

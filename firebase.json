@@ -28,6 +28,14 @@
         "destination": "/softnav-viewer.html"
       },
       {
+        "source": "**/rumtrace-convert.js",
+        "destination": "/rumtrace-convert.js"
+      },
+      {
+        "source": "**/rumtrace-convert.js.map",
+        "destination": "/rumtrace-convert.js.map"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

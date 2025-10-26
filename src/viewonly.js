@@ -35,6 +35,13 @@ const iframeReady = new Promise(resolve => {
 async function displayTrace(traceContent) {
   document.documentElement.className = 'state--viewing';
 
+  let parsed = JSON.parse(traceContent);
+  if (Array.isArray(parsed.entries)) {
+    // It's a rum-trace. Convert!
+    parsed = RumTraceConvert.performanceEntriesToTraceEvents(parsed);
+  }
+  const traceJson = JSON.stringify(parsed);
+
   const iframe = $('iframe#ifr-dt');
   iframe.src = `${devtoolsBaseUrl}`; // ?loadTimelineFromURL=data:
 
@@ -44,8 +51,9 @@ async function displayTrace(traceContent) {
   await wait(1500);
 
   // Thanks Sam! https://crrev.com/c/7076796 "Add targetOrigin parameter to postMessage in RehydratingConnection (7076796)"
-  iframe.contentWindow?.postMessage({type: 'REHYDRATING_TRACE_FILE', traceJson: traceContent}, '*');
+  iframe.contentWindow?.postMessage({type: 'REHYDRATING_TRACE_FILE', traceJson}, '*');
 }
+
 
 /**
  * @param {File} file

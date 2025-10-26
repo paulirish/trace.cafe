@@ -137,7 +137,7 @@ export default [{
     html({
       template: viewonlyTemplate,
       fileName: 'viewonly.html',
-      title: 'trace.cafe viewer'
+      title: 'vanilla view trace'
     }),
   ],
 }];

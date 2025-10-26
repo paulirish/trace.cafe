@@ -3,6 +3,9 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
 import terser from '@rollup/plugin-terser';
 import {readFileSync, writeFileSync} from 'node:fs';
+import {cpSync, existsSync} from 'node:fs';
+import {join, dirname} from 'node:path';
+import {homedir} from 'node:os';
 
 
 // stolen from https://github.com/rollup/plugins/blob/master/packages/html/src/index.ts
@@ -96,7 +99,7 @@ ${code}
   }),
   {
     // For bundlebuddy
-    buildEnd() {
+    generateBundle(options) {
       const deps = [];
       for (const id of this.getModuleIds()) {
         const m = this.getModuleInfo(id);
@@ -106,10 +109,34 @@ ${code}
           }
         }
       }
-      writeFileSync('dist/graph.json', JSON.stringify(deps, null, 2));
+      if (!options.file) return;
+      const graphFile = options.file.replace(/\.js$/, '.graph.json');
+      writeFileSync(graphFile, JSON.stringify(deps, null, 2));
     },
   }
 ];
+
+const copyToFieldTracePlugin = {
+  name: 'copy-to-fieldtrace',
+  async writeBundle(options) {
+    const destDir = join(homedir(), 'code', 'fieldtrace', 'site');
+    if (!options.file || !existsSync(destDir)) return;
+
+    const outputDir = dirname(options.file);
+    const filesToCopy = ['viewonly.html', 'viewonly.js', 'viewonly.js.map'];
+
+    for (const file of filesToCopy) {
+      const source = join(outputDir, file);
+      const destination = join(destDir, file);
+      try {
+        cpSync(source, destination, {force: true});
+      } catch (err) {
+         err.code !== 'ENOENT' && console.error(`Error copying ${source}:`, err);
+      }
+    }
+    console.log('Copied dist/viewonly* to fieldtrace')
+  },
+};
 
 export default [{
   input: 'src/app.js',
@@ -139,5 +166,6 @@ export default [{
       fileName: 'viewonly.html',
       title: 'vanilla view trace'
     }),
+    copyToFieldTracePlugin,
   ],
 }];

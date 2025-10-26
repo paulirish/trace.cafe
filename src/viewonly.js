@@ -38,8 +38,8 @@ async function displayTrace(traceContent) {
 
   let parsed = JSON.parse(traceContent);
   if (Array.isArray(parsed.entries)) {
-    // It's a rum-trace. Convert!
-    parsed = RumTraceConvert.performanceEntriesToTraceEvents(parsed);
+    // It's a fieldtrace. Convert!
+    parsed = FieldTrace.toTrace(parsed);
   }
   const traceJson = JSON.stringify(parsed);
 

@@ -91,4 +91,28 @@ document.body.addEventListener('paste', async e => {
   displayTrace(pastedText);
 });
 
+// If anyone opens trace.cafe as a popup, inform them
+window.addEventListener('load', _ => {
+  window.opener?.postMessage('CAFEOPEN', '*');
+});
 
+// Allow receiving traces over postMessage
+window.addEventListener('message', async e => {
+  const msg = e.data.msg ?? e.data;
+  const data = e.data.data;
+  console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
+
+  switch (msg) {
+    case 'PING':
+      e.source?.postMessage('PONG', {targetOrigin: e.origin});
+      break;
+    case 'VIEW':
+      await displayTrace(data);
+      e.source?.postMessage({msg: 'UPLOADCOMPLETE'}, {targetOrigin: e.origin});
+      break;
+    case 'UPLOADCOMPLETE-softnav':
+      console.log('Trace sent to softnav viewer!')
+      break;
+    default:
+  }
+});

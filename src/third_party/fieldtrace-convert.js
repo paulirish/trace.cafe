@@ -19676,7 +19676,7 @@ ${message}` : ""}`);
       currentTrace.push(scriptCompiled, rundownScript, rundownScriptSource);
     }
     const scriptSrcById = {};
-    sources.forEach((source, index) => {
+    sources.forEach((source) => {
       scriptSrcById[source.url] = source.scriptId;
     });
     currentTrace.forEach((evt) => {
@@ -19908,44 +19908,46 @@ ${message}` : ""}`);
         }
       }
     );
-    entry.domContentLoadedEventEnd && currentTrace.push(
-      /** @type {Types.Events.MarkDOMContent} */
-      {
-        ...baseEvt,
-        name: "MarkDOMContent",
-        ph: Phase2.INSTANT,
-        ts: toMicrosec(entry.domContentLoadedEventEnd),
-        args: {
-          data: {
-            frame: frameData.frame,
-            isMainFrame: true,
-            // TODO(AD) - probably OK until iframes can opt into their parent's perf timeline but will need reviewing then
-            isOutermostMainFrame: true,
-            page: frameData.frame
-          }
-        },
-        s: "t"
-      }
-    );
-    entry.loadEventEnd && currentTrace.push(
-      /** @type {Types.Events.MarkLoad} */
-      {
-        ...baseEvt,
-        name: "MarkLoad",
-        ph: Phase2.INSTANT,
-        ts: toMicrosec(entry.loadEventEnd),
-        args: {
-          data: {
-            frame: frameData.frame,
-            isMainFrame: true,
-            // TODO(AD) - probably OK until iframes can opt into their parent's perf timeline but will need reviewing then // TODO(AD) ???s
-            isOutermostMainFrame: true,
-            page: frameData.frame
-          }
-        },
-        s: "t"
-      }
-    );
+    if (entry.domContentLoadedEventEnd)
+      currentTrace.push(
+        /** @type {Types.Events.MarkDOMContent} */
+        {
+          ...baseEvt,
+          name: "MarkDOMContent",
+          ph: Phase2.INSTANT,
+          ts: toMicrosec(entry.domContentLoadedEventEnd),
+          args: {
+            data: {
+              frame: frameData.frame,
+              isMainFrame: true,
+              // TODO(AD) - probably OK until iframes can opt into their parent's perf timeline but will need reviewing then
+              isOutermostMainFrame: true,
+              page: frameData.frame
+            }
+          },
+          s: "t"
+        }
+      );
+    if (entry.loadEventEnd)
+      currentTrace.push(
+        /** @type {Types.Events.MarkLoad} */
+        {
+          ...baseEvt,
+          name: "MarkLoad",
+          ph: Phase2.INSTANT,
+          ts: toMicrosec(entry.loadEventEnd),
+          args: {
+            data: {
+              frame: frameData.frame,
+              isMainFrame: true,
+              // TODO(AD) - probably OK until iframes can opt into their parent's perf timeline but will need reviewing then // TODO(AD) ???s
+              isOutermostMainFrame: true,
+              page: frameData.frame
+            }
+          },
+          s: "t"
+        }
+      );
   }
   function craftLongTaskEvent(entry) {
     currentTrace.push(innerHandleLongTask(entry));

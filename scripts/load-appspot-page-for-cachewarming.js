@@ -43,7 +43,7 @@ export async function attemptLoad(hash) {
       if (url === 'https://trace.cafe/t/demo') {
         break;
       }
- 
+
       // Now go into Sources panel via insights.
       const showSidebarButton = page.getByRole('button', { name: 'Show sidebar' });
       if (await showSidebarButton.isVisible({timeout: 100})) {
@@ -51,20 +51,20 @@ export async function attemptLoad(hash) {
       }
       await page.getByRole('button', { name: 'View details for Optimize DOM' }).click();
       console.log('    ✅ Clicked "View details for Optimize DOM"!');
-      
+
       await frame.getByText(/Style recalculation/).first().click();
       console.log('    ✅ Clicked "Style recalculation" in insight!');
 
-      await page.getByRole('link', { name: 'use-code-line-observer.ts:210:' }).click();
-      console.log('    ✅ Clicked line-observer.ts source link!');
+      await page.getByRole('link', { name: 'remove-child-patch.ts:10:38' }).click();
+      console.log('    ✅ Clicked remove-child-patch.ts source link!');
       console.log('    ℹ️ Waiting for source code to load');
       await page.getByRole('button', { name: 'More options' }).click();
       await page.getByRole('menuitem', { name: 'Group by Authored/Deployed,' }).click();
 
-      
+
       const text = await page.locator('.cm-content').textContent();
 
-      if (!text.includes('previousY: number,') || !text.includes('lineIsAboveBottomOfScreen')) {
+      if (!text.includes('applyRemoveChildPatch') || !text.includes('instanceof Error')) {
         throw new Error('Code content does not match expected content.', text);
       }
       console.log('    ✅✅✅✅✅ Source code looks good!');

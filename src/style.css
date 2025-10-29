@@ -101,7 +101,7 @@ iframe#ifr-softnav.visible {
 
 .state--viewing details {
     border-bottom: 1px solid var(--sys-color-divider);
-    width: calc(100% - 64px);
+    width: 100%;
     color: rgb(51, 51, 51);
     position: fixed;
     top: 0;

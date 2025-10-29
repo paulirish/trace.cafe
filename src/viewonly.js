@@ -30,7 +30,7 @@ const iframeReady = new Promise(resolve => {
 
 
 /**
- * @returns {{dialog: HTMLDialogElement, progress: HTMLProgressElement}}
+ * @returns {{dialog: HTMLDialogElement}}
  */
 function createProgressDialog() {
   const dialog = document.createElement('dialog');
@@ -46,32 +46,70 @@ function createProgressDialog() {
     color: light-dark(#333b3c, #efefec);
     border-radius: 8px;
     z-index: 1000;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   `;
 
-  const p = document.createElement('p');
-  p.textContent = 'Status: Reticulating trace splines';
+  /**
+   * @param {string} labelText
+   * @returns {{container: HTMLDivElement, progress: HTMLProgressElement}}
+   */
+  function createProgressItem(labelText) {
+    const container = document.createElement('div');
+    container.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: right;
+    `;
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    label.style.width = '150px';
 
-  const progress = document.createElement('progress');
-  progress.id = 'trace-progress';
-  progress.value = 0;
-  progress.max = 100;
-  progress.style.width = '300px';
+    const progress = document.createElement('progress');
+    progress.value = 0;
+    progress.max = 100;
+    progress.style.width = '150px';
 
-  dialog.appendChild(p);
-  dialog.appendChild(progress);
-
-  const animationDuration = 5_000;
-  const startTime = performance.now();
-
-  function animateProgress() {
-    const elapsed = performance.now() - startTime;
-    const progressPct = Math.min(elapsed / animationDuration, 1);
-    progress.value = progressPct * 100;
-    if (progressPct < 1) requestAnimationFrame(animateProgress);
+    container.appendChild(label);
+    container.appendChild(progress);
+    dialog.appendChild(container);
+    return {container, progress};
   }
-  requestAnimationFrame(animateProgress);
 
-  return {dialog, progress};
+  const {progress: convertingProgress} = createProgressItem('Converting');
+  const {progress: splinesProgress} = createProgressItem('Reticulating trace splines');
+  const animationDuration = 2_000;
+
+  /**
+   * @param {HTMLProgressElement} progressEl
+   * @returns {Promise<void>}
+   */
+  function animateProgress(progressEl) {
+    return new Promise(resolve => {
+      const startTime = performance.now();
+      function frame() {
+        const progressPct = Math.min((performance.now() - startTime) / animationDuration, 1);
+        progressEl.value = progressPct * 100;
+        if (progressPct < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          resolve(void 0);
+        }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  // Chain the animations
+  animateProgress(convertingProgress).then(() => {
+    animateProgress(splinesProgress);
+  });
+
+
+  return {dialog};
 }
 
 
@@ -104,9 +142,8 @@ async function displayTrace(traceContent) {
 
   await new Promise(resolve => {iframe.onload = resolve});
   await iframeReady;
-
-  // const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
-  // await wait(1500);
+  // just a lil bit more.
+  await new Promise(resolve => setTimeout(resolve, 500));
 
   // Close and remove the progress dialog
   dialog.close();

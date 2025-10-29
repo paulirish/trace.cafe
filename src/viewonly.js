@@ -30,44 +30,62 @@ const iframeReady = new Promise(resolve => {
 
 
 /**
+ * @returns {{dialog: HTMLDialogElement, progress: HTMLProgressElement}}
+ */
+function createProgressDialog() {
+  const dialog = document.createElement('dialog');
+  dialog.id = 'progress-dialog';
+  dialog.style.cssText = `
+    color-scheme: light dark;
+    inset: 0.5rem;
+    margin: auto;
+    position: fixed;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: light-dark(#efefec, #333b3c);
+    color: light-dark(#333b3c, #efefec);
+    border-radius: 8px;
+    z-index: 1000;
+  `;
+
+  const p = document.createElement('p');
+  p.textContent = 'Status: Reticulating trace splines';
+
+  const progress = document.createElement('progress');
+  progress.id = 'trace-progress';
+  progress.value = 0;
+  progress.max = 100;
+  progress.style.width = '300px';
+
+  dialog.appendChild(p);
+  dialog.appendChild(progress);
+
+  const animationDuration = 5_000;
+  const startTime = performance.now();
+
+  function animateProgress() {
+    const elapsed = performance.now() - startTime;
+    const progressPct = Math.min(elapsed / animationDuration, 1);
+    progress.value = progressPct * 100;
+    if (progressPct < 1) requestAnimationFrame(animateProgress);
+  }
+  requestAnimationFrame(animateProgress);
+
+  return {dialog, progress};
+}
+
+
+/**
  * @param {string} traceContent
  */
 async function displayTrace(traceContent) {
   document.documentElement.className = 'state--viewing';
 
   // Create and show the progress dialog
-  const dialog = document.createElement('dialog');
-  dialog.id = 'progress-dialog';
-  dialog.style.cssText = `
-    inset: 0.5rem;
-    margin: auto;
-    position: fixed;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    z-index: 1000;
-  `;
-  dialog.innerHTML = `
-    <p>Status: Reticulating trace splines</p>
-    <progress id="trace-progress" value="0" max="100" style="width: 300px;"></progress>
-  `;
+  const {dialog} = createProgressDialog();
   document.body.appendChild(dialog);
   dialog.showModal();
 
-  const progressBar = dialog.querySelector('#trace-progress');
-  const animationDuration = 15000; // ms
-  const startTime = performance.now();
-
-  function animateProgress() {
-    const elapsed = performance.now() - startTime;
-    const progress = Math.min(elapsed / animationDuration, 1);
-    progressBar.value = progress * 100;
-
-    if (progress < 1) {
-      requestAnimationFrame(animateProgress);
-    }
-  }
-  requestAnimationFrame(animateProgress);
 
   let parsed = JSON.parse(traceContent);
   if (Array.isArray(parsed.entries)) {

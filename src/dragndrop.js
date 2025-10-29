@@ -1,6 +1,6 @@
 // Thx Lighthouse viewer drag-and-drop.js
 function setupDragAndDrop(callback) {
-  let dragging = false;
+  let dragCounter = 0;
 
   /**
    * @param {FileList} fileList
@@ -35,28 +35,31 @@ function setupDragAndDrop(callback) {
   dropArea.addEventListener('drop', event => {
     event.stopPropagation();
     event.preventDefault();
+    dragCounter = 0;
     resetDraggingUI();
     const fileList = event.dataTransfer.files;
     handleDrop(fileList);
   });
 
-  // The mouseleave event is more reliable than dragleave when the user drops
-  // the file outside the window.
-  dropArea.addEventListener('mouseleave', _ => {
-    if (!dragging) return;
-    resetDraggingUI();
-  });
   dropArea.addEventListener('dragenter', event => {
     // Don't trigger if someone (me) accidentally drags the demo link.
     if (event.dataTransfer?.types?.includes('Files')) {
-      dropArea.classList.add('dropping');
-      dragging = true;
+      if (dragCounter === 0) {
+        dropArea.classList.add('dropping');
+      }
+      dragCounter++;
+    }
+  });
+
+  dropArea.addEventListener('dragleave', () => {
+    dragCounter--;
+    if (dragCounter === 0) {
+      resetDraggingUI();
     }
   });
 
   function resetDraggingUI() {
     dropArea.classList.remove('dropping');
-    dragging = false;
   }
 
   return {handleDrop};

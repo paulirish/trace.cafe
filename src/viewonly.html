@@ -1,10 +1,11 @@
 
 <main>
   <div class="landing-ui">
-    <h1><span class="emoji">🍦</span> vanilla view trace</h1>
+    <h1><span class="emoji">🌱</span> view a fieldtrace</h1>
     <ol class="intro-steps">
-      <li>Drag-and-drop a trace (or <button id="selectfile">select a file</button>)
-      <li>We'll postMessage it to the DevTools panel.
+      <li>Drag-and-drop a .fieldtrace, <button id="selectfile">select a file</button>, or paste the JSON.</li>
+      <li>We'll convert it to a proper trace on the fly
+      <li>Then we'll render in it DevTools Perf panel</li>
     </ol>
   </div>
 </main>
@@ -13,3 +14,4 @@
 <iframe id="ifr-dt" title="DevTools Panel"></iframe>
 
 <script src="./fieldtrace-convert.js"></script>
+

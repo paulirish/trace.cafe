@@ -68,10 +68,10 @@ ${code}
 
   return `
 <!doctype html>
-<html lang=en class=state--landing>
+<html lang=en class="state--landing" viewonly>
   <head>
     <title>${title}</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
     <style>
       ${readFileSync('./src/style.css', 'utf-8')}
     </style>
@@ -85,18 +85,6 @@ ${code}
 
  const plugins = [
   nodeResolve({browser: true}),
-  // With this, we dont minify when building via watch.
-  !process.env.INWATCHBUILD && terser({
-    ecma: 2021,
-    output: {
-      comments: (node, comment) => {
-        const text = comment.value;
-        if (text.includes('The Lighthouse Authors') && comment.line > 1) return false;
-        return /@ts-nocheck - Prevent tsc|@preserve|@license|@cc_on|^!/i.test(text);
-      },
-      max_line_len: 1000,
-    },
-  }),
   {
     // For bundlebuddy
     generateBundle(options) {
@@ -147,6 +135,19 @@ export default [{
   },
   plugins: [
     ...plugins,
+    // With this, we dont minify when building via watch.
+    !process.env.INWATCHBUILD &&
+      terser({
+        ecma: 2021,
+        output: {
+          comments: (node, comment) => {
+            const text = comment.value;
+            if (text.includes('The Lighthouse Authors') && comment.line > 1) return false;
+            return /@ts-nocheck - Prevent tsc|@preserve|@license|@cc_on|^!/i.test(text);
+          },
+          max_line_len: 1000,
+        },
+      }),
     html({
       template,
       title: 'trace.cafe'
@@ -164,7 +165,7 @@ export default [{
     html({
       template: viewonlyTemplate,
       fileName: 'viewonly.html',
-      title: 'vanilla view trace'
+      title: 'fieldtrace view'
     }),
     copyToFieldTracePlugin,
   ],

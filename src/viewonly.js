@@ -38,6 +38,11 @@ async function displayTrace(traceContent) {
 
   let parsed = JSON.parse(traceContent);
   if (Array.isArray(parsed.entries)) {
+    const mainUrl = parsed.entries.filter(e => e.entryType === 'navigation')?.at(-1).name;
+    const origin = URL.parse(mainUrl)?.origin?.replace('https://','').replace('http://','').replace('www.','');
+    if (origin) {
+      document.title = `${origin} | fieldtrace`;
+    }
     // It's a fieldtrace. Convert!
     parsed = FieldTrace.toTrace(parsed);
   }

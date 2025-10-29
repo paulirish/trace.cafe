@@ -493,6 +493,7 @@ textarea {
   margin-bottom: 18px;
 }
 
-html[viewonly] .landing-ui {
-    border-top-width: 1px;
+html[viewonly] {
+  &.state--viewing iframe#ifr-dt { padding-top:0;}
+  .landing-ui { border-top-width: 1px;}
 }

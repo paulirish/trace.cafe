@@ -22,9 +22,8 @@ globalThis.$ = function (query, context) {
 
 const iframeReady = new Promise(resolve => {
   window.addEventListener('message', e => {
-    if (e.data === 'REHYDRATING_IFRAME_READY') {
-      console.log('iframe is ready');
-      resolve();
+    if (e.data.type === 'REHYDRATING_IFRAME_READY') {
+      resolve(void 0);
     }
   });
 });
@@ -35,6 +34,40 @@ const iframeReady = new Promise(resolve => {
  */
 async function displayTrace(traceContent) {
   document.documentElement.className = 'state--viewing';
+
+  // Create and show the progress dialog
+  const dialog = document.createElement('dialog');
+  dialog.id = 'progress-dialog';
+  dialog.style.cssText = `
+    inset: 0.5rem;
+    margin: auto;
+    position: fixed;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    z-index: 1000;
+  `;
+  dialog.innerHTML = `
+    <p>Status: Reticulating trace splines</p>
+    <progress id="trace-progress" value="0" max="100" style="width: 300px;"></progress>
+  `;
+  document.body.appendChild(dialog);
+  dialog.showModal();
+
+  const progressBar = dialog.querySelector('#trace-progress');
+  const animationDuration = 15000; // ms
+  const startTime = performance.now();
+
+  function animateProgress() {
+    const elapsed = performance.now() - startTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
+    progressBar.value = progress * 100;
+
+    if (progress < 1) {
+      requestAnimationFrame(animateProgress);
+    }
+  }
+  requestAnimationFrame(animateProgress);
 
   let parsed = JSON.parse(traceContent);
   if (Array.isArray(parsed.entries)) {
@@ -51,10 +84,15 @@ async function displayTrace(traceContent) {
   const iframe = $('iframe#ifr-dt');
   iframe.src = `${devtoolsBaseUrl}`; // ?loadTimelineFromURL=data:
 
-  // await new Promise(resolve => {iframe.onload = resolve});
-  // await iframeReady;
-  const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
-  await wait(1500);
+  await new Promise(resolve => {iframe.onload = resolve});
+  await iframeReady;
+
+  // const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
+  // await wait(1500);
+
+  // Close and remove the progress dialog
+  dialog.close();
+  dialog.remove();
 
   // Thanks Sam! https://crrev.com/c/7076796 "Add targetOrigin parameter to postMessage in RehydratingConnection (7076796)"
   iframe.contentWindow?.postMessage({type: 'REHYDRATING_TRACE_FILE', traceJson}, '*');

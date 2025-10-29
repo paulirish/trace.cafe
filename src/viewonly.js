@@ -127,6 +127,7 @@ async function displayTrace(traceContent) {
 
   let parsed = JSON.parse(traceContent);
   if (Array.isArray(parsed.entries)) {
+    console.log('Received fieldtrace: ', parsed);
     const mainUrl = parsed.entries.filter(e => e.entryType === 'navigation')?.at(-1).name;
     const origin = URL.parse(mainUrl)?.origin?.replace('https://','').replace('http://','').replace('www.','');
     if (origin) {
@@ -134,6 +135,9 @@ async function displayTrace(traceContent) {
     }
     // It's a fieldtrace. Convert!
     parsed = FieldTrace.toTrace(parsed);
+    console.log('Converted to trace format', parsed);
+  } else {
+    console.log('Already in trace format:', parsed);
   }
   const traceJson = JSON.stringify(parsed);
 
@@ -154,6 +158,14 @@ async function displayTrace(traceContent) {
 }
 
 
+async function readParams() {
+  const url = URL.parse(location.href);
+  const fieldTrace = url?.searchParams.get('fieldtrace');
+  if (!fieldTrace) return;
+
+  await fetch(fieldTrace).then(r => r.text()).then(displayTrace);
+}
+
 /**
  * @param {File} file
  */
@@ -162,6 +174,11 @@ async function handleFile(file) {
   const traceContent = await arrayBufferToString(traceBuffer);
   displayTrace(traceContent);
 }
+
+$('.toolbar-button--home').addEventListener('click', e => {
+  e.preventDefault();
+  location.href = '/view/';
+});
 
 function setupFileInput() {
   const fileinput = $('input#fileinput');
@@ -177,8 +194,9 @@ function setupFileInput() {
 }
 
 setupDragAndDrop(handleFile);
-
+readParams(); // Handle permalinks and load stuff
 setupFileInput();
+
 
 // Handle pasting of trace file contents.
 document.body.addEventListener('paste', async e => {

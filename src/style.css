@@ -496,4 +496,15 @@ textarea {
 html[viewonly] {
   &.state--viewing iframe#ifr-dt { padding-top:0;}
   .landing-ui { border-top-width: 1px;}
+  header button {
+    display: none;
+    z-index: 10;
+    background-color: light-dark(oklch(0.3 0.09 244.25), lch(91.5 7.52 260.4));
+    position: absolute;
+    right: 130px;
+    top: 2px;
+  }
+  &.state--viewing header button {
+    display: block;
+  }
 }

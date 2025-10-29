@@ -107,21 +107,13 @@ ${code}
 const copyToFieldTracePlugin = {
   name: 'copy-to-fieldtrace',
   async writeBundle(options) {
-    const destDir = join(homedir(), 'code', 'fieldtrace', 'site');
+    const destDir = join(homedir(), 'code', 'fieldtrace', 'dist', 'site', 'view');
     if (!options.file || !existsSync(destDir)) return;
 
     const outputDir = dirname(options.file);
-    const filesToCopy = ['viewonly.html', 'viewonly.js', 'viewonly.js.map'];
-
-    for (const file of filesToCopy) {
-      const source = join(outputDir, file);
-      const destination = join(destDir, file);
-      try {
-        cpSync(source, destination, {force: true});
-      } catch (err) {
-         err.code !== 'ENOENT' && console.error(`Error copying ${source}:`, err);
-      }
-    }
+    cpSync(join(outputDir, 'viewonly.html'), join(destDir, 'index.html'), {force: true});
+    cpSync(join(outputDir, 'viewonly.js'), join(destDir, 'viewonly.js'), {force: true});
+    cpSync(join(outputDir, 'viewonly.js.map'), join(destDir, 'viewonly.js.map'), {force: true});
     console.log('Copied dist/viewonly* to fieldtrace')
   },
 };

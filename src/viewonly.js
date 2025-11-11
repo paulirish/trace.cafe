@@ -2,7 +2,7 @@ import {setupDragAndDrop} from './dragndrop.js';
 import {arrayBufferToString} from './trace-compression.js';
 
 const chromiumHashVer = ['afb989e0e1cd54ffc8edd6b4865e32aef9ae3245', '143.0.7494.0'];
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
+const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html?panel=timeline`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.

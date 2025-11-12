@@ -167,10 +167,16 @@ async function readParams() {
 }
 
 /**
- * @param {File} file
+ * @param {FileList|null} fileList
  */
-async function handleFile(file) {
-  const traceBuffer = await file.arrayBuffer();
+async function handleFile(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  if (fileList.length !== 1) {
+    throw console.error('Can only upload 1 trace at a time');
+  }
+  const fileItem = fileList[0];
+
+  const traceBuffer = await fileItem.arrayBuffer();
   const traceContent = await arrayBufferToString(traceBuffer);
   displayTrace(traceContent);
 }
@@ -187,9 +193,8 @@ function setupFileInput() {
     fileinput.showPicker();
   });
   fileinput.addEventListener('change', async e => {
-    const files = e.target?.files;
-    if (!files) return;
-    handleFile(files[0]);
+    const files = fileinput.files;
+    handleFile(files);
   });
 }
 

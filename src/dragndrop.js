@@ -2,21 +2,6 @@
 function setupDragAndDrop(callback) {
   let dragCounter = 0;
 
-  /**
-   * @param {FileList} fileList
-   */
-  function handleDrop(fileList) {
-    if (fileList.length === 0) return;
-    if (fileList.length !== 1) {
-      throw console.error('Can only upload 1 trace at a time');
-    }
-    const fileItem = fileList.item(0);
-    console.log('Received file: ', fileItem.name);
-    if (callback) {
-      callback(fileItem);
-    }
-  }
-
   // Setup drag n drop
   const dropArea = $('body');
   dropArea.addEventListener('dragover', event => {
@@ -37,8 +22,8 @@ function setupDragAndDrop(callback) {
     event.preventDefault();
     dragCounter = 0;
     resetDraggingUI();
-    const fileList = event.dataTransfer.files;
-    handleDrop(fileList);
+    const fileList = event.dataTransfer?.files;
+    callback(fileList);
   });
 
   dropArea.addEventListener('dragenter', event => {
@@ -62,9 +47,7 @@ function setupDragAndDrop(callback) {
     dropArea.classList.remove('dropping');
   }
 
-  return {handleDrop};
 }
-
 
 export {
   setupDragAndDrop,

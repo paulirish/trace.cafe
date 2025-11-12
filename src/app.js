@@ -236,9 +236,19 @@ function setupFileInput() {
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
-    const {handleDrop} = setupDragAndDrop(upload);
-    handleDrop(e.target?.files);
+    validateAndUpload(fileinput.files);
   });
+}
+
+/** @param {FileList|null} fileList */
+function validateAndUpload(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  if (fileList.length !== 1) {
+    throw console.error('Can only upload 1 trace at a time');
+  }
+  const fileItem = fileList[0];
+  console.log('Received file: ', fileItem.name);
+  return upload(fileItem);
 }
 
 /**
@@ -262,7 +272,7 @@ async function downloadTrace(assetUrl, fileData) {
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
-setupDragAndDrop(upload);
+setupDragAndDrop(validateAndUpload));
 setupFileInput();
 
 // Allow receiving traces over postMessage
@@ -276,7 +286,7 @@ window.addEventListener('message', async e => {
       e.source?.postMessage('PONG', e.origin);
       break;
     case 'TRACE':
-      const traceViewUrl = await upload(data);
+      const traceViewUrl = await validateAndUpload(data);
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
     case 'UPLOADCOMPLETE-softnav':

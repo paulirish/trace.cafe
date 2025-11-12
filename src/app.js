@@ -20,7 +20,7 @@ const chromiumHashVer = ['513a8a918598025345c4188582f14155eca5fe87', '144.0.7524
 // - js_app                   ~= 131 req (6.5 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
 // - ~rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`~   removed in Oct 2025.
 // - trace_app                ~= 128 req (6.2 MB)
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
+const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
@@ -78,7 +78,7 @@ async function displayTrace(assetUrl, fileData) {
    * ```
    * That'll work.
    */
-  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
+  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl, location.href);
   hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
   hostedDtViewingTraceUrl.searchParams.set('panel', 'timeline');
 
@@ -273,7 +273,7 @@ async function downloadTrace(assetUrl, fileData) {
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
-setupDragAndDrop();
+setupDragAndDrop(validateAndUpload);
 setupFileInput();
 
 // Allow receiving traces over postMessage

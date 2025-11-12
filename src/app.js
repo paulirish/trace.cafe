@@ -1,4 +1,4 @@
-import {setupDragAndDrop, handleDrop} from './dragndrop';
+import {setupDragAndDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
@@ -70,7 +70,7 @@ async function displayTrace(assetUrl, fileData) {
   /**
    * `loadTimelineFromURL` required double-encoded values, but we fixed that when introducing its replacement `traceURL`. :)
    * This means the normal `searchParam.set('traceURL', actualURL)` will work fine, but there's a small wrinkle for trace.cafe's firebase URLs…
-   * 
+   *
    * Our Firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset. (essentially the folder path is treated as part of the filename)
    * A tad more explictly:
    * ```js
@@ -236,9 +236,21 @@ function setupFileInput() {
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
-    handleDrop(e.target?.files);
+    validateAndUpload(fileinput.files);
   });
 }
+
+/** @param {FileList|null} fileList */
+function validateAndUpload(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  if (fileList.length !== 1) {
+    throw console.error('Can only upload 1 trace at a time');
+  }
+  const fileItem = fileList[0];
+  console.log('Received file: ', fileItem.name);
+  return upload(fileItem);
+}
+
 
 /**
  * @param {string} assetUrl

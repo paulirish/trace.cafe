@@ -1,4 +1,4 @@
-import {setupDragAndDrop, handleDrop} from './dragndrop';
+import {setupDragAndDrop} from './dragndrop';
 import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
@@ -10,7 +10,7 @@ import {upload} from './storage';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['f2f8504343c8da40486cd22d97202589972ec515', '143.0.7497.0'];
+const chromiumHashVer = ['513a8a918598025345c4188582f14155eca5fe87', '144.0.7524.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -20,7 +20,7 @@ const chromiumHashVer = ['f2f8504343c8da40486cd22d97202589972ec515', '143.0.7497
 // - js_app                   ~= 131 req (6.5 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
 // - ~rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`~   removed in Oct 2025.
 // - trace_app                ~= 128 req (6.2 MB)
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
+const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
@@ -70,7 +70,7 @@ async function displayTrace(assetUrl, fileData) {
   /**
    * `loadTimelineFromURL` required double-encoded values, but we fixed that when introducing its replacement `traceURL`. :)
    * This means the normal `searchParam.set('traceURL', actualURL)` will work fine, but there's a small wrinkle for trace.cafe's firebase URLs…
-   * 
+   *
    * Our Firebase asset urls include a url-encoded escaped slash `%2F` which is left as is in the canonical URL for that asset. (essentially the folder path is treated as part of the filename)
    * A tad more explictly:
    * ```js
@@ -78,7 +78,7 @@ async function displayTrace(assetUrl, fileData) {
    * ```
    * That'll work.
    */
-  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
+  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl, location.href);
   hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
   hostedDtViewingTraceUrl.searchParams.set('panel', 'timeline');
 
@@ -236,9 +236,21 @@ function setupFileInput() {
     fileinput.showPicker(); // hawt.
   });
   fileinput.addEventListener('change', e => {
-    handleDrop(e.target?.files);
+    validateAndUpload(fileinput.files);
   });
 }
+
+/** @param {FileList|null} fileList */
+function validateAndUpload(fileList) {
+  if (!fileList || fileList.length === 0) return;
+  if (fileList.length !== 1) {
+    throw console.error('Can only upload 1 trace at a time');
+  }
+  const fileItem = fileList[0];
+  console.log('Received file: ', fileItem.name);
+  return upload(fileItem);
+}
+
 
 /**
  * @param {string} assetUrl
@@ -261,7 +273,7 @@ async function downloadTrace(assetUrl, fileData) {
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
-setupDragAndDrop();
+setupDragAndDrop(validateAndUpload);
 setupFileInput();
 
 // Allow receiving traces over postMessage

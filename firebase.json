@@ -28,7 +28,11 @@
         "destination": "/softnav-viewer.html"
       },
       {
-        "source": "**",
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "**/t/**",
         "destination": "/index.html"
       }
     ]

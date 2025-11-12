@@ -57,14 +57,14 @@ footer a {
   margin: 60px auto;
   width: 600px;
   border: 1px solid hsl(214deg 7% 81%);
-  border-top: 0;
+  border-top-width: 0;
   border-radius: 2px;
   display: flex;
   flex-direction: column;
 }
 h1, h2 { margin: 1rem; }
 h1 a { color: inherit; text-decoration: inherit;}
-h2 {  
+h2 {
   margin-bottom: 0;
   font-size: 16px;
   line-height: 19px;
@@ -72,7 +72,7 @@ h2 {
   font-weight: normal;
 }
 
-iframe { 
+iframe {
   flex: 1; /* Make the iframe expand to fill the available space */
   width: 100%;
   height: 100%;
@@ -87,9 +87,9 @@ iframe {
   padding-top: var(--dt-tabstrip-height); /* show the panel tabstrip. why this doesnt work with top/margin-top is BEYOND me. whatthe. */
 }
 
-/* not handled with same body state as devtools iframe, but.. thats good */ 
-iframe#ifr-perfetto.visible, 
-iframe#ifr-softnav.visible {  
+/* not handled with same body state as devtools iframe, but.. thats good */
+iframe#ifr-perfetto.visible,
+iframe#ifr-softnav.visible {
   display: block;
   background-color: white;
   padding-top: var(--dt-tabstrip-height);
@@ -100,8 +100,8 @@ iframe#ifr-softnav.visible {
 }
 
 .state--viewing details {
-    border-bottom: 1px solid var(--sys-color-divider);  
-    width: calc(100% - 64px);
+    border-bottom: 1px solid var(--sys-color-divider);
+    width: 100%;
     color: rgb(51, 51, 51);
     position: fixed;
     top: 0;
@@ -120,7 +120,7 @@ iframe#ifr-softnav.visible {
 }
 
 .state--viewing details summary {
-  height: var(--dt-tabstrip-height); 
+  height: var(--dt-tabstrip-height);
   padding: 0 10px;
   line-height: var(--dt-tabstrip-height);
 }
@@ -156,9 +156,9 @@ textarea {
   border: 0;
   resize: none;
 }
-/* "clever" hack to make sure log textarea is visible in landing state, 
-    but dont show the rest of the <details> elem. 
-    probably 
+/* "clever" hack to make sure log textarea is visible in landing state,
+    but dont show the rest of the <details> elem.
+    probably
   */
 .state--landing details .console {
   visibility: visible;
@@ -199,7 +199,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   background-color: #ffffffe6;
   font-size: 35px;
   font-weight: 600;
@@ -216,16 +216,17 @@ button#selectfile {
   color: #0000ee; /* fallback i guess */
 
   /* thx useragent stylesheet! */
-  color: -webkit-link; 
+  color: -webkit-link;
   cursor: pointer;
   text-decoration: underline;
+  font-family: unset;
 }
 
 
 
 
 
-/* mimic css overview style */  
+/* mimic css overview style */
 :root {
 
   --legacy-accent-color: rgb(27, 110, 243); /* didnt update the prop but the value is current */
@@ -242,7 +243,7 @@ button#selectfile {
 
   --ref-palette-neutral10: var(--color-ref-neutral10, rgb(31 31 31 / 100%));
   --sys-color-state-hover-on-subtle: color-mix(in sRGB, var(--ref-palette-neutral10) 6%, transparent);
-  
+
   --ref-palette-primary40: var(--color-ref-primary40, rgb(11 87 208 / 100%));
   --sys-color-primary: var(--ref-palette-primary40);
 
@@ -256,7 +257,7 @@ h1 a {
   line-height: 28px;
   color: hsl(25deg 6% 13%);
 }
-h1 a span.emoji { 
+h1 a span.emoji {
   font-size: 24px;
 }
 
@@ -490,4 +491,8 @@ textarea {
   padding: 3px 22px 1px 24px;
   line-height: 17px;
   margin-bottom: 18px;
+}
+
+html[viewonly] .landing-ui {
+    border-top-width: 1px;
 }

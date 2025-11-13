@@ -81,6 +81,7 @@ async function displayTrace(assetUrl, fileData) {
   const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl, location.href);
   hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
   hostedDtViewingTraceUrl.searchParams.set('panel', 'timeline');
+  hostedDtViewingTraceUrl.searchParams.set('thx', 'random'); // cachebust. TODO: remove once my deploys are solid.
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr-dt');

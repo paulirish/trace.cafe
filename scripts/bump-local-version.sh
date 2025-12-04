@@ -15,8 +15,9 @@ sed -i "s/const chromiumHashVer.*/$declaration/" /Users/paulirish/code/trace.caf
 echo "app.js updated."
 
 
+# can get timeCreated timestamp from:
+#     gcloud storage ls --json "gs://$chromebucket/$version/linux64/devtools-frontend.zip"
 gcloud storage cp  "gs://$chromebucket/$version/linux64/devtools-frontend.zip" .
-
 
 unzip devtools-frontend.zip
 rm -v devtools-frontend.zip
@@ -43,3 +44,6 @@ rm -v $(find ./devtools_front_end -iname "*.prebundle.js")
 
 rm -rf dist/devtools_front_end
 mv -v devtools_front_end dist/
+trash ./devtools_front_end
+
+echo "dist/devtools_front_end updated."

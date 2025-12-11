@@ -291,7 +291,10 @@ setupFileInput();
 window.addEventListener('message', async e => {
   const msg = e.data.msg ?? e.data;
   const data = e.data.data;
-  console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
+
+  // ignore react-devtools being chatty. Do i need to do this for other framework devtools?
+  const skipLogging = e.data?.source?.includes('devtools');
+  !skipLogging && console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
 
   switch (msg) {
     case 'PING':

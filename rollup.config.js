@@ -35,7 +35,7 @@ ${code}
 
   return `
 <!doctype html>
-<html lang=en class=state--landing>
+<html lang=en data-state=landing>
   <head>
     <title>${title}</title>
     ${metas}

@@ -22,6 +22,7 @@ class AppState extends EventTarget {
     // UI toggles
     this._showPerfetto = false;
     this._showSoftNav = false;
+    this._isSoftNavLoading = false;
   }
 
   /**
@@ -36,12 +37,39 @@ class AppState extends EventTarget {
     this.dispatchEvent(new CustomEvent('view-changed', { detail: this._viewState }));
   }
 
+  togglePerfetto() {
+    this._showPerfetto = !this._showPerfetto;
+    this.dispatchEvent(new CustomEvent('perfetto-toggled', { detail: this._showPerfetto }));
+  }
+
+  toggleSoftNav() {
+    this._showSoftNav = !this._showSoftNav;
+    this.dispatchEvent(new CustomEvent('softnav-toggled', { detail: this._showSoftNav }));
+  }
+
+  setSoftNavLoading(isLoading) {
+    this._isSoftNavLoading = isLoading;
+    this.dispatchEvent(new CustomEvent('softnav-loading-changed', { detail: this._isSoftNavLoading }));
+  }
+
   get trace() {
     return this._currentTrace;
   }
 
   get view() {
     return this._viewState;
+  }
+
+  get showPerfetto() {
+    return this._showPerfetto;
+  }
+
+  get showSoftNav() {
+    return this._showSoftNav;
+  }
+
+  get isSoftNavLoading() {
+    return this._isSoftNavLoading;
   }
 }
 

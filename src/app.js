@@ -47,17 +47,12 @@ function $(query, context) {
  */
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
-    document.documentElement.className = 'state--landing';
-    $('iframe#ifr-perfetto').classList.remove('visible', 'perfetto-tracedatasent');
-    $('iframe#ifr-softnav').classList.remove('visible', 'softnav-tracedatasent');
     return;
   }
 
   const {dialog} = createProgressDialog();
   document.body.append(dialog);
   dialog.showModal();
-
-  document.documentElement.className = 'state--viewing';
 
   // Set human-friendly title
   const filename = (fileData.metadata?.oName || fileData.name).replace('.json', '');
@@ -151,10 +146,10 @@ async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
 }
 
 function toggleBetweenPerfettoAndDevTools() {
+  appState.togglePerfetto();
   const iframePerfetto = $('iframe#ifr-perfetto');
-  const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
   // Only load it once. but user can toggle visibility all they want
-  if (shouldShowPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
+  if (appState.showPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
     if (appState.trace) {
       showTraceInPerfetto(iframePerfetto, appState.trace.url, appState.trace.title);
     }
@@ -188,12 +183,34 @@ async function readParams() {
     return;
   }
 
-  document.documentElement.className = 'state--viewing';
+  // document.documentElement.className = 'state--viewing'; // Handled by render()
   const {assetUrl, fileData} = await getAssetUrl(traceId);
   displayTrace(assetUrl, fileData);
 }
 
+function render() {
+  const isViewing = appState.view === 'viewing';
+  const root = document.documentElement;
+
+  // Set top-level state attribute
+  root.dataset.state = isViewing ? 'viewing' : 'landing';
+
+  // Toggle iframe visibility
+  $('iframe#ifr-perfetto').classList.toggle('visible', appState.showPerfetto);
+  $('iframe#ifr-softnav').classList.toggle('visible', appState.showSoftNav);
+
+  // Toggle buttons
+  const softNavBtn = $('.toolbar-button--softnav-toggle');
+  softNavBtn.classList.toggle('on', appState.showSoftNav);
+  softNavBtn.classList.toggle('loading', appState.isSoftNavLoading);
+}
+
 function setupLanding() {
+  // Subscribe to state changes
+  appState.addEventListener('view-changed', render);
+  appState.addEventListener('perfetto-toggled', render);
+  appState.addEventListener('softnav-toggled', render);
+  appState.addEventListener('softnav-loading-changed', render);
   // // Preload iframe
   // TODO: use Navigation API to avoid the preload from adding a history entry.
   // const iframe = $('iframe#ifr-dt');
@@ -228,14 +245,19 @@ function setupLanding() {
   });
 
   $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
-    const showSoftNav = !$('.toolbar-button--softnav-toggle').classList.contains('on');
-    $('.toolbar-button--softnav-toggle').classList.toggle('on', showSoftNav);
-    $('.toolbar-button--softnav-toggle').classList.toggle('loading', showSoftNav);
-    $('iframe#ifr-softnav').classList.toggle('visible', showSoftNav);
-    if (appState.trace) {
+    appState.toggleSoftNav();
+    const showSoftNav = appState.showSoftNav;
+
+    if (showSoftNav) {
+      appState.setSoftNavLoading(true);
+    } else {
+      appState.setSoftNavLoading(false);
+    }
+
+    if (showSoftNav && appState.trace) {
       showTraceInSoftNavViewer($('iframe#ifr-softnav'), appState.trace.url).catch(err => {
         console.error('Error showing trace in SoftNav viewer:', err.message);
-        $('.toolbar-button--softnav-toggle').classList.remove('loading');
+        appState.setSoftNavLoading(false);
       })
     }
   });

@@ -42,6 +42,10 @@
     </details>
   </div>
 </main>
+<!-- Initial state is handled by JS, but providing a default here avoids FOUC -->
+<script>
+  document.documentElement.dataset.state = 'landing';
+</script>
 
 <input id=fileinput type="file" hidden accept=".json,.gz,application/json">
 <iframe id="ifr-dt" title="DevTools Panel"></iframe>

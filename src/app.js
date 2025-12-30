@@ -3,6 +3,7 @@ import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
 import {upload} from './storage';
+import {appState} from './state';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
@@ -30,7 +31,7 @@ const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
  * @param {ParentNode=} context
  * @return {ParseSelector<T>}
  */
-globalThis.$ = function (query, context) {
+function $(query, context) {
   const result = (context || document).querySelector(query);
   if (result === null) {
     throw new Error(`query ${query} not found`);
@@ -66,6 +67,8 @@ async function displayTrace(assetUrl, fileData) {
   recentlyViewed.add(fileData, filename);
 
   document.title = `${filename} — ${dateStr} - trace.cafe`;
+
+  appState.setTrace(assetUrl, fileData, `${filename} — ${dateStr}`);
 
   setTimeout(_ => {
     $('details').open = false;
@@ -109,9 +112,7 @@ async function displayTrace(assetUrl, fileData) {
   // const iframePerfetto = $('iframe#ifr-perfetto');
   // iframePerfetto.src = 'https://ui.perfetto.dev/';
 
-  // global vars for the perfetto load... it's gross. i'm sorry.
-  globalThis.traceAssetUrl = assetUrl;
-  globalThis.traceTitle = `${filename} — ${dateStr}`;
+  appState.setTrace(assetUrl, fileData, `${filename} — ${dateStr}`);
 }
 
 // https://perfetto.dev/docs/visualization/deep-linking-to-perfetto-ui
@@ -154,7 +155,9 @@ function toggleBetweenPerfettoAndDevTools() {
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
   // Only load it once. but user can toggle visibility all they want
   if (shouldShowPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
-    showTraceInPerfetto(iframePerfetto, globalThis.traceAssetUrl, globalThis.traceTitle);
+    if (appState.trace) {
+      showTraceInPerfetto(iframePerfetto, appState.trace.url, appState.trace.title);
+    }
   }
 }
 
@@ -229,10 +232,12 @@ function setupLanding() {
     $('.toolbar-button--softnav-toggle').classList.toggle('on', showSoftNav);
     $('.toolbar-button--softnav-toggle').classList.toggle('loading', showSoftNav);
     $('iframe#ifr-softnav').classList.toggle('visible', showSoftNav);
-    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl).catch(err => {
-      console.error('Error showing trace in SoftNav viewer:', err.message);
-      $('.toolbar-button--softnav-toggle').classList.remove('loading');
-    })
+    if (appState.trace) {
+      showTraceInSoftNavViewer($('iframe#ifr-softnav'), appState.trace.url).catch(err => {
+        console.error('Error showing trace in SoftNav viewer:', err.message);
+        $('.toolbar-button--softnav-toggle').classList.remove('loading');
+      })
+    }
   });
 
   addEventListener('unhandledrejection', event => {

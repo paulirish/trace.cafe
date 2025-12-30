@@ -3,7 +3,7 @@ function setupDragAndDrop(callback) {
   let dragCounter = 0;
 
   // Setup drag n drop
-  const dropArea = $('body');
+  const dropArea = document.querySelector('body');
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();

@@ -24,22 +24,6 @@ const chromiumHashVer = ['f6948d651f4c3e127dce461f0a825085b0103b37', '145.0.7561
 const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
 
 /**
- * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
- * Thx lighthouse's dom.js!
- * @template {string} T
- * @param {T} query
- * @param {ParentNode=} context
- * @return {ParseSelector<T>}
- */
-function $(query, context) {
-  const result = (context || document).querySelector(query);
-  if (result === null) {
-    throw new Error(`query ${query} not found`);
-  }
-  return /** @type {ParseSelector<T>} */ (result);
-};
-
-/**
  * Show devtools now that we have a trace asset URL
  * @param {string | undefined} assetUrl
  * @param {FullMetadata} fileData
@@ -66,7 +50,7 @@ async function displayTrace(assetUrl, fileData) {
   appState.setTrace(assetUrl, fileData, `${filename} — ${dateStr}`);
 
   setTimeout(_ => {
-    $('details').open = false;
+    document.querySelector('details').open = false;
   }, 1_000);
 
   /**
@@ -86,7 +70,7 @@ async function displayTrace(assetUrl, fileData) {
   hostedDtViewingTraceUrl.searchParams.set('thx', 'random'); // cachebust. TODO: remove once my deploys are solid.
 
   console.log('Trace opening in DevTools…', filename);
-  const iframe = $('iframe#ifr-dt');
+  const iframe = document.querySelector('iframe#ifr-dt');
   // I experimenting with a srcdoc loading screen but it doesn't work cuz the .src assignment will nuke the srcdoc state entirly.
   // Kinda weird but w/e. Also srcdoc messes with history entries.
   iframe.onload = _ => {
@@ -131,7 +115,7 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
       },
     };
     iframePerfetto.contentWindow.postMessage(payload, ORIGIN);
-    iframePerfetto.classList.add('perfetto-tracedatasent');
+    appState.setPerfettoLoaded(true);
   };
 
   window.addEventListener('message', onPerfettoMsg);
@@ -141,19 +125,12 @@ async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
   // demo: https://trace.cafe/t/qvYZmG22OT
   const text = await fetch(traceAssetUrl).then(r => r.text());
   iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
-  $('.toolbar-button--softnav-toggle').classList.remove('loading');
-  iframeSoftNav.classList.add('softnav-tracedatasent');
+  appState.setSoftNavLoading(false);
+  appState.setSoftNavLoaded(true);
 }
 
 function toggleBetweenPerfettoAndDevTools() {
   appState.togglePerfetto();
-  const iframePerfetto = $('iframe#ifr-perfetto');
-  // Only load it once. but user can toggle visibility all they want
-  if (appState.showPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
-    if (appState.trace) {
-      showTraceInPerfetto(iframePerfetto, appState.trace.url, appState.trace.title);
-    }
-  }
 }
 
 async function readParams() {
@@ -188,6 +165,20 @@ async function readParams() {
   displayTrace(assetUrl, fileData);
 }
 
+function syncViewers() {
+  if (appState.showPerfetto && !appState.perfettoLoaded && appState.trace) {
+    showTraceInPerfetto(document.querySelector('iframe#ifr-perfetto'), appState.trace.url, appState.trace.title);
+  }
+
+  if (appState.showSoftNav && !appState.softNavLoaded && !appState.isSoftNavLoading && appState.trace) {
+     appState.setSoftNavLoading(true);
+     showTraceInSoftNavViewer(document.querySelector('iframe#ifr-softnav'), appState.trace.url).catch(err => {
+        console.error('Error showing trace in SoftNav viewer:', err.message);
+        appState.setSoftNavLoading(false);
+      });
+  }
+}
+
 function render() {
   const isViewing = appState.view === 'viewing';
   const root = document.documentElement;
@@ -196,29 +187,30 @@ function render() {
   root.dataset.state = isViewing ? 'viewing' : 'landing';
 
   // Toggle iframe visibility
-  $('iframe#ifr-perfetto').classList.toggle('visible', appState.showPerfetto);
-  $('iframe#ifr-softnav').classList.toggle('visible', appState.showSoftNav);
+  document.querySelector('iframe#ifr-perfetto').classList.toggle('visible', appState.showPerfetto);
+  document.querySelector('iframe#ifr-softnav').classList.toggle('visible', appState.showSoftNav);
 
   // Toggle buttons
-  const softNavBtn = $('.toolbar-button--softnav-toggle');
+  const softNavBtn = document.querySelector('.toolbar-button--softnav-toggle');
   softNavBtn.classList.toggle('on', appState.showSoftNav);
   softNavBtn.classList.toggle('loading', appState.isSoftNavLoading);
 }
 
 function setupLanding() {
   // Subscribe to state changes
-  appState.addEventListener('view-changed', render);
-  appState.addEventListener('perfetto-toggled', render);
-  appState.addEventListener('softnav-toggled', render);
-  appState.addEventListener('softnav-loading-changed', render);
-  // // Preload iframe
-  // TODO: use Navigation API to avoid the preload from adding a history entry.
-  // const iframe = $('iframe#ifr-dt');
-  // iframe.src = `${devtoolsBaseUrl}?traceURL=`;
+  const update = () => {
+    render();
+    syncViewers();
+  };
 
-  $('.landing-ui').appendChild(recentlyViewed.listAsDOM());
+  appState.addEventListener('view-changed', update);
+  appState.addEventListener('perfetto-toggled', update);
+  appState.addEventListener('softnav-toggled', update);
+  appState.addEventListener('softnav-loading-changed', update);
 
-  const verEl = $('a#chromever');
+  document.querySelector('.landing-ui').appendChild(recentlyViewed.listAsDOM());
+
+  const verEl = document.querySelector('a#chromever');
   verEl.href = `https://chromiumdash.appspot.com/commits?commit=${chromiumHashVer[0]}&platform=Linux`;
   const mstone = chromiumHashVer[1].split('.').at(0);
   verEl.hidden = false;
@@ -226,40 +218,26 @@ function setupLanding() {
   verEl.title = `${chromiumHashVer[1]} == ${verEl.title}`;
 
   // Update example trace URL
-  const example = $('a#example');
+  const example = document.querySelector('a#example');
   const rootRelUrl = example.href.replace(example.origin, '');
   const adjustedExampleUrl = new URL(rootRelUrl, location.href);
   example.textContent = example.href = adjustedExampleUrl.href;
 
   // formaction is trés cool but it adds a questionMark param
-  $('.toolbar-button--home').addEventListener('click', e => {
+  document.querySelector('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
   });
 
   // Toggle icon between Perfetto and PP
-  $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
+  document.querySelector('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
     const isDT = e.target.classList.toggle('toolbar-button--perfetto-toggle-devtools');
     e.target.title = `Show in ${isDT ? 'DevTools Perf Panel' : 'Perfetto UI'}`;
     toggleBetweenPerfettoAndDevTools();
   });
 
-  $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
+  document.querySelector('.toolbar-button--softnav-toggle').addEventListener('click', e => {
     appState.toggleSoftNav();
-    const showSoftNav = appState.showSoftNav;
-
-    if (showSoftNav) {
-      appState.setSoftNavLoading(true);
-    } else {
-      appState.setSoftNavLoading(false);
-    }
-
-    if (showSoftNav && appState.trace) {
-      showTraceInSoftNavViewer($('iframe#ifr-softnav'), appState.trace.url).catch(err => {
-        console.error('Error showing trace in SoftNav viewer:', err.message);
-        appState.setSoftNavLoading(false);
-      })
-    }
   });
 
   addEventListener('unhandledrejection', event => {
@@ -268,8 +246,8 @@ function setupLanding() {
 }
 
 function setupFileInput() {
-  const fileinput = $('input#fileinput');
-  $('#selectfile').addEventListener('click', e => {
+  const fileinput = document.querySelector('input#fileinput');
+  document.querySelector('#selectfile').addEventListener('click', e => {
     e.preventDefault();
     fileinput.showPicker(); // hawt.
   });

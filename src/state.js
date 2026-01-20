@@ -22,7 +22,11 @@ class AppState extends EventTarget {
     // UI toggles
     this._showPerfetto = false;
     this._showSoftNav = false;
+
+    // Loading/Loaded states
     this._isSoftNavLoading = false;
+    this._perfettoLoaded = false;
+    this._softNavLoaded = false;
   }
 
   /**
@@ -33,8 +37,19 @@ class AppState extends EventTarget {
   setTrace(url, metadata, title) {
     this._currentTrace = { url, metadata, title };
     this._viewState = 'viewing';
+
+    // Reset UI state for new trace
+    this._showPerfetto = false;
+    this._showSoftNav = false;
+    this._isSoftNavLoading = false;
+    this._perfettoLoaded = false;
+    this._softNavLoaded = false;
+
     this.dispatchEvent(new CustomEvent('trace-changed', { detail: this._currentTrace }));
     this.dispatchEvent(new CustomEvent('view-changed', { detail: this._viewState }));
+    // Dispatch toggle events so UI updates to "closed"
+    this.dispatchEvent(new CustomEvent('perfetto-toggled', { detail: this._showPerfetto }));
+    this.dispatchEvent(new CustomEvent('softnav-toggled', { detail: this._showSoftNav }));
   }
 
   togglePerfetto() {
@@ -50,6 +65,14 @@ class AppState extends EventTarget {
   setSoftNavLoading(isLoading) {
     this._isSoftNavLoading = isLoading;
     this.dispatchEvent(new CustomEvent('softnav-loading-changed', { detail: this._isSoftNavLoading }));
+  }
+
+  setPerfettoLoaded(isLoaded) {
+    this._perfettoLoaded = isLoaded;
+  }
+
+  setSoftNavLoaded(isLoaded) {
+    this._softNavLoaded = isLoaded;
   }
 
   get trace() {
@@ -70,6 +93,14 @@ class AppState extends EventTarget {
 
   get isSoftNavLoading() {
     return this._isSoftNavLoading;
+  }
+
+  get perfettoLoaded() {
+    return this._perfettoLoaded;
+  }
+
+  get softNavLoaded() {
+    return this._softNavLoaded;
   }
 }
 

@@ -3,7 +3,8 @@ import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
 import {upload} from './storage';
-import {appState} from './state';
+import {appState, ViewState, ViewerStatus} from './state';
+import {$} from './dom';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
@@ -70,7 +71,7 @@ async function displayTrace(assetUrl, fileData) {
   hostedDtViewingTraceUrl.searchParams.set('thx', 'random'); // cachebust. TODO: remove once my deploys are solid.
 
   console.log('Trace opening in DevTools…', filename);
-  const iframe = document.querySelector('iframe#ifr-dt');
+  const iframe = $('iframe#ifr-dt');
   // I experimenting with a srcdoc loading screen but it doesn't work cuz the .src assignment will nuke the srcdoc state entirly.
   // Kinda weird but w/e. Also srcdoc messes with history entries.
   iframe.onload = _ => {
@@ -115,7 +116,7 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
       },
     };
     iframePerfetto.contentWindow.postMessage(payload, ORIGIN);
-    appState.setPerfettoLoaded(true);
+    appState.setPerfettoStatus(ViewerStatus.LOADED);
   };
 
   window.addEventListener('message', onPerfettoMsg);
@@ -125,8 +126,7 @@ async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
   // demo: https://trace.cafe/t/qvYZmG22OT
   const text = await fetch(traceAssetUrl).then(r => r.text());
   iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
-  appState.setSoftNavLoading(false);
-  appState.setSoftNavLoaded(true);
+  appState.setSoftNavStatus(ViewerStatus.LOADED);
 }
 
 function toggleBetweenPerfettoAndDevTools() {
@@ -166,34 +166,31 @@ async function readParams() {
 }
 
 function syncViewers() {
-  if (appState.showPerfetto && !appState.perfettoLoaded && appState.trace) {
-    showTraceInPerfetto(document.querySelector('iframe#ifr-perfetto'), appState.trace.url, appState.trace.title);
+  if (appState.showPerfetto && appState.perfettoStatus === ViewerStatus.IDLE && appState.trace) {
+    appState.setPerfettoStatus(ViewerStatus.LOADING);
+    showTraceInPerfetto($('iframe#ifr-perfetto'), appState.trace.url, appState.trace.title);
   }
 
-  if (appState.showSoftNav && !appState.softNavLoaded && !appState.isSoftNavLoading && appState.trace) {
-     appState.setSoftNavLoading(true);
-     showTraceInSoftNavViewer(document.querySelector('iframe#ifr-softnav'), appState.trace.url).catch(err => {
+  if (appState.showSoftNav && appState.softNavStatus === ViewerStatus.IDLE && appState.trace) {
+     appState.setSoftNavStatus(ViewerStatus.LOADING);
+     showTraceInSoftNavViewer($('iframe#ifr-softnav'), appState.trace.url).catch(err => {
         console.error('Error showing trace in SoftNav viewer:', err.message);
-        appState.setSoftNavLoading(false);
+        appState.setSoftNavStatus(ViewerStatus.ERROR);
       });
   }
 }
 
 function render() {
-  const isViewing = appState.view === 'viewing';
-  const root = document.documentElement;
-
-  // Set top-level state attribute
-  root.dataset.state = isViewing ? 'viewing' : 'landing';
+  // Top-level state attribute is handled automatically by AppState
 
   // Toggle iframe visibility
-  document.querySelector('iframe#ifr-perfetto').classList.toggle('visible', appState.showPerfetto);
-  document.querySelector('iframe#ifr-softnav').classList.toggle('visible', appState.showSoftNav);
+  $('iframe#ifr-perfetto').classList.toggle('visible', appState.showPerfetto);
+  $('iframe#ifr-softnav').classList.toggle('visible', appState.showSoftNav);
 
   // Toggle buttons
-  const softNavBtn = document.querySelector('.toolbar-button--softnav-toggle');
+  const softNavBtn = $('.toolbar-button--softnav-toggle');
   softNavBtn.classList.toggle('on', appState.showSoftNav);
-  softNavBtn.classList.toggle('loading', appState.isSoftNavLoading);
+  softNavBtn.classList.toggle('loading', appState.softNavStatus === ViewerStatus.LOADING);
 }
 
 function setupLanding() {
@@ -203,14 +200,15 @@ function setupLanding() {
     syncViewers();
   };
 
-  appState.addEventListener('view-changed', update);
-  appState.addEventListener('perfetto-toggled', update);
-  appState.addEventListener('softnav-toggled', update);
-  appState.addEventListener('softnav-loading-changed', update);
+  appState.on('view-changed', update);
+  appState.on('perfetto-toggled', update);
+  appState.on('softnav-toggled', update);
+  appState.on('softnav-status-changed', update);
+  appState.on('perfetto-status-changed', update);
 
-  document.querySelector('.landing-ui').appendChild(recentlyViewed.listAsDOM());
+  $('.landing-ui').appendChild(recentlyViewed.listAsDOM());
 
-  const verEl = document.querySelector('a#chromever');
+  const verEl = $('a#chromever');
   verEl.href = `https://chromiumdash.appspot.com/commits?commit=${chromiumHashVer[0]}&platform=Linux`;
   const mstone = chromiumHashVer[1].split('.').at(0);
   verEl.hidden = false;
@@ -218,25 +216,25 @@ function setupLanding() {
   verEl.title = `${chromiumHashVer[1]} == ${verEl.title}`;
 
   // Update example trace URL
-  const example = document.querySelector('a#example');
+  const example = $('a#example');
   const rootRelUrl = example.href.replace(example.origin, '');
   const adjustedExampleUrl = new URL(rootRelUrl, location.href);
   example.textContent = example.href = adjustedExampleUrl.href;
 
   // formaction is trés cool but it adds a questionMark param
-  document.querySelector('.toolbar-button--home').addEventListener('click', e => {
+  $('.toolbar-button--home').addEventListener('click', e => {
     e.preventDefault();
     location.href = '/';
   });
 
   // Toggle icon between Perfetto and PP
-  document.querySelector('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
+  $('.toolbar-button--perfetto-toggle').addEventListener('click', e => {
     const isDT = e.target.classList.toggle('toolbar-button--perfetto-toggle-devtools');
     e.target.title = `Show in ${isDT ? 'DevTools Perf Panel' : 'Perfetto UI'}`;
     toggleBetweenPerfettoAndDevTools();
   });
 
-  document.querySelector('.toolbar-button--softnav-toggle').addEventListener('click', e => {
+  $('.toolbar-button--softnav-toggle').addEventListener('click', e => {
     appState.toggleSoftNav();
   });
 
@@ -246,8 +244,8 @@ function setupLanding() {
 }
 
 function setupFileInput() {
-  const fileinput = document.querySelector('input#fileinput');
-  document.querySelector('#selectfile').addEventListener('click', e => {
+  const fileinput = $('input#fileinput');
+  $('#selectfile').addEventListener('click', e => {
     e.preventDefault();
     fileinput.showPicker(); // hawt.
   });

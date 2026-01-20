@@ -1,9 +1,11 @@
+import {$} from './dom.js';
+
 // Thx Lighthouse viewer drag-and-drop.js
 function setupDragAndDrop(callback) {
   let dragCounter = 0;
 
   // Setup drag n drop
-  const dropArea = document.querySelector('body');
+  const dropArea = $('body');
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();

@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import { attemptLoad } from './load-appspot-page-for-cachewarming.js';
+import { attemptLoad } from './test-deployment.js';
 
 // see go/hyvwn
 

@@ -170,18 +170,11 @@ async function readParams() {
 
   if (!traceId) return;
 
-
   const canonicalUrl = new URL(`/t/${traceId}`, location.href);
   // Download convenience fn
   if (location.href.startsWith(`${canonicalUrl.href}/download`)) {
     const {assetUrl, fileData} = await getAssetUrl(traceId);
     void downloadTrace(assetUrl, fileData);
-    return;
-  }
-
-  // Let's get everyone on the canonical thing.
-  if (location.href !== canonicalUrl.href) {
-    location.href = canonicalUrl.href;
     return;
   }
 

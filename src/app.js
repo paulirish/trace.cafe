@@ -10,7 +10,7 @@ import {upload} from './storage';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['f6948d651f4c3e127dce461f0a825085b0103b37', '145.0.7561.0'];
+const chromiumHashVer = ['c01889a49f205a63408ea7d5b37ed3cb76eeaf84', '151.0.7873.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -170,18 +170,11 @@ async function readParams() {
 
   if (!traceId) return;
 
-
   const canonicalUrl = new URL(`/t/${traceId}`, location.href);
   // Download convenience fn
   if (location.href.startsWith(`${canonicalUrl.href}/download`)) {
     const {assetUrl, fileData} = await getAssetUrl(traceId);
     void downloadTrace(assetUrl, fileData);
-    return;
-  }
-
-  // Let's get everyone on the canonical thing.
-  if (location.href !== canonicalUrl.href) {
-    location.href = canonicalUrl.href;
     return;
   }
 

@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import { attemptLoad } from './load-appspot-page-for-cachewarming.js';
+import { attemptLoad } from './test-deployment.js';
 
 // see go/hyvwn
 
@@ -33,7 +33,7 @@ export async function main() {
   await updateSoftNavViewer();
 
 
-  console.log('node scripts/load-appspot-page-for-cachewarming.js', hash);
+  console.log('node scripts/test-deployment.js', hash);
   attemptLoad(hash);
 
 }

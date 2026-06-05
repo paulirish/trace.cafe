@@ -3,10 +3,12 @@ import {appspotUrl} from './bump-frontend-version.js';
 
 export async function attemptLoad(hash) {
   // Get chromiumHashVer from arg or command line argument
-  let chromiumHashVer = hash ?? process.argv[2];
+  let chromiumHashVer = hash ?? process.argv.find(arg => !arg.startsWith('-') && !arg.includes('node') && !arg.includes('.js'));
 
   let url = 'https://trace.cafe/t/demo'; // appspotUrl(chromiumHashVer);
-  if (chromiumHashVer) {
+  if (process.argv.includes('--local')) {
+    url = 'http://localhost:5002/?trace=demo';
+  } else if (chromiumHashVer) {
     url = appspotUrl(chromiumHashVer);
   }
 
@@ -32,7 +34,9 @@ export async function attemptLoad(hash) {
       console.log('\n    😊 Network is quiet!');
 
       // Wait for the RPP UI to load
-      const frame = url.includes('trace.cafe') ? page.frame({url: /chrome-devtools-frontend.appspot.com/}) : page.mainFrame();
+      const frame = (url.includes('trace.cafe') || url.includes('localhost')) ? 
+          page.frame({url: /trace_app\.html/}) : 
+          page.mainFrame();
       console.log('    Waiting for RPP UI (bottom-up) to load');
       await frame.waitForSelector('#tab-bottom-up', {timeout: 10_000});
       console.log('    RPP UI (bottom-up) is loaded!');
@@ -40,7 +44,7 @@ export async function attemptLoad(hash) {
       console.log('    ✅ Clicked Bottom-up!');
 
       // quit if we're not doing enhanced trace
-      if (url === 'https://trace.cafe/t/demo') {
+      if (url.includes('/t/demo') || url.includes('trace=demo')) {
         break;
       }
 

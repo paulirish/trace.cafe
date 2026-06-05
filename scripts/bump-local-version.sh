@@ -22,12 +22,15 @@ echo "Downloading DevTools frontend..."
 gcloud storage cp "gs://$chromebucket/$version/linux64/devtools-frontend.zip" .
 
 echo "Extracting and trimming..."
-rm -rf devtools-frontend devtools_front_end_tmp
-unzip -q devtools-frontend.zip -d devtools-frontend_tmp
+# Wipe any possible residue from previous runs
+rm -rf devtools-frontend_tmp devtools_front_end_tmp devtools-frontend
+unzip -qo devtools-frontend.zip -d devtools-frontend_tmp
 rm devtools-frontend.zip
 
 mkdir -p ./devtools_front_end_tmp
-mv devtools-frontend_tmp/gen/third_party/devtools-frontend/src/front_end/* ./devtools_front_end_tmp
+# Find the actual front_end folder (it's often nested deep)
+FE_PATH=$(find devtools-frontend_tmp -name "front_end" -type d | head -n 1)
+cp -R "$FE_PATH"/* ./devtools_front_end_tmp/
 rm -rf devtools-frontend_tmp
 
 # Cleanup

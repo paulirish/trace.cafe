@@ -33,7 +33,7 @@ export async function main() {
   await updateSoftNavViewer();
 
 
-  console.log('node scripts/load-appspot-page-for-cachewarming.js', hash);
+  console.log('node scripts/test-deployment.js', hash);
   attemptLoad(hash);
 
 }

@@ -1,3 +1,5 @@
+import {$} from './dom';
+
 // Thx Lighthouse viewer drag-and-drop.js
 function setupDragAndDrop(callback) {
   let dragCounter = 0;

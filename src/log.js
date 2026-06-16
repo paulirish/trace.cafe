@@ -1,4 +1,6 @@
 
+import {$} from './dom';
+
 export function hijackConsole(){
   const textarea = $('textarea');
   const consoleEl = $('.console');

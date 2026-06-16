@@ -3,9 +3,10 @@ import {getAssetUrl} from './storage';
 import {hijackConsole} from './log';
 import {recentlyViewed} from './recently-viewed';
 import {upload} from './storage';
+import {$} from './dom';
+import {state, ViewState, ViewerStatus} from './state';
 
 /** @typedef {import('firebase/storage').FullMetadata} FullMetadata */
-/** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
@@ -30,13 +31,7 @@ const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
  * @param {ParentNode=} context
  * @return {ParseSelector<T>}
  */
-globalThis.$ = function (query, context) {
-  const result = (context || document).querySelector(query);
-  if (result === null) {
-    throw new Error(`query ${query} not found`);
-  }
-  return /** @type {ParseSelector<T>} */ (result);
-};
+/** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
 /**
  * Show devtools now that we have a trace asset URL
@@ -46,7 +41,7 @@ globalThis.$ = function (query, context) {
  */
 async function displayTrace(assetUrl, fileData) {
   if (!assetUrl) {
-    document.documentElement.className = 'state--landing';
+    state.viewState = ViewState.LANDING;
     $('iframe#ifr-perfetto').classList.remove('visible', 'perfetto-tracedatasent');
     $('iframe#ifr-softnav').classList.remove('visible', 'softnav-tracedatasent');
     return;
@@ -56,7 +51,7 @@ async function displayTrace(assetUrl, fileData) {
   document.body.append(dialog);
   dialog.showModal();
 
-  document.documentElement.className = 'state--viewing';
+  state.viewState = ViewState.VIEWING;
 
   // Set human-friendly title
   const filename = (fileData.metadata?.oName || fileData.name).replace('.json', '');
@@ -109,9 +104,10 @@ async function displayTrace(assetUrl, fileData) {
   // const iframePerfetto = $('iframe#ifr-perfetto');
   // iframePerfetto.src = 'https://ui.perfetto.dev/';
 
-  // global vars for the perfetto load... it's gross. i'm sorry.
-  globalThis.traceAssetUrl = assetUrl;
-  globalThis.traceTitle = `${filename} — ${dateStr}`;
+  state.activeTrace = {
+    assetUrl,
+    title: `${filename} — ${dateStr}`,
+  };
 }
 
 // https://perfetto.dev/docs/visualization/deep-linking-to-perfetto-ui
@@ -144,7 +140,8 @@ async function showTraceInPerfetto(iframePerfetto, traceAssetUrl, traceTitle) {
 async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
   // demo: https://trace.cafe/t/qvYZmG22OT
   const text = await fetch(traceAssetUrl).then(r => r.text());
-  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, 'https://trace.cafe');
+  const targetOrigin = new URL(iframeSoftNav.src, location.href).origin;
+  iframeSoftNav.contentWindow.postMessage({msg: 'TRACE', data: text}, targetOrigin);
   $('.toolbar-button--softnav-toggle').classList.remove('loading');
   iframeSoftNav.classList.add('softnav-tracedatasent');
 }
@@ -152,9 +149,10 @@ async function showTraceInSoftNavViewer(iframeSoftNav, traceAssetUrl) {
 function toggleBetweenPerfettoAndDevTools() {
   const iframePerfetto = $('iframe#ifr-perfetto');
   const shouldShowPerfetto = iframePerfetto.classList.toggle('visible');
+  state.activeViewer = shouldShowPerfetto ? 'perfetto' : 'devtools';
   // Only load it once. but user can toggle visibility all they want
   if (shouldShowPerfetto && !iframePerfetto.classList.contains('perfetto-tracedatasent')) {
-    showTraceInPerfetto(iframePerfetto, globalThis.traceAssetUrl, globalThis.traceTitle);
+    showTraceInPerfetto(iframePerfetto, state.activeTrace.assetUrl, state.activeTrace.title);
   }
 }
 
@@ -178,7 +176,7 @@ async function readParams() {
     return;
   }
 
-  document.documentElement.className = 'state--viewing';
+  state.viewState = ViewState.VIEWING;
   const {assetUrl, fileData} = await getAssetUrl(traceId);
   displayTrace(assetUrl, fileData);
 }
@@ -222,7 +220,8 @@ function setupLanding() {
     $('.toolbar-button--softnav-toggle').classList.toggle('on', showSoftNav);
     $('.toolbar-button--softnav-toggle').classList.toggle('loading', showSoftNav);
     $('iframe#ifr-softnav').classList.toggle('visible', showSoftNav);
-    showTraceInSoftNavViewer($('iframe#ifr-softnav'), globalThis.traceAssetUrl).catch(err => {
+    state.activeViewer = showSoftNav ? 'softnav' : (state.activeViewer === 'softnav' ? 'devtools' : state.activeViewer);
+    showTraceInSoftNavViewer($('iframe#ifr-softnav'), state.activeTrace.assetUrl).catch(err => {
       console.error('Error showing trace in SoftNav viewer:', err.message);
       $('.toolbar-button--softnav-toggle').classList.remove('loading');
     })
@@ -334,6 +333,7 @@ document.body.addEventListener('paste', async e => {
  * @returns {{dialog: HTMLDialogElement}}
  */
 function createProgressDialog() {
+  state.viewerStatus = ViewerStatus.LOADING;
   const dialog = document.createElement('dialog');
   dialog.id = 'progress-dialog';
   dialog.style.cssText = `
@@ -408,7 +408,9 @@ function createProgressDialog() {
   // Chain the animations
   animateProgress(dtProgress).then(() => {
     animateProgress(traceProgress).then(() => {
-      animateProgress(splinesProgress);
+      animateProgress(splinesProgress).then(() => {
+        state.viewerStatus = ViewerStatus.LOADED;
+      });
     });
   });
 

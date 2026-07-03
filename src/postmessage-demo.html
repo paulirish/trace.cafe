@@ -153,12 +153,12 @@ window.addEventListener('message', e => {
   // Thx Lighthouse viewer drag-and-drop.js
   function setupDragAndDrop() {
     // qS helper.
-    globalThis.$ = function (query, context) {
+    const $ = function (query, context) {
       const result = (context || document).querySelector(query);
       if (result === null) {
         throw new Error(`query ${query} not found`);
       }
-      return /** @type {ParseSelector<T>} */ (result);
+      return result;
     };
 
     let dragging = false;

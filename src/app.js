@@ -23,14 +23,6 @@ const chromiumHashVer = ['c01889a49f205a63408ea7d5b37ed3cb76eeaf84', '151.0.7873
 // - trace_app                ~= 128 req (6.2 MB)
 const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
 
-/**
- * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
- * Thx lighthouse's dom.js!
- * @template {string} T
- * @param {T} query
- * @param {ParentNode=} context
- * @return {ParseSelector<T>}
- */
 /** @template {string} T @typedef {import('typed-query-selector/parser').ParseSelector<T, Element>} ParseSelector */
 
 /**

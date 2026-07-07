@@ -14,7 +14,8 @@
     "deploy": "firebase deploy",
     "predeploy": "pnpm run build",
     "warm": "node scripts/load-appspot-page-for-cachewarming.js",
-    "bump": "./scripts/bump-local-version.sh"
+    "bump": "./scripts/bump-local-version.sh",
+    "test": "node scripts/test-viewonly.js"
   },
   "keywords": [],
   "author": "",

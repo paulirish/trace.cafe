@@ -24,16 +24,16 @@ const storage = getStorage(app);
 
 /**
  * From the traceId, find the full URL (with token) that'll receive the correct asset.
- * @param {string} traceId 
+ * @param {string} traceId
  */
 async function getAssetUrl(traceId) {
   console.log(`Looking for trace with ID:  (${traceId})`);
 
-  const currentRef = (traceId === 'demo') 
-    ? ref(storage, `permatraces/7qvReGZ6RU`) // loadingtrace-in-opp. Alternatively `gh-chained.fetches-anno.gz` works as an enhnanced trace.
+  const currentRef = (traceId === 'demo')
+    ? ref(storage, `permatraces/web-dev-e.json.gz`) // loadingtrace-in-opp. Alternatively `gh-chained.fetches-anno.gz` works as an enhnanced trace.
     : ref(storage, `traces/${traceId}`);
 
-  const bucket =  (traceId === 'demo') 
+  const bucket =  (traceId === 'demo')
     ? 'tum-permatraces2'
     : firebaseConfig.storageBucket;
 
@@ -48,7 +48,7 @@ async function getAssetUrl(traceId) {
       console.error(`Trace (${traceId}) not found. Perhaps it's been more than 1 year since upload?`);
     } else {
       console.error(err);
-    } 
+    }
     return {dlurl: undefined, metadata: undefined};
   }
   /** @type {FullMetadata} */
@@ -63,8 +63,8 @@ async function getAssetUrl(traceId) {
 }
 
 /**
- * 
- * @param {*} fileItem 
+ *
+ * @param {*} fileItem
  */
 function getNanoId(fileItem) {
   const allowedIDCharacters = 'abcdefghijklmnopqrstuvwxyz' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '0123456789';
@@ -73,7 +73,7 @@ function getNanoId(fileItem) {
 }
 
 /**
- * @param {File} fileItem 
+ * @param {File} fileItem
  */
 async function upload(fileItem) {
 
@@ -137,11 +137,11 @@ async function upload(fileItem) {
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       console.log(`Upload ${progress.toLocaleString()}% done. (${snapshot.state})`);
-    }, 
+    },
     (error) => {
       console.error('Upload error', error);       // https://firebase.google.com/docs/storage/web/handle-errors
       uploadDone.reject(error);
-    }, 
+    },
     async () => {
       console.log(`Upload complete. Trace ID: (${uploadTask.snapshot.ref.name})`);
       uploadDone.resolve(traceViewUrl);

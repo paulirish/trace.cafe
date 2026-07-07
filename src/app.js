@@ -10,7 +10,7 @@ import {upload} from './storage';
 // TODO: find a way to update this as it's currently frozen in time .. or make sure it matches the trace version?
 //    Current workflow: grab the Revision from chrome:version
 //    These hashes match up with the "Updating trunk VERSION" commits: https://chromium.googlesource.com/chromium/src/+log/main/chrome/VERSION
-const chromiumHashVer = ['f2f8504343c8da40486cd22d97202589972ec515', '143.0.7497.0'];
+const chromiumHashVer = ['f6948d651f4c3e127dce461f0a825085b0103b37', '145.0.7561.0'];
 
 // Ideally we'd use `devtools://devtools/bundled/js_app.html...` …
 //     but the browser has extra protection on devtools:// URLS..
@@ -20,7 +20,7 @@ const chromiumHashVer = ['f2f8504343c8da40486cd22d97202589972ec515', '143.0.7497
 // - js_app                   ~= 131 req (6.5 MB)  but sets isNode:true, which removes Screenshots and more. crbug.com/1487369
 // - ~rehydrated_devtools_app ~= 104 req (4.9 MB)  but throws an error if no `window.opener`~   removed in Oct 2025.
 // - trace_app                ~= 128 req (6.2 MB)
-const devtoolsBaseUrl = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${chromiumHashVer[0]}/trace_app.html`;
+const devtoolsBaseUrl = `/devtools_front_end/trace_app.html`;
 
 /**
  * Guaranteed context.querySelector. Always returns an element or throws if nothing matches query.
@@ -52,6 +52,10 @@ async function displayTrace(assetUrl, fileData) {
     return;
   }
 
+  const {dialog} = createProgressDialog();
+  document.body.append(dialog);
+  dialog.showModal();
+
   document.documentElement.className = 'state--viewing';
 
   // Set human-friendly title
@@ -78,9 +82,10 @@ async function displayTrace(assetUrl, fileData) {
    * ```
    * That'll work.
    */
-  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl);
+  const hostedDtViewingTraceUrl = new URL(devtoolsBaseUrl, location.href);
   hostedDtViewingTraceUrl.searchParams.set('traceURL', assetUrl);
   hostedDtViewingTraceUrl.searchParams.set('panel', 'timeline');
+  hostedDtViewingTraceUrl.searchParams.set('thx', 'random'); // cachebust. TODO: remove once my deploys are solid.
 
   console.log('Trace opening in DevTools…', filename);
   const iframe = $('iframe#ifr-dt');
@@ -91,6 +96,12 @@ async function displayTrace(assetUrl, fileData) {
     // Can't really extract errors from that iframe.....
     console.log('Trace loaded.', filename, 'Uploaded:', dateStr);
     document.documentElement.classList.add('ifr-dt-loaded');
+
+    // It'd be better if DevTools showed progress during the fetch. In the meantime we'll show ours for 2.5 after.  It's possible this is too long.
+    setTimeout(() => {
+      dialog.close();
+      dialog.remove();
+    }, 1500);
   };
   iframe.src = hostedDtViewingTraceUrl.href;
 
@@ -251,6 +262,7 @@ function validateAndUpload(fileList) {
   return upload(fileItem);
 }
 
+
 /**
  * @param {string} assetUrl
  * @param {FullMetadata} fileData
@@ -272,21 +284,25 @@ async function downloadTrace(assetUrl, fileData) {
 hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
-setupDragAndDrop(validateAndUpload));
+setupDragAndDrop(validateAndUpload);
 setupFileInput();
 
 // Allow receiving traces over postMessage
 window.addEventListener('message', async e => {
   const msg = e.data.msg ?? e.data;
   const data = e.data.data;
-  console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
+
+  // ignore react-devtools being chatty. Do i need to do this for other framework devtools?
+  const skipLogging = e.data?.source?.includes('devtools');
+  !skipLogging && console.log('postMessage received', msg, data && Object.keys(data).length ? 'with data' : '');
 
   switch (msg) {
     case 'PING':
       e.source?.postMessage('PONG', e.origin);
       break;
     case 'TRACE':
-      const traceViewUrl = await validateAndUpload(data);
+      // TODO: maybe also use progress dialog here.
+      const traceViewUrl = await upload(data);
       e.source?.postMessage({msg: 'UPLOADCOMPLETE', data: {url: traceViewUrl.href}}, e.origin);
       break;
     case 'UPLOADCOMPLETE-softnav':
@@ -301,14 +317,107 @@ window.addEventListener('load', _ => {
   window.opener?.postMessage('CAFEOPEN', '*');
 });
 
-// Handle pasting of trace file contents. (weird edge case but mostly for me :)
+// Handle pasting of trace file contents. or pasting a file. (weird edge cases but mostly for me :)
 document.body.addEventListener('paste', async e => {
-  const pastedText = e.clipboardData?.getData('text/plain');
-  if (!pastedText) return;
-  if (!(pastedText.startsWith('[') || pastedText.startsWith('{'))) return;
+  let file;
+  if (!e.clipboardData?.files.length) {
+    const pastedText = e.clipboardData?.getData('text/plain');
+    if (!pastedText) return;
+    if (!(pastedText.startsWith('[') || pastedText.startsWith('{'))) return;
 
-  const traceText = pastedText;
-  const file = new File([traceText], 'pasted-trace.json', {type: 'application/json'});
-  // upload(file).catch(err => console.error('Error uploading pasted trace:', err.message));
-  displayTrace('pasted content', {name: 'pasted', bucket: '', fullPath: '', generation: '', metageneration: '', size: traceText.length, timeCreated: new Date().toISOString(), updated: new Date().toISOString(), downloadTokens: undefined})
+    const traceText = pastedText;
+    file = new File([traceText], 'pasted-trace.json', {type: 'application/json'});
+  } else {
+    file = e.clipboardData.files[0];
+  }
+
+  upload(file).catch(err => console.error('Error uploading pasted trace:', err.message));
 });
+
+
+
+
+/**
+ * @returns {{dialog: HTMLDialogElement}}
+ */
+function createProgressDialog() {
+  const dialog = document.createElement('dialog');
+  dialog.id = 'progress-dialog';
+  dialog.style.cssText = `
+    color-scheme: light dark;
+    inset: 0.5rem;
+    margin: auto;
+    position: fixed;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: light-dark(#efefec, #333b3c);
+    color: light-dark(#333b3c, #efefec);
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  `;
+
+  /**
+   * @param {string} labelText
+   * @returns {{container: HTMLDivElement, progress: HTMLProgressElement}}
+   */
+  function createProgressItem(labelText) {
+    const container = document.createElement('div');
+    container.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: right;
+    `;
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    label.style.width = '150px';
+
+    const progress = document.createElement('progress');
+    progress.value = 0;
+    progress.max = 100;
+    progress.style.width = '150px';
+
+    container.appendChild(label);
+    container.appendChild(progress);
+    dialog.appendChild(container);
+    return {container, progress};
+  }
+
+  const {progress: dtProgress} = createProgressItem('Loading DevTools');
+  const {progress: traceProgress} = createProgressItem('Fetching trace');
+  const {progress: splinesProgress} = createProgressItem('Reticulating splines');
+  const animationDuration = 1_000;
+
+  /**
+   * @param {HTMLProgressElement} progressEl
+   * @returns {Promise<void>}
+   */
+  function animateProgress(progressEl) {
+    return new Promise(resolve => {
+      const startTime = performance.now();
+      function frame() {
+        const progressPct = Math.min((performance.now() - startTime) / animationDuration, 1);
+        progressEl.value = progressPct * 100;
+        if (progressPct < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          resolve(void 0);
+        }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  // Chain the animations
+  animateProgress(dtProgress).then(() => {
+    animateProgress(traceProgress).then(() => {
+      animateProgress(splinesProgress);
+    });
+  });
+
+  return {dialog};
+}

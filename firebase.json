@@ -36,7 +36,11 @@
         "destination": "/fieldtrace-convert.js.map"
       },
       {
-        "source": "**",
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "**/t/**",
         "destination": "/index.html"
       }
     ]

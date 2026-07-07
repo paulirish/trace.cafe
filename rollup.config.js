@@ -3,13 +3,10 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import {default as html, makeHtmlAttributes} from '@rollup/plugin-html';
 import terser from '@rollup/plugin-terser';
 import {readFileSync, writeFileSync} from 'node:fs';
-import {cpSync, existsSync} from 'node:fs';
-import {join, dirname} from 'node:path';
-import {homedir} from 'node:os';
 
 
 // stolen from https://github.com/rollup/plugins/blob/master/packages/html/src/index.ts
-const template = ({attributes, files, meta, publicPath, title }) => {
+const template = ({attributes, files, meta, publicPath, title }) => { 
 
   // console.log({attributes}, files);
   const scripts = (files.js || [])
@@ -53,7 +50,8 @@ ${code}
    ${scripts}
   </body>
 </html>`;
- };
+
+ }
 
  const viewonlyTemplate = ({attributes, files, meta, publicPath, title }) => {
   const scripts = (files.js || [])

@@ -104,19 +104,7 @@ ${code}
   }
 ];
 
-const copyToFieldTracePlugin = {
-  name: 'copy-to-fieldtrace',
-  async writeBundle(options) {
-    const destDir = join(homedir(), 'code', 'fieldtrace', 'dist', 'site', 'view');
-    if (!options.file || !existsSync(destDir)) return;
 
-    const outputDir = dirname(options.file);
-    cpSync(join(outputDir, 'viewonly.html'), join(destDir, 'index.html'), {force: true});
-    cpSync(join(outputDir, 'viewonly.js'), join(destDir, 'viewonly.js'), {force: true});
-    cpSync(join(outputDir, 'viewonly.js.map'), join(destDir, 'viewonly.js.map'), {force: true});
-    console.log('Copied dist/viewonly* to fieldtrace')
-  },
-};
 
 export default [{
   input: 'src/app.js',
@@ -159,6 +147,6 @@ export default [{
       fileName: 'viewonly.html',
       title: 'fieldtrace view'
     }),
-    copyToFieldTracePlugin,
+
   ],
 }];

@@ -7,13 +7,16 @@
   "type": "module",
   "scripts": {
     "watch": "mkdir -p dist && INWATCHBUILD=1 rollup --watch -c",
-    "build": "mkdir -p dist && rollup -c && cp src/third_party/softnav-viewer.html dist/softnav-viewer.html",
-    "tsc": "tsc -p tsconfig.json",
+    "build": "mkdir -p dist && rollup -c && cp src/third_party/* dist/",
+    "build:viewonly": "rollup -c --config-filter 1",
+    "typecheck": "tsc -p tsconfig.json",
     "serve": "npm run build && firebase serve --port 5002",
+    "dev": "npm run serve",
     "deploy": "firebase deploy",
     "predeploy": "pnpm run build",
     "test-deployment": "node scripts/test-deployment.js",
-    "bump": "./scripts/bump-local-version.sh"
+    "bump": "./scripts/bump-local-version.sh",
+    "test": "node scripts/test-viewonly.js"
   },
   "keywords": [],
   "author": "",

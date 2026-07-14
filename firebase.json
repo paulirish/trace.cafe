@@ -28,6 +28,14 @@
         "destination": "/softnav-viewer.html"
       },
       {
+        "source": "**/fieldtrace-convert.js",
+        "destination": "/fieldtrace-convert.js"
+      },
+      {
+        "source": "**/fieldtrace-convert.js.map",
+        "destination": "/fieldtrace-convert.js.map"
+      },
+      {
         "source": "/",
         "destination": "/index.html"
       },

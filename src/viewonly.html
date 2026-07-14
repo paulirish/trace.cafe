@@ -1,0 +1,18 @@
+
+<header>
+  <button class="toolbar-button toolbar-button--home" title="Navigate to trace.cafe home" formaction="/" type="submit"></button>
+</header>
+<main>
+  <div class="landing-ui">
+    <h1><span class="emoji">🌱</span> view a fieldtrace</h1>
+    <ol class="intro-steps">
+      <li>Drag-and-drop a .fieldtrace, <button id="selectfile">select a file</button>, or paste the JSON.</li>
+      <li>We'll convert it to a proper trace on the fly
+      <li>Then we'll render in it DevTools Perf panel</li>
+    </ol>
+  </div>
+</main>
+
+<input id=fileinput type="file" hidden accept=".json,.gz,application/json">
+<iframe id="ifr-dt" title="DevTools Panel"></iframe>
+

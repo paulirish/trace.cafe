@@ -27,5 +27,9 @@
     "src/**/*.js",
     "types/**/*.d.ts",
     "package.json"
+  ],
+  "exclude": [
+    "src/third_party/fieldtrace-convert.js",
+    "src/third_party/fieldtrace-convert.js.map"
   ]
 }

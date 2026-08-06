@@ -256,7 +256,7 @@ hijackConsole();
 setupLanding();
 readParams(); // Handle permalinks and load stuff
 setupDragAndDrop(validateAndUpload);
-setupFileInput();
+setupFileInput(validateAndUpload);
 
 // Allow receiving traces over postMessage
 window.addEventListener('message', async e => {

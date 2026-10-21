@@ -1,7 +1,10 @@
-import { chromium } from 'playwright';
+import test, { after, before } from 'node:test';
+import assert from 'node:assert/strict';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import { chromium } from 'playwright';
 
 // Minimal mock trace content
 const sampleTrace = JSON.stringify({
@@ -18,13 +21,27 @@ const sampleTrace = JSON.stringify({
   ]
 });
 
-// A simple static file server for serving the build files
+const sampleTraceGz = zlib.gzipSync(Buffer.from(sampleTrace));
+
 function createServer() {
   return http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
-    let filePath = path.join('dist', url.pathname);
-    if (url.pathname === '/' || url.pathname === '/viewonly') {
+    let pathname = url.pathname;
+
+    // Fast-path stub for devtools frontend iframe to avoid fetching 130+ bundled files during test
+    if (pathname.includes('trace_app.html')) {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<!doctype html><title>DevTools Stub</title>');
+      return;
+    }
+
+    let filePath;
+    if (pathname.startsWith('/viewonly') || pathname.startsWith('/view')) {
       filePath = 'dist/viewonly.html';
+    } else if (pathname === '/' || pathname.startsWith('/t/')) {
+      filePath = 'dist/index.html';
+    } else {
+      filePath = path.join('dist', pathname);
     }
 
     fs.readFile(filePath, (err, data) => {
@@ -38,6 +55,8 @@ function createServer() {
         contentType = 'application/javascript';
       } else if (filePath.endsWith('.css')) {
         contentType = 'text/css';
+      } else if (filePath.endsWith('.json')) {
+        contentType = 'application/json';
       }
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(data);
@@ -45,115 +64,226 @@ function createServer() {
   });
 }
 
-async function runTests() {
-  // Start local server
+/**
+ * Creates a page with pageerror collection and Firebase Storage mock.
+ * @param {import('playwright').Browser} browser
+ * @param {string} url
+ */
+async function openTestPage(browser, url) {
+  const page = await browser.newPage();
+  const pageErrors = [];
+  page.on('pageerror', err => pageErrors.push(err));
+
+  /** @type {Array<{method: string, url: string, postData: string | null}>} */
+  const uploadedFiles = [];
+
+  // Mock Firebase Storage upload and download APIs
+  await page.route('**/*firebasestorage.googleapis.com/**', async route => {
+    const req = route.request();
+    const reqUrl = new URL(req.url());
+
+    if (req.method() === 'POST') {
+      const traceName = reqUrl.searchParams.get('name') ?? 'traces/mocktrace1';
+      uploadedFiles.push({
+        method: req.method(),
+        url: req.url(),
+        postData: req.postData(),
+      });
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Expose-Headers': 'X-Goog-Upload-URL, X-Goog-Upload-Status, X-Goog-Upload-Chunk-Granularity',
+          'X-Goog-Upload-Status': 'final',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: traceName,
+          bucket: 'trace-uploading-maybe.appspot.com',
+          generation: '1',
+          timeCreated: new Date().toISOString(),
+          downloadTokens: 'mock-token',
+        }),
+      });
+      return;
+    }
+
+    if (req.method() === 'GET') {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'traces/mocktrace1',
+          bucket: 'trace-uploading-maybe.appspot.com',
+          generation: '1',
+          timeCreated: new Date().toISOString(),
+          downloadTokens: 'mock-token',
+          metadata: { oName: 'mock-trace' },
+        }),
+      });
+      return;
+    }
+
+    await route.continue();
+  });
+
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  return { page, pageErrors, uploadedFiles };
+}
+
+test('trace.cafe ingestion & viewer test suite', async t => {
   const server = createServer();
-  const port = await new Promise((resolve) => {
-    server.listen(0, '127.0.0.1', () => {
-      resolve(server.address().port);
-    });
+  const port = await new Promise(resolve => {
+    server.listen(0, '127.0.0.1', () => resolve(server.address().port));
   });
   const baseUrl = `http://127.0.0.1:${port}`;
-  console.log(`Local test server started at ${baseUrl}`);
+  const browser = await chromium.launch();
 
-  const browser = await chromium.launch({
-    // headless: false, // set to false for debugging
+  after(async () => {
+    await browser.close();
+    server.close();
   });
 
-  try {
-    // ----------------------------------------------------
-    // Test Case 1: postMessage 'VIEW'
-    // ----------------------------------------------------
-    console.log('\n--- Test 1: Testing postMessage VIEW ---');
-    const page1 = await browser.newPage();
-    await page1.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+  // --- viewonly.html tests ---
 
-    // Set up message listener in the browser to detect response
-    const postMessagePromise = page1.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (e) => {
-          if (e.data && e.data.msg === 'UPLOADCOMPLETE') {
-            resolve(true);
-          }
+  await t.test('viewonly: postMessage VIEW', async () => {
+    const { page, pageErrors } = await openTestPage(browser, `${baseUrl}/viewonly`);
+
+    const postMessagePromise = page.evaluate(() => {
+      return new Promise(resolve => {
+        window.addEventListener('message', e => {
+          if (e.data?.msg === 'UPLOADCOMPLETE') resolve(true);
         });
       });
     });
 
-    // Send postMessage from parent context
-    await page1.evaluate((trace) => {
+    await page.evaluate(trace => {
       window.postMessage({ msg: 'VIEW', data: trace }, '*');
     }, sampleTrace);
 
-    // Verify it sent back UPLOADCOMPLETE
     const msgReceived = await postMessagePromise;
-    console.log('✅ Received UPLOADCOMPLETE postMessage response.');
+    assert.equal(msgReceived, true);
 
-    // Verify viewing state
-    const isViewingState = await page1.evaluate(() => {
-      return document.documentElement.classList.contains('state--viewing');
-    });
-    if (!isViewingState) throw new Error('Document did not transition to state--viewing');
-    console.log('✅ HTML transitioned to state--viewing class.');
+    const isViewing = await page.evaluate(() => document.documentElement.classList.contains('state--viewing'));
+    assert.equal(isViewing, true);
 
-    // Verify iframe exists and is loading devtools
-    const iframeSrc = await page1.evaluate(() => {
-      const iframe = document.querySelector('iframe#ifr-dt');
-      return iframe ? iframe.src : null;
-    });
-    if (!iframeSrc || !iframeSrc.includes('trace_app.html')) {
-      throw new Error(`Iframe src is invalid: ${iframeSrc}`);
-    }
-    console.log('✅ DevTools iframe src is set correctly:', iframeSrc);
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html'));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
 
-    await page1.close();
+  await t.test('viewonly: clipboard paste', async () => {
+    const { page, pageErrors } = await openTestPage(browser, `${baseUrl}/viewonly`);
 
-    // ----------------------------------------------------
-    // Test Case 2: Clipboard Paste
-    // ----------------------------------------------------
-    console.log('\n--- Test 2: Testing Clipboard Paste ---');
-    const page2 = await browser.newPage();
-    await page2.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-
-    // Dispatch custom paste event
-    await page2.evaluate((trace) => {
+    await page.evaluate(trace => {
       const dataTransfer = new DataTransfer();
       dataTransfer.setData('text/plain', trace);
-      const event = new ClipboardEvent('paste', {
+      document.body.dispatchEvent(new ClipboardEvent('paste', {
         clipboardData: dataTransfer,
         bubbles: true,
-        cancelable: true
-      });
-      document.body.dispatchEvent(event);
+        cancelable: true,
+      }));
     }, sampleTrace);
 
-    // Verify viewing state
-    const isViewingStatePaste = await page2.evaluate(() => {
-      return document.documentElement.classList.contains('state--viewing');
+    await page.waitForFunction(() => document.documentElement.classList.contains('state--viewing'));
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html'));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
+
+  await t.test('viewonly: file input (.json.gz)', async () => {
+    const { page, pageErrors } = await openTestPage(browser, `${baseUrl}/viewonly`);
+
+    await page.setInputFiles('input#fileinput', {
+      name: 'trace.json.gz',
+      mimeType: 'application/x-gzip',
+      buffer: sampleTraceGz,
     });
-    if (!isViewingStatePaste) throw new Error('Document did not transition to state--viewing on paste');
-    console.log('✅ HTML transitioned to state--viewing class on paste.');
 
-    // Verify iframe src set
-    const iframeSrcPaste = await page2.evaluate(() => {
-      const iframe = document.querySelector('iframe#ifr-dt');
-      return iframe ? iframe.src : null;
+    await page.waitForFunction(() => document.documentElement.classList.contains('state--viewing'));
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html'));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
+
+  // --- index.html (app.js) tests ---
+
+  await t.test('app: file input (.json.gz)', async () => {
+    const { page, pageErrors, uploadedFiles } = await openTestPage(browser, baseUrl);
+
+    await page.setInputFiles('input#fileinput', {
+      name: 'paulet.json.gz',
+      mimeType: 'application/x-gzip',
+      buffer: sampleTraceGz,
     });
-    if (!iframeSrcPaste || !iframeSrcPaste.includes('trace_app.html')) {
-      throw new Error(`Iframe src is invalid on paste: ${iframeSrcPaste}`);
-    }
-    console.log('✅ DevTools iframe src is set correctly on paste.');
 
-    await page2.close();
+    // Wait for upload to initiate and navigate to /t/<traceId>
+    await page.waitForURL(url => url.pathname.startsWith('/t/'), { timeout: 5000 });
+    await page.waitForFunction(() => document.documentElement.classList.contains('state--viewing'));
 
-    console.log('\n🎉 All tests passed successfully!');
+    assert.equal(uploadedFiles.length, 1);
+    assert.ok(uploadedFiles[0].postData?.includes('"contentEncoding":"gzip"'));
+    assert.ok(uploadedFiles[0].postData?.includes('"oName":"paulet.json.gz"'));
 
-  } catch (err) {
-    console.error('❌ Test failed:', err);
-    process.exitCode = 1;
-  } finally {
-    await browser.close();
-    server.close();
-  }
-}
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html?traceURL='));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
 
-runTests();
+  await t.test('app: drag-and-drop (.json)', async () => {
+    const { page, pageErrors, uploadedFiles } = await openTestPage(browser, baseUrl);
+
+    await page.evaluate(trace => {
+      const dt = new DataTransfer();
+      const file = new File([trace], 'trace.json', { type: 'application/json' });
+      dt.items.add(file);
+      document.body.dispatchEvent(new DragEvent('drop', {
+        dataTransfer: dt,
+        bubbles: true,
+        cancelable: true,
+      }));
+    }, sampleTrace);
+
+    await page.waitForURL(url => url.pathname.startsWith('/t/'), { timeout: 5000 });
+    await page.waitForFunction(() => document.documentElement.classList.contains('state--viewing'));
+
+    assert.equal(uploadedFiles.length, 1);
+    assert.ok(uploadedFiles[0].postData?.includes('"oName":"trace.json"'));
+
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html?traceURL='));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
+
+  await t.test('app: clipboard paste', async () => {
+    const { page, pageErrors, uploadedFiles } = await openTestPage(browser, baseUrl);
+
+    await page.evaluate(trace => {
+      const dt = new DataTransfer();
+      dt.setData('text/plain', trace);
+      document.body.dispatchEvent(new ClipboardEvent('paste', {
+        clipboardData: dt,
+        bubbles: true,
+        cancelable: true,
+      }));
+    }, sampleTrace);
+
+    await page.waitForURL(url => url.pathname.startsWith('/t/'), { timeout: 5000 });
+    await page.waitForFunction(() => document.documentElement.classList.contains('state--viewing'));
+
+    assert.equal(uploadedFiles.length, 1);
+    const iframeSrc = await page.locator('iframe#ifr-dt').getAttribute('src');
+    assert.ok(iframeSrc?.includes('trace_app.html?traceURL='));
+    assert.deepEqual(pageErrors, []);
+    await page.close();
+  });
+});

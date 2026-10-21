@@ -13,7 +13,7 @@
     "serve": "npm run build && firebase serve --port 5002",
     "dev": "npm run serve",
     "deploy": "firebase deploy",
-    "predeploy": "pnpm run build",
+    "predeploy": "pnpm run build && pnpm test",
     "test-deployment": "node scripts/test-deployment.js",
     "bump": "./scripts/bump-local-version.sh",
     "test": "node scripts/test-viewonly.js"

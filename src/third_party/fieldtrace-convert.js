@@ -1,996 +1,5 @@
-var __defProp = Object.defineProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-
-// node_modules/.pnpm/@paulirish+trace_engine@0.0.61/node_modules/@paulirish/trace_engine/models/trace/types/File.js
-var DataOrigin;
-(function(DataOrigin2) {
-  DataOrigin2["CPU_PROFILE"] = "CPUProfile";
-  DataOrigin2["TRACE_EVENTS"] = "TraceEvents";
-})(DataOrigin || (DataOrigin = {}));
-var EntriesLinkState;
-(function(EntriesLinkState2) {
-  EntriesLinkState2["CREATION_NOT_STARTED"] = "creation_not_started";
-  EntriesLinkState2["PENDING_TO_EVENT"] = "pending_to_event";
-  EntriesLinkState2["CONNECTED"] = "connected";
-})(EntriesLinkState || (EntriesLinkState = {}));
-var EventKeyType;
-(function(EventKeyType2) {
-  EventKeyType2["RAW_EVENT"] = "r";
-  EventKeyType2["SYNTHETIC_EVENT"] = "s";
-  EventKeyType2["PROFILE_CALL"] = "p";
-  EventKeyType2["LEGACY_TIMELINE_FRAME"] = "l";
-})(EventKeyType || (EventKeyType = {}));
-
-// node_modules/.pnpm/@paulirish+trace_engine@0.0.61/node_modules/@paulirish/trace_engine/models/trace/types/Timing.js
-var Timing_exports = {};
-__export(Timing_exports, {
-  Micro: () => Micro,
-  Milli: () => Milli,
-  Seconds: () => Seconds
-});
-function Micro(value) {
-  return value;
-}
-function Milli(value) {
-  return value;
-}
-function Seconds(value) {
-  return value;
-}
-
-// node_modules/.pnpm/@paulirish+trace_engine@0.0.61/node_modules/@paulirish/trace_engine/models/trace/types/TraceEvents.js
-var TraceEvents_exports = {};
-__export(TraceEvents_exports, {
-  AuctionWorkletType: () => AuctionWorkletType,
-  CallFrameID: () => CallFrameID,
-  Categories: () => Categories,
-  InvalidationEventType: () => InvalidationEventType,
-  LayoutInvalidationReason: () => LayoutInvalidationReason,
-  MarkerName: () => MarkerName,
-  NO_NAVIGATION: () => NO_NAVIGATION,
-  Name: () => Name,
-  Phase: () => Phase,
-  ProcessID: () => ProcessID,
-  ProfileID: () => ProfileID,
-  SampleIndex: () => SampleIndex,
-  Scope: () => Scope,
-  SelectorTimingsKey: () => SelectorTimingsKey,
-  StyleRecalcInvalidationReason: () => StyleRecalcInvalidationReason,
-  ThreadID: () => ThreadID,
-  WorkerId: () => WorkerId,
-  eventIsPageLoadEvent: () => eventIsPageLoadEvent,
-  isAbortPostTaskCallback: () => isAbortPostTaskCallback,
-  isActivateLayerTree: () => isActivateLayerTree,
-  isAnimation: () => isAnimation,
-  isAnimationFrameAsyncEnd: () => isAnimationFrameAsyncEnd,
-  isAnimationFrameAsyncStart: () => isAnimationFrameAsyncStart,
-  isAnimationFramePresentation: () => isAnimationFramePresentation,
-  isAnyScriptSourceEvent: () => isAnyScriptSourceEvent,
-  isAuctionWorkletDoneWithProcess: () => isAuctionWorkletDoneWithProcess,
-  isAuctionWorkletRunningInProcess: () => isAuctionWorkletRunningInProcess,
-  isBegin: () => isBegin,
-  isBeginCommitCompositorFrame: () => isBeginCommitCompositorFrame,
-  isBeginFrame: () => isBeginFrame,
-  isBeginMainThreadFrame: () => isBeginMainThreadFrame,
-  isBeginRemoteFontLoad: () => isBeginRemoteFontLoad,
-  isCommit: () => isCommit,
-  isCommitLoad: () => isCommitLoad,
-  isComplete: () => isComplete,
-  isCompositeLayers: () => isCompositeLayers,
-  isConsoleRunTask: () => isConsoleRunTask,
-  isConsoleTime: () => isConsoleTime,
-  isConsoleTimeStamp: () => isConsoleTimeStamp,
-  isDOMStats: () => isDOMStats,
-  isDebuggerAsyncTaskRun: () => isDebuggerAsyncTaskRun,
-  isDebuggerAsyncTaskScheduled: () => isDebuggerAsyncTaskScheduled,
-  isDecodeImage: () => isDecodeImage,
-  isDecodeLazyPixelRef: () => isDecodeLazyPixelRef,
-  isDidCommitSameDocumentNavigation: () => isDidCommitSameDocumentNavigation,
-  isDispatch: () => isDispatch,
-  isDisplayListItemListSnapshot: () => isDisplayListItemListSnapshot,
-  isDomLoading: () => isDomLoading,
-  isDrawFrame: () => isDrawFrame,
-  isDrawLazyPixelRef: () => isDrawLazyPixelRef,
-  isDroppedFrame: () => isDroppedFrame,
-  isEnd: () => isEnd,
-  isEventTiming: () => isEventTiming,
-  isEventTimingEnd: () => isEventTimingEnd,
-  isEventTimingStart: () => isEventTimingStart,
-  isFireAnimationFrame: () => isFireAnimationFrame,
-  isFireIdleCallback: () => isFireIdleCallback,
-  isFirstContentfulPaint: () => isFirstContentfulPaint,
-  isFirstPaint: () => isFirstPaint,
-  isFlowPhase: () => isFlowPhase,
-  isFlowPhaseEvent: () => isFlowPhaseEvent,
-  isFrameCommittedInBrowser: () => isFrameCommittedInBrowser,
-  isFunctionCall: () => isFunctionCall,
-  isGPUTask: () => isGPUTask,
-  isHandlePostMessage: () => isHandlePostMessage,
-  isInstant: () => isInstant,
-  isInteractiveTime: () => isInteractiveTime,
-  isInvalidateLayout: () => isInvalidateLayout,
-  isInvalidationTracking: () => isInvalidationTracking,
-  isJSInvocationEvent: () => isJSInvocationEvent,
-  isLargestContentfulPaintCandidate: () => isLargestContentfulPaintCandidate,
-  isLargestImagePaintCandidate: () => isLargestImagePaintCandidate,
-  isLargestTextPaintCandidate: () => isLargestTextPaintCandidate,
-  isLayerTreeHostImplSnapshot: () => isLayerTreeHostImplSnapshot,
-  isLayout: () => isLayout,
-  isLayoutImageUnsized: () => isLayoutImageUnsized,
-  isLayoutInvalidationTracking: () => isLayoutInvalidationTracking,
-  isLayoutShift: () => isLayoutShift,
-  isLegacyScreenshot: () => isLegacyScreenshot,
-  isLegacySyntheticScreenshot: () => isLegacySyntheticScreenshot,
-  isLegacyTimelineFrame: () => isLegacyTimelineFrame,
-  isLinkPreconnect: () => isLinkPreconnect,
-  isMainFrameViewport: () => isMainFrameViewport,
-  isMarkDOMContent: () => isMarkDOMContent,
-  isMarkLoad: () => isMarkLoad,
-  isMarkerEvent: () => isMarkerEvent,
-  isNavigationStart: () => isNavigationStart,
-  isNeedsBeginFrameChanged: () => isNeedsBeginFrameChanged,
-  isNestableAsyncPhase: () => isNestableAsyncPhase,
-  isNetworkTrackEntry: () => isNetworkTrackEntry,
-  isPaint: () => isPaint,
-  isPaintImage: () => isPaintImage,
-  isPairableAsyncBegin: () => isPairableAsyncBegin,
-  isPairableAsyncEnd: () => isPairableAsyncEnd,
-  isPairableAsyncInstant: () => isPairableAsyncInstant,
-  isParseAuthorStyleSheetEvent: () => isParseAuthorStyleSheetEvent,
-  isParseHTML: () => isParseHTML,
-  isParseMetaViewport: () => isParseMetaViewport,
-  isPerformanceMark: () => isPerformanceMark,
-  isPerformanceMeasure: () => isPerformanceMeasure,
-  isPerformanceMeasureBegin: () => isPerformanceMeasureBegin,
-  isPhaseAsync: () => isPhaseAsync,
-  isPipelineReporter: () => isPipelineReporter,
-  isPrePaint: () => isPrePaint,
-  isProcessName: () => isProcessName,
-  isProfile: () => isProfile,
-  isProfileCall: () => isProfileCall,
-  isProfileChunk: () => isProfileChunk,
-  isRasterTask: () => isRasterTask,
-  isRecalcStyle: () => isRecalcStyle,
-  isReceivedDataEvent: () => isReceivedDataEvent,
-  isRemoteFontLoaded: () => isRemoteFontLoaded,
-  isRenderFrameImplCreateChildFrame: () => isRenderFrameImplCreateChildFrame,
-  isRendererEvent: () => isRendererEvent,
-  isRequestIdleCallback: () => isRequestIdleCallback,
-  isRequestMainThreadFrame: () => isRequestMainThreadFrame,
-  isResourceChangePriority: () => isResourceChangePriority,
-  isResourceFinish: () => isResourceFinish,
-  isResourceMarkAsCached: () => isResourceMarkAsCached,
-  isResourceReceiveResponse: () => isResourceReceiveResponse,
-  isResourceReceivedData: () => isResourceReceivedData,
-  isResourceSendRequest: () => isResourceSendRequest,
-  isResourceWillSendRequest: () => isResourceWillSendRequest,
-  isRunPostTaskCallback: () => isRunPostTaskCallback,
-  isRunTask: () => isRunTask,
-  isRundownScript: () => isRundownScript,
-  isRundownScriptCompiled: () => isRundownScriptCompiled,
-  isRundownScriptSource: () => isRundownScriptSource,
-  isRundownScriptSourceLarge: () => isRundownScriptSourceLarge,
-  isSchedulePostMessage: () => isSchedulePostMessage,
-  isSchedulePostTaskCallback: () => isSchedulePostTaskCallback,
-  isScheduleStyleInvalidationTracking: () => isScheduleStyleInvalidationTracking,
-  isScheduleStyleRecalculation: () => isScheduleStyleRecalculation,
-  isScreenshot: () => isScreenshot,
-  isScrollLayer: () => isScrollLayer,
-  isSelectorStats: () => isSelectorStats,
-  isSetLayerId: () => isSetLayerId,
-  isStyleInvalidatorInvalidationTracking: () => isStyleInvalidatorInvalidationTracking,
-  isStyleRecalcInvalidationTracking: () => isStyleRecalcInvalidationTracking,
-  isSyntheticAnimation: () => isSyntheticAnimation,
-  isSyntheticBased: () => isSyntheticBased,
-  isSyntheticConsoleTiming: () => isSyntheticConsoleTiming,
-  isSyntheticCpuProfile: () => isSyntheticCpuProfile,
-  isSyntheticInteraction: () => isSyntheticInteraction,
-  isSyntheticLayoutShift: () => isSyntheticLayoutShift,
-  isSyntheticLayoutShiftCluster: () => isSyntheticLayoutShiftCluster,
-  isSyntheticNetworkRequest: () => isSyntheticNetworkRequest,
-  isSyntheticUserTiming: () => isSyntheticUserTiming,
-  isSyntheticWebSocketConnection: () => isSyntheticWebSocketConnection,
-  isThreadName: () => isThreadName,
-  isTimerFire: () => isTimerFire,
-  isTimerInstall: () => isTimerInstall,
-  isTracingSessionIdForWorker: () => isTracingSessionIdForWorker,
-  isTracingStartedInBrowser: () => isTracingStartedInBrowser,
-  isUpdateCounters: () => isUpdateCounters,
-  isUpdateLayer: () => isUpdateLayer,
-  isUserTiming: () => isUserTiming,
-  isUserTimingMeasure: () => isUserTimingMeasure,
-  isV8Compile: () => isV8Compile,
-  isWebSocketCreate: () => isWebSocketCreate,
-  isWebSocketDestroy: () => isWebSocketDestroy,
-  isWebSocketEvent: () => isWebSocketEvent,
-  isWebSocketInfo: () => isWebSocketInfo,
-  isWebSocketReceiveHandshakeResponse: () => isWebSocketReceiveHandshakeResponse,
-  isWebSocketSendHandshakeRequest: () => isWebSocketSendHandshakeRequest,
-  isWebSocketTraceEvent: () => isWebSocketTraceEvent,
-  isWebSocketTransfer: () => isWebSocketTransfer,
-  objectIsCallFrame: () => objectIsCallFrame
-});
-var Phase;
-(function(Phase3) {
-  Phase3["BEGIN"] = "B";
-  Phase3["END"] = "E";
-  Phase3["COMPLETE"] = "X";
-  Phase3["INSTANT"] = "I";
-  Phase3["COUNTER"] = "C";
-  Phase3["ASYNC_NESTABLE_START"] = "b";
-  Phase3["ASYNC_NESTABLE_INSTANT"] = "n";
-  Phase3["ASYNC_NESTABLE_END"] = "e";
-  Phase3["ASYNC_STEP_INTO"] = "T";
-  Phase3["ASYNC_BEGIN"] = "S";
-  Phase3["ASYNC_END"] = "F";
-  Phase3["ASYNC_STEP_PAST"] = "p";
-  Phase3["FLOW_START"] = "s";
-  Phase3["FLOW_STEP"] = "t";
-  Phase3["FLOW_END"] = "f";
-  Phase3["SAMPLE"] = "P";
-  Phase3["OBJECT_CREATED"] = "N";
-  Phase3["OBJECT_SNAPSHOT"] = "O";
-  Phase3["OBJECT_DESTROYED"] = "D";
-  Phase3["METADATA"] = "M";
-  Phase3["MEMORY_DUMP_GLOBAL"] = "V";
-  Phase3["MEMORY_DUMP_PROCESS"] = "v";
-  Phase3["MARK"] = "R";
-  Phase3["CLOCK_SYNC"] = "c";
-})(Phase || (Phase = {}));
-function isNestableAsyncPhase(phase) {
-  return phase === Phase.ASYNC_NESTABLE_START || phase === Phase.ASYNC_NESTABLE_END || phase === Phase.ASYNC_NESTABLE_INSTANT;
-}
-function isPhaseAsync(phase) {
-  return isNestableAsyncPhase(phase) || phase === Phase.ASYNC_BEGIN || phase === Phase.ASYNC_STEP_INTO || phase === Phase.ASYNC_END || phase === Phase.ASYNC_STEP_PAST;
-}
-function isFlowPhase(phase) {
-  return phase === Phase.FLOW_START || phase === Phase.FLOW_STEP || phase === Phase.FLOW_END;
-}
-var Scope;
-(function(Scope2) {
-  Scope2["THREAD"] = "t";
-  Scope2["PROCESS"] = "p";
-  Scope2["GLOBAL"] = "g";
-})(Scope || (Scope = {}));
-function objectIsCallFrame(object) {
-  return "functionName" in object && typeof object.functionName === "string" && ("scriptId" in object && (typeof object.scriptId === "string" || typeof object.scriptId === "number")) && ("columnNumber" in object && typeof object.columnNumber === "number") && ("lineNumber" in object && typeof object.lineNumber === "number") && ("url" in object && typeof object.url === "string");
-}
-function isRunTask(event) {
-  return event.name === Name.RUN_TASK && event.ph === Phase.COMPLETE;
-}
-var AuctionWorkletType;
-(function(AuctionWorkletType2) {
-  AuctionWorkletType2["BIDDER"] = "bidder";
-  AuctionWorkletType2["SELLER"] = "seller";
-  AuctionWorkletType2["UNKNOWN"] = "unknown";
-})(AuctionWorkletType || (AuctionWorkletType = {}));
-function isAuctionWorkletRunningInProcess(event) {
-  return event.name === "AuctionWorkletRunningInProcess";
-}
-function isAuctionWorkletDoneWithProcess(event) {
-  return event.name === "AuctionWorkletDoneWithProcess";
-}
-function isLegacyScreenshot(event) {
-  return event.name === Name.SCREENSHOT && "id" in event;
-}
-function isLegacySyntheticScreenshot(event) {
-  return event.name === Name.SCREENSHOT && "dataUri" in (event.args ?? {});
-}
-function isScreenshot(event) {
-  return event.name === Name.SCREENSHOT && "source_id" in (event.args ?? {});
-}
-var markerTypeGuards = [
-  isMarkDOMContent,
-  isMarkLoad,
-  isFirstPaint,
-  isFirstContentfulPaint,
-  isLargestContentfulPaintCandidate,
-  isNavigationStart
-];
-var MarkerName = ["MarkDOMContent", "MarkLoad", "firstPaint", "firstContentfulPaint", "largestContentfulPaint::Candidate"];
-function isMarkerEvent(event) {
-  if (event.ph === Phase.INSTANT || event.ph === Phase.MARK) {
-    return markerTypeGuards.some((fn) => fn(event));
-  }
-  return false;
-}
-var pageLoadEventTypeGuards = [
-  ...markerTypeGuards,
-  isInteractiveTime
-];
-function eventIsPageLoadEvent(event) {
-  if (event.ph === Phase.INSTANT || event.ph === Phase.MARK) {
-    return pageLoadEventTypeGuards.some((fn) => fn(event));
-  }
-  return false;
-}
-function isTracingSessionIdForWorker(event) {
-  return event.name === "TracingSessionIdForWorker";
-}
-var NO_NAVIGATION = "NO_NAVIGATION";
-var LayoutInvalidationReason;
-(function(LayoutInvalidationReason2) {
-  LayoutInvalidationReason2["SIZE_CHANGED"] = "Size changed";
-  LayoutInvalidationReason2["ATTRIBUTE"] = "Attribute";
-  LayoutInvalidationReason2["ADDED_TO_LAYOUT"] = "Added to layout";
-  LayoutInvalidationReason2["SCROLLBAR_CHANGED"] = "Scrollbar changed";
-  LayoutInvalidationReason2["REMOVED_FROM_LAYOUT"] = "Removed from layout";
-  LayoutInvalidationReason2["STYLE_CHANGED"] = "Style changed";
-  LayoutInvalidationReason2["FONTS_CHANGED"] = "Fonts changed";
-  LayoutInvalidationReason2["UNKNOWN"] = "Unknown";
-})(LayoutInvalidationReason || (LayoutInvalidationReason = {}));
-function isScheduleStyleInvalidationTracking(event) {
-  return event.name === Name.SCHEDULE_STYLE_INVALIDATION_TRACKING;
-}
-var StyleRecalcInvalidationReason;
-(function(StyleRecalcInvalidationReason2) {
-  StyleRecalcInvalidationReason2["ANIMATION"] = "Animation";
-  StyleRecalcInvalidationReason2["RELATED_STYLE_RULE"] = "Related style rule";
-})(StyleRecalcInvalidationReason || (StyleRecalcInvalidationReason = {}));
-function isStyleRecalcInvalidationTracking(event) {
-  return event.name === Name.STYLE_RECALC_INVALIDATION_TRACKING;
-}
-function isStyleInvalidatorInvalidationTracking(event) {
-  return event.name === Name.STYLE_INVALIDATOR_INVALIDATION_TRACKING;
-}
-function isBeginCommitCompositorFrame(event) {
-  return event.name === Name.BEGIN_COMMIT_COMPOSITOR_FRAME;
-}
-function isParseMetaViewport(event) {
-  return event.name === Name.PARSE_META_VIEWPORT;
-}
-function isLinkPreconnect(event) {
-  return event.name === Name.LINK_PRECONNECT;
-}
-function isScheduleStyleRecalculation(event) {
-  return event.name === Name.SCHEDULE_STYLE_RECALCULATION;
-}
-function isRenderFrameImplCreateChildFrame(event) {
-  return event.name === Name.RENDER_FRAME_IMPL_CREATE_CHILD_FRAME;
-}
-function isLayoutImageUnsized(event) {
-  return event.name === Name.LAYOUT_IMAGE_UNSIZED;
-}
-function isPairableAsyncBegin(e) {
-  return e.ph === Phase.ASYNC_NESTABLE_START;
-}
-function isPairableAsyncEnd(e) {
-  return e.ph === Phase.ASYNC_NESTABLE_END;
-}
-function isPairableAsyncInstant(e) {
-  return e.ph === Phase.ASYNC_NESTABLE_INSTANT;
-}
-function isAnimationFrameAsyncStart(data) {
-  return data.name === Name.ANIMATION_FRAME && data.ph === Phase.ASYNC_NESTABLE_START;
-}
-function isAnimationFrameAsyncEnd(data) {
-  return data.name === Name.ANIMATION_FRAME && data.ph === Phase.ASYNC_NESTABLE_END;
-}
-function isAnimationFramePresentation(data) {
-  return data.name === Name.ANIMATION_FRAME_PRESENTATION;
-}
-function isPipelineReporter(event) {
-  return event.name === Name.PIPELINE_REPORTER;
-}
-function isSyntheticBased(event) {
-  return "rawSourceEvent" in event;
-}
-function isSyntheticInteraction(event) {
-  return Boolean("interactionId" in event && event.args?.data && "beginEvent" in event.args.data && "endEvent" in event.args.data);
-}
-function isDrawFrame(event) {
-  return event.name === Name.DRAW_FRAME && event.ph === Phase.INSTANT;
-}
-function isBeginFrame(event) {
-  return Boolean(event.name === Name.BEGIN_FRAME && event.args && "frameSeqId" in event.args);
-}
-function isDroppedFrame(event) {
-  return Boolean(event.name === Name.DROPPED_FRAME && event.args && "frameSeqId" in event.args);
-}
-function isRequestMainThreadFrame(event) {
-  return event.name === Name.REQUEST_MAIN_THREAD_FRAME;
-}
-function isBeginMainThreadFrame(event) {
-  return event.name === Name.BEGIN_MAIN_THREAD_FRAME;
-}
-function isNeedsBeginFrameChanged(event) {
-  return event.name === Name.NEEDS_BEGIN_FRAME_CHANGED;
-}
-function isCommit(event) {
-  return Boolean(event.name === Name.COMMIT && event.args && "frameSeqId" in event.args);
-}
-function isRasterTask(event) {
-  return event.name === Name.RASTER_TASK;
-}
-function isCompositeLayers(event) {
-  return event.name === Name.COMPOSITE_LAYERS;
-}
-function isActivateLayerTree(event) {
-  return event.name === Name.ACTIVATE_LAYER_TREE;
-}
-function isInvalidationTracking(event) {
-  return isScheduleStyleInvalidationTracking(event) || isStyleRecalcInvalidationTracking(event) || isStyleInvalidatorInvalidationTracking(event) || isLayoutInvalidationTracking(event);
-}
-function isDrawLazyPixelRef(event) {
-  return event.name === Name.DRAW_LAZY_PIXEL_REF;
-}
-function isDecodeLazyPixelRef(event) {
-  return event.name === Name.DECODE_LAZY_PIXEL_REF;
-}
-function isDecodeImage(event) {
-  return event.name === Name.DECODE_IMAGE;
-}
-var InvalidationEventType;
-(function(InvalidationEventType2) {
-  InvalidationEventType2["StyleInvalidatorInvalidationTracking"] = "StyleInvalidatorInvalidationTracking";
-  InvalidationEventType2["StyleRecalcInvalidationTracking"] = "StyleRecalcInvalidationTracking";
-})(InvalidationEventType || (InvalidationEventType = {}));
-var SelectorTimingsKey;
-(function(SelectorTimingsKey2) {
-  SelectorTimingsKey2["Elapsed"] = "elapsed (us)";
-  SelectorTimingsKey2["RejectPercentage"] = "reject_percentage";
-  SelectorTimingsKey2["FastRejectCount"] = "fast_reject_count";
-  SelectorTimingsKey2["MatchAttempts"] = "match_attempts";
-  SelectorTimingsKey2["MatchCount"] = "match_count";
-  SelectorTimingsKey2["Selector"] = "selector";
-  SelectorTimingsKey2["StyleSheetId"] = "style_sheet_id";
-  SelectorTimingsKey2["InvalidationCount"] = "invalidation_count";
-})(SelectorTimingsKey || (SelectorTimingsKey = {}));
-function isSelectorStats(event) {
-  return event.name === Name.SELECTOR_STATS;
-}
-function isRecalcStyle(event) {
-  return event.name === Name.RECALC_STYLE;
-}
-function isLayout(event) {
-  return event.name === Name.LAYOUT && Boolean(event.args && "beginData" in event.args);
-}
-function isInvalidateLayout(event) {
-  return event.name === Name.INVALIDATE_LAYOUT;
-}
-function isDebuggerAsyncTaskScheduled(event) {
-  return event.name === Name.DEBUGGER_ASYNC_TASK_SCHEDULED;
-}
-function isDebuggerAsyncTaskRun(event) {
-  return event.name === Name.DEBUGGER_ASYNC_TASK_RUN;
-}
-function ProfileID(value) {
-  return value;
-}
-function CallFrameID(value) {
-  return value;
-}
-function SampleIndex(value) {
-  return value;
-}
-function ProcessID(value) {
-  return value;
-}
-function ThreadID(value) {
-  return value;
-}
-function WorkerId(value) {
-  return value;
-}
-function isComplete(event) {
-  return event.ph === Phase.COMPLETE;
-}
-function isBegin(event) {
-  return event.ph === Phase.BEGIN;
-}
-function isEnd(event) {
-  return event.ph === Phase.END;
-}
-function isDispatch(event) {
-  return event.name === "EventDispatch" && event.ph === Phase.COMPLETE;
-}
-function isInstant(event) {
-  return event.ph === Phase.INSTANT;
-}
-function isRendererEvent(event) {
-  return isInstant(event) || isComplete(event);
-}
-function isFireIdleCallback(event) {
-  return event.name === "FireIdleCallback" && event.ph === Phase.COMPLETE;
-}
-function isSchedulePostMessage(event) {
-  return event.name === Name.SCHEDULE_POST_MESSAGE;
-}
-function isHandlePostMessage(event) {
-  return event.name === Name.HANDLE_POST_MESSAGE && event.ph === Phase.COMPLETE;
-}
-function isUpdateCounters(event) {
-  return event.name === "UpdateCounters";
-}
-function isDOMStats(event) {
-  return event.name === "DOMStats";
-}
-function isThreadName(event) {
-  return event.name === Name.THREAD_NAME;
-}
-function isProcessName(event) {
-  return event.name === "process_name";
-}
-function isTracingStartedInBrowser(event) {
-  return event.name === Name.TRACING_STARTED_IN_BROWSER;
-}
-function isFrameCommittedInBrowser(event) {
-  return event.name === "FrameCommittedInBrowser";
-}
-function isCommitLoad(event) {
-  return event.name === "CommitLoad";
-}
-function isAnimation(event) {
-  return event.name === "Animation" && event.cat.includes("devtools.timeline");
-}
-function isSyntheticAnimation(event) {
-  if (event.name !== "Animation" || !event.cat.includes("devtools.timeline")) {
-    return false;
-  }
-  const data = event.args?.data;
-  if (!data) {
-    return false;
-  }
-  return "beginEvent" in data && "endEvent" in data;
-}
-function isLayoutShift(event) {
-  return event.name === Name.LAYOUT_SHIFT;
-}
-function isLayoutInvalidationTracking(event) {
-  return event.name === Name.LAYOUT_INVALIDATION_TRACKING;
-}
-function isFirstContentfulPaint(event) {
-  return event.name === "firstContentfulPaint";
-}
-function isLargestContentfulPaintCandidate(event) {
-  return event.name === Name.MARK_LCP_CANDIDATE;
-}
-function isLargestImagePaintCandidate(event) {
-  return event.name === "LargestImagePaint::Candidate";
-}
-function isLargestTextPaintCandidate(event) {
-  return event.name === "LargestTextPaint::Candidate";
-}
-function isMarkLoad(event) {
-  return event.name === "MarkLoad";
-}
-function isFirstPaint(event) {
-  return event.name === "firstPaint";
-}
-function isMarkDOMContent(event) {
-  return event.name === "MarkDOMContent";
-}
-function isInteractiveTime(event) {
-  return event.name === "InteractiveTime";
-}
-function isEventTiming(event) {
-  return event.name === Name.EVENT_TIMING;
-}
-function isEventTimingEnd(event) {
-  return isEventTiming(event) && event.ph === Phase.ASYNC_NESTABLE_END;
-}
-function isEventTimingStart(event) {
-  return isEventTiming(event) && event.ph === Phase.ASYNC_NESTABLE_START;
-}
-function isGPUTask(event) {
-  return event.name === "GPUTask";
-}
-function isProfile(event) {
-  return event.name === Name.PROFILE;
-}
-function isSyntheticCpuProfile(event) {
-  return event.name === Name.CPU_PROFILE && event.ph === Phase.COMPLETE;
-}
-function isProfileChunk(event) {
-  return event.name === Name.PROFILE_CHUNK;
-}
-function isResourceChangePriority(event) {
-  return event.name === "ResourceChangePriority";
-}
-function isResourceSendRequest(event) {
-  return event.name === "ResourceSendRequest";
-}
-function isResourceReceiveResponse(event) {
-  return event.name === "ResourceReceiveResponse";
-}
-function isResourceMarkAsCached(event) {
-  return event.name === "ResourceMarkAsCached";
-}
-function isResourceFinish(event) {
-  return event.name === "ResourceFinish";
-}
-function isResourceWillSendRequest(event) {
-  return event.name === "ResourceWillSendRequest";
-}
-function isResourceReceivedData(event) {
-  return event.name === "ResourceReceivedData";
-}
-function isReceivedDataEvent(event) {
-  return event.name === "ResourceReceivedData" || event.name === "ResourceFinish" || event.name === "ResourceReceiveResponse";
-}
-function isSyntheticNetworkRequest(event) {
-  return event.name === Name.SYNTHETIC_NETWORK_REQUEST;
-}
-function isSyntheticWebSocketConnection(event) {
-  return event.name === "SyntheticWebSocketConnection";
-}
-function isNetworkTrackEntry(event) {
-  return isSyntheticNetworkRequest(event) || isSyntheticWebSocketConnection(event) || isWebSocketTraceEvent(event);
-}
-function isPrePaint(event) {
-  return event.name === "PrePaint";
-}
-function isNavigationStart(event) {
-  return event.name === "navigationStart" && event.args?.data?.documentLoaderURL !== "";
-}
-function isDidCommitSameDocumentNavigation(event) {
-  return event.name === "RenderFrameHostImpl::DidCommitSameDocumentNavigation" && event.ph === Phase.COMPLETE;
-}
-function isMainFrameViewport(event) {
-  return event.name === "PaintTimingVisualizer::Viewport";
-}
-function isSyntheticUserTiming(event) {
-  if (event.cat !== "blink.user_timing") {
-    return false;
-  }
-  const data = event.args?.data;
-  if (!data) {
-    return false;
-  }
-  return "beginEvent" in data && "endEvent" in data;
-}
-function isSyntheticConsoleTiming(event) {
-  if (event.cat !== "blink.console") {
-    return false;
-  }
-  const data = event.args?.data;
-  if (!data) {
-    return false;
-  }
-  return "beginEvent" in data && "endEvent" in data;
-}
-function isUserTiming(event) {
-  return event.cat === "blink.user_timing";
-}
-function isDomLoading(event) {
-  return event.name === Name.DOM_LOADING;
-}
-function isBeginRemoteFontLoad(event) {
-  return event.name === Name.BEGIN_REMOTE_FONT_LOAD;
-}
-function isRemoteFontLoaded(event) {
-  return event.name === Name.REMOTE_FONT_LOADED;
-}
-function isPerformanceMeasure(event) {
-  return isUserTiming(event) && isPhaseAsync(event.ph);
-}
-function isPerformanceMeasureBegin(event) {
-  return isPerformanceMeasure(event) && event.ph === Phase.ASYNC_NESTABLE_START;
-}
-function isPerformanceMark(event) {
-  return isUserTiming(event) && (event.ph === Phase.MARK || event.ph === Phase.INSTANT);
-}
-function isConsoleTime(event) {
-  return event.cat === "blink.console" && isPhaseAsync(event.ph);
-}
-function isConsoleTimeStamp(event) {
-  return event.ph === Phase.INSTANT && event.name === Name.TIME_STAMP;
-}
-function isUserTimingMeasure(event) {
-  return event.name === Name.USER_TIMING_MEASURE;
-}
-function isParseHTML(event) {
-  return event.name === "ParseHTML";
-}
-function isSyntheticLayoutShift(event) {
-  return event.name === Name.SYNTHETIC_LAYOUT_SHIFT;
-}
-function isSyntheticLayoutShiftCluster(event) {
-  return event.name === Name.SYNTHETIC_LAYOUT_SHIFT_CLUSTER;
-}
-function isProfileCall(event) {
-  return "callFrame" in event;
-}
-function isPaint(event) {
-  return event.name === Name.PAINT;
-}
-function isPaintImage(event) {
-  return event.name === Name.PAINT_IMAGE && event.ph === Phase.COMPLETE;
-}
-function isScrollLayer(event) {
-  return event.name === Name.SCROLL_LAYER && event.ph === Phase.COMPLETE;
-}
-function isSetLayerId(event) {
-  return event.name === Name.SET_LAYER_TREE_ID;
-}
-function isUpdateLayer(event) {
-  return event.name === Name.UPDATE_LAYER;
-}
-function isDisplayListItemListSnapshot(event) {
-  return event.name === Name.DISPLAY_ITEM_LIST_SNAPSHOT;
-}
-function isLayerTreeHostImplSnapshot(event) {
-  return event.name === Name.LAYER_TREE_HOST_IMPL_SNAPSHOT;
-}
-function isFireAnimationFrame(event) {
-  return event.name === Name.FIRE_ANIMATION_FRAME && event.ph === Phase.COMPLETE;
-}
-function isTimerInstall(event) {
-  return event.name === Name.TIMER_INSTALL;
-}
-function isTimerFire(event) {
-  return event.name === Name.TIMER_FIRE && event.ph === Phase.COMPLETE;
-}
-function isRequestIdleCallback(event) {
-  return event.name === Name.REQUEST_IDLE_CALLBACK;
-}
-function isWebSocketCreate(event) {
-  return event.name === Name.WEB_SOCKET_CREATE;
-}
-function isWebSocketInfo(event) {
-  return event.name === Name.WEB_SOCKET_SEND_HANDSHAKE_REQUEST || event.name === Name.WEB_SOCKET_RECEIVE_HANDSHAKE_REQUEST || event.name === Name.WEB_SOCKET_DESTROY;
-}
-function isWebSocketTransfer(event) {
-  return event.name === Name.WEB_SOCKET_SEND || event.name === Name.WEB_SOCKET_RECEIVE;
-}
-function isWebSocketSendHandshakeRequest(event) {
-  return event.name === Name.WEB_SOCKET_SEND_HANDSHAKE_REQUEST;
-}
-function isWebSocketReceiveHandshakeResponse(event) {
-  return event.name === Name.WEB_SOCKET_RECEIVE_HANDSHAKE_REQUEST;
-}
-function isWebSocketDestroy(event) {
-  return event.name === Name.WEB_SOCKET_DESTROY;
-}
-function isWebSocketTraceEvent(event) {
-  return isWebSocketCreate(event) || isWebSocketInfo(event) || isWebSocketTransfer(event);
-}
-function isWebSocketEvent(event) {
-  return isWebSocketTraceEvent(event) || isSyntheticWebSocketConnection(event);
-}
-function isV8Compile(event) {
-  return event.name === Name.COMPILE && event.ph === Phase.COMPLETE;
-}
-function isFunctionCall(event) {
-  return event.name === Name.FUNCTION_CALL && event.ph === Phase.COMPLETE;
-}
-function isSchedulePostTaskCallback(event) {
-  return event.name === Name.SCHEDULE_POST_TASK_CALLBACK;
-}
-function isRunPostTaskCallback(event) {
-  return event.name === Name.RUN_POST_TASK_CALLBACK && event.ph === Phase.COMPLETE;
-}
-function isAbortPostTaskCallback(event) {
-  return event.name === Name.ABORT_POST_TASK_CALLBACK && event.ph === Phase.COMPLETE;
-}
-function isJSInvocationEvent(event) {
-  switch (event.name) {
-    case Name.RUN_MICROTASKS:
-    case Name.FUNCTION_CALL:
-    // TODO(paulirish): Define types for these Evaluate* events
-    case Name.EVALUATE_SCRIPT:
-    case Name.EVALUATE_MODULE:
-    case Name.EVENT_DISPATCH:
-    case Name.V8_EXECUTE:
-    case Name.V8_CONSOLE_RUN_TASK:
-      return true;
-  }
-  if (event.name.startsWith("v8") || event.name.startsWith("V8")) {
-    return true;
-  }
-  if (isConsoleRunTask(event)) {
-    return true;
-  }
-  return false;
-}
-function isConsoleRunTask(event) {
-  return event.name === Name.V8_CONSOLE_RUN_TASK;
-}
-function isFlowPhaseEvent(event) {
-  return event.ph === Phase.FLOW_START || event.ph === Phase.FLOW_STEP || event.ph === Phase.FLOW_END;
-}
-function isParseAuthorStyleSheetEvent(event) {
-  return event.name === Name.PARSE_AUTHOR_STYLE_SHEET && event.ph === Phase.COMPLETE;
-}
-var Name;
-(function(Name2) {
-  Name2["THREAD_NAME"] = "thread_name";
-  Name2["PROGRAM"] = "Program";
-  Name2["RUN_TASK"] = "RunTask";
-  Name2["ASYNC_TASK"] = "AsyncTask";
-  Name2["RUN_MICROTASKS"] = "RunMicrotasks";
-  Name2["XHR_LOAD"] = "XHRLoad";
-  Name2["XHR_READY_STATE_CHANGED"] = "XHRReadyStateChange";
-  Name2["PARSE_HTML"] = "ParseHTML";
-  Name2["PARSE_CSS"] = "ParseAuthorStyleSheet";
-  Name2["COMPILE_CODE"] = "V8.CompileCode";
-  Name2["COMPILE_MODULE"] = "V8.CompileModule";
-  Name2["COMPILE"] = "v8.compile";
-  Name2["COMPILE_SCRIPT"] = "V8.CompileScript";
-  Name2["OPTIMIZE"] = "V8.OptimizeCode";
-  Name2["WASM_STREAM_FROM_RESPONSE_CALLBACK"] = "v8.wasm.streamFromResponseCallback";
-  Name2["WASM_COMPILED_MODULE"] = "v8.wasm.compiledModule";
-  Name2["WASM_CACHED_MODULE"] = "v8.wasm.cachedModule";
-  Name2["WASM_MODULE_CACHE_HIT"] = "v8.wasm.moduleCacheHit";
-  Name2["WASM_MODULE_CACHE_INVALID"] = "v8.wasm.moduleCacheInvalid";
-  Name2["PROFILE_CALL"] = "ProfileCall";
-  Name2["EVALUATE_SCRIPT"] = "EvaluateScript";
-  Name2["FUNCTION_CALL"] = "FunctionCall";
-  Name2["EVENT_DISPATCH"] = "EventDispatch";
-  Name2["EVALUATE_MODULE"] = "v8.evaluateModule";
-  Name2["REQUEST_MAIN_THREAD_FRAME"] = "RequestMainThreadFrame";
-  Name2["REQUEST_ANIMATION_FRAME"] = "RequestAnimationFrame";
-  Name2["CANCEL_ANIMATION_FRAME"] = "CancelAnimationFrame";
-  Name2["FIRE_ANIMATION_FRAME"] = "FireAnimationFrame";
-  Name2["REQUEST_IDLE_CALLBACK"] = "RequestIdleCallback";
-  Name2["CANCEL_IDLE_CALLBACK"] = "CancelIdleCallback";
-  Name2["FIRE_IDLE_CALLBACK"] = "FireIdleCallback";
-  Name2["TIMER_INSTALL"] = "TimerInstall";
-  Name2["TIMER_REMOVE"] = "TimerRemove";
-  Name2["TIMER_FIRE"] = "TimerFire";
-  Name2["WEB_SOCKET_CREATE"] = "WebSocketCreate";
-  Name2["WEB_SOCKET_SEND_HANDSHAKE"] = "WebSocketSendHandshakeRequest";
-  Name2["WEB_SOCKET_RECEIVE_HANDSHAKE"] = "WebSocketReceiveHandshakeResponse";
-  Name2["WEB_SOCKET_DESTROY"] = "WebSocketDestroy";
-  Name2["WEB_SOCKET_SEND"] = "WebSocketSend";
-  Name2["WEB_SOCKET_RECEIVE"] = "WebSocketReceive";
-  Name2["CRYPTO_DO_ENCRYPT"] = "DoEncrypt";
-  Name2["CRYPTO_DO_ENCRYPT_REPLY"] = "DoEncryptReply";
-  Name2["CRYPTO_DO_DECRYPT"] = "DoDecrypt";
-  Name2["CRYPTO_DO_DECRYPT_REPLY"] = "DoDecryptReply";
-  Name2["CRYPTO_DO_DIGEST"] = "DoDigest";
-  Name2["CRYPTO_DO_DIGEST_REPLY"] = "DoDigestReply";
-  Name2["CRYPTO_DO_SIGN"] = "DoSign";
-  Name2["CRYPTO_DO_SIGN_REPLY"] = "DoSignReply";
-  Name2["CRYPTO_DO_VERIFY"] = "DoVerify";
-  Name2["CRYPTO_DO_VERIFY_REPLY"] = "DoVerifyReply";
-  Name2["V8_EXECUTE"] = "V8.Execute";
-  Name2["V8_CONSOLE_RUN_TASK"] = "V8Console::runTask";
-  Name2["SCHEDULE_POST_TASK_CALLBACK"] = "SchedulePostTaskCallback";
-  Name2["RUN_POST_TASK_CALLBACK"] = "RunPostTaskCallback";
-  Name2["ABORT_POST_TASK_CALLBACK"] = "AbortPostTaskCallback";
-  Name2["DEBUGGER_ASYNC_TASK_RUN"] = "v8::Debugger::AsyncTaskRun";
-  Name2["DEBUGGER_ASYNC_TASK_SCHEDULED"] = "v8::Debugger::AsyncTaskScheduled";
-  Name2["GC"] = "GCEvent";
-  Name2["DOMGC"] = "BlinkGC.AtomicPhase";
-  Name2["MAJOR_GC"] = "MajorGC";
-  Name2["MINOR_GC"] = "MinorGC";
-  Name2["GC_COLLECT_GARBARGE"] = "BlinkGC.AtomicPhase";
-  Name2["CPPGC_SWEEP"] = "CppGC.IncrementalSweep";
-  Name2["SCHEDULE_STYLE_RECALCULATION"] = "ScheduleStyleRecalculation";
-  Name2["LAYOUT"] = "Layout";
-  Name2["RECALC_STYLE"] = "UpdateLayoutTree";
-  Name2["INVALIDATE_LAYOUT"] = "InvalidateLayout";
-  Name2["LAYOUT_INVALIDATION_TRACKING"] = "LayoutInvalidationTracking";
-  Name2["COMPUTE_INTERSECTION"] = "ComputeIntersections";
-  Name2["HIT_TEST"] = "HitTest";
-  Name2["PRE_PAINT"] = "PrePaint";
-  Name2["LAYERIZE"] = "Layerize";
-  Name2["LAYOUT_SHIFT"] = "LayoutShift";
-  Name2["SYNTHETIC_LAYOUT_SHIFT"] = "SyntheticLayoutShift";
-  Name2["SYNTHETIC_LAYOUT_SHIFT_CLUSTER"] = "SyntheticLayoutShiftCluster";
-  Name2["UPDATE_LAYER_TREE"] = "UpdateLayerTree";
-  Name2["SCHEDULE_STYLE_INVALIDATION_TRACKING"] = "ScheduleStyleInvalidationTracking";
-  Name2["STYLE_RECALC_INVALIDATION_TRACKING"] = "StyleRecalcInvalidationTracking";
-  Name2["STYLE_INVALIDATOR_INVALIDATION_TRACKING"] = "StyleInvalidatorInvalidationTracking";
-  Name2["SELECTOR_STATS"] = "SelectorStats";
-  Name2["BEGIN_COMMIT_COMPOSITOR_FRAME"] = "BeginCommitCompositorFrame";
-  Name2["PARSE_META_VIEWPORT"] = "ParseMetaViewport";
-  Name2["SCROLL_LAYER"] = "ScrollLayer";
-  Name2["UPDATE_LAYER"] = "UpdateLayer";
-  Name2["PAINT_SETUP"] = "PaintSetup";
-  Name2["PAINT"] = "Paint";
-  Name2["PAINT_IMAGE"] = "PaintImage";
-  Name2["COMMIT"] = "Commit";
-  Name2["COMPOSITE_LAYERS"] = "CompositeLayers";
-  Name2["RASTER_TASK"] = "RasterTask";
-  Name2["IMAGE_DECODE_TASK"] = "ImageDecodeTask";
-  Name2["IMAGE_UPLOAD_TASK"] = "ImageUploadTask";
-  Name2["DECODE_IMAGE"] = "Decode Image";
-  Name2["DRAW_LAZY_PIXEL_REF"] = "Draw LazyPixelRef";
-  Name2["DECODE_LAZY_PIXEL_REF"] = "Decode LazyPixelRef";
-  Name2["GPU_TASK"] = "GPUTask";
-  Name2["RASTERIZE"] = "Rasterize";
-  Name2["EVENT_TIMING"] = "EventTiming";
-  Name2["OPTIMIZE_CODE"] = "V8.OptimizeCode";
-  Name2["CACHE_SCRIPT"] = "v8.produceCache";
-  Name2["CACHE_MODULE"] = "v8.produceModuleCache";
-  Name2["V8_SAMPLE"] = "V8Sample";
-  Name2["JIT_CODE_ADDED"] = "JitCodeAdded";
-  Name2["JIT_CODE_MOVED"] = "JitCodeMoved";
-  Name2["STREAMING_COMPILE_SCRIPT"] = "v8.parseOnBackground";
-  Name2["STREAMING_COMPILE_SCRIPT_WAITING"] = "v8.parseOnBackgroundWaiting";
-  Name2["STREAMING_COMPILE_SCRIPT_PARSING"] = "v8.parseOnBackgroundParsing";
-  Name2["BACKGROUND_DESERIALIZE"] = "v8.deserializeOnBackground";
-  Name2["FINALIZE_DESERIALIZATION"] = "V8.FinalizeDeserialization";
-  Name2["COMMIT_LOAD"] = "CommitLoad";
-  Name2["MARK_LOAD"] = "MarkLoad";
-  Name2["MARK_DOM_CONTENT"] = "MarkDOMContent";
-  Name2["MARK_FIRST_PAINT"] = "firstPaint";
-  Name2["MARK_FCP"] = "firstContentfulPaint";
-  Name2["MARK_LCP_CANDIDATE"] = "largestContentfulPaint::Candidate";
-  Name2["MARK_LCP_INVALIDATE"] = "largestContentfulPaint::Invalidate";
-  Name2["NAVIGATION_START"] = "navigationStart";
-  Name2["CONSOLE_TIME"] = "ConsoleTime";
-  Name2["USER_TIMING"] = "UserTiming";
-  Name2["INTERACTIVE_TIME"] = "InteractiveTime";
-  Name2["TIME_STAMP"] = "TimeStamp";
-  Name2["BEGIN_FRAME"] = "BeginFrame";
-  Name2["NEEDS_BEGIN_FRAME_CHANGED"] = "NeedsBeginFrameChanged";
-  Name2["BEGIN_MAIN_THREAD_FRAME"] = "BeginMainThreadFrame";
-  Name2["ACTIVATE_LAYER_TREE"] = "ActivateLayerTree";
-  Name2["DRAW_FRAME"] = "DrawFrame";
-  Name2["DROPPED_FRAME"] = "DroppedFrame";
-  Name2["FRAME_STARTED_LOADING"] = "FrameStartedLoading";
-  Name2["PIPELINE_REPORTER"] = "PipelineReporter";
-  Name2["SCREENSHOT"] = "Screenshot";
-  Name2["RESOURCE_WILL_SEND_REQUEST"] = "ResourceWillSendRequest";
-  Name2["RESOURCE_SEND_REQUEST"] = "ResourceSendRequest";
-  Name2["RESOURCE_RECEIVE_RESPONSE"] = "ResourceReceiveResponse";
-  Name2["RESOURCE_RECEIVE_DATA"] = "ResourceReceivedData";
-  Name2["RESOURCE_FINISH"] = "ResourceFinish";
-  Name2["RESOURCE_MARK_AS_CACHED"] = "ResourceMarkAsCached";
-  Name2["WEB_SOCKET_SEND_HANDSHAKE_REQUEST"] = "WebSocketSendHandshakeRequest";
-  Name2["WEB_SOCKET_RECEIVE_HANDSHAKE_REQUEST"] = "WebSocketReceiveHandshakeResponse";
-  Name2["CPU_PROFILE"] = "CpuProfile";
-  Name2["PROFILE"] = "Profile";
-  Name2["START_PROFILING"] = "CpuProfiler::StartProfiling";
-  Name2["PROFILE_CHUNK"] = "ProfileChunk";
-  Name2["UPDATE_COUNTERS"] = "UpdateCounters";
-  Name2["JS_SAMPLE"] = "JSSample";
-  Name2["ANIMATION"] = "Animation";
-  Name2["PARSE_AUTHOR_STYLE_SHEET"] = "ParseAuthorStyleSheet";
-  Name2["EMBEDDER_CALLBACK"] = "EmbedderCallback";
-  Name2["SET_LAYER_TREE_ID"] = "SetLayerTreeId";
-  Name2["TRACING_STARTED_IN_PAGE"] = "TracingStartedInPage";
-  Name2["TRACING_STARTED_IN_BROWSER"] = "TracingStartedInBrowser";
-  Name2["TRACING_SESSION_ID_FOR_WORKER"] = "TracingSessionIdForWorker";
-  Name2["LAZY_PIXEL_REF"] = "LazyPixelRef";
-  Name2["LAYER_TREE_HOST_IMPL_SNAPSHOT"] = "cc::LayerTreeHostImpl";
-  Name2["PICTURE_SNAPSHOT"] = "cc::Picture";
-  Name2["DISPLAY_ITEM_LIST_SNAPSHOT"] = "cc::DisplayItemList";
-  Name2["INPUT_LATENCY_MOUSE_MOVE"] = "InputLatency::MouseMove";
-  Name2["INPUT_LATENCY_MOUSE_WHEEL"] = "InputLatency::MouseWheel";
-  Name2["IMPL_SIDE_FLING"] = "InputHandlerProxy::HandleGestureFling::started";
-  Name2["SCHEDULE_POST_MESSAGE"] = "SchedulePostMessage";
-  Name2["HANDLE_POST_MESSAGE"] = "HandlePostMessage";
-  Name2["RENDER_FRAME_IMPL_CREATE_CHILD_FRAME"] = "RenderFrameImpl::createChildFrame";
-  Name2["LAYOUT_IMAGE_UNSIZED"] = "LayoutImageUnsized";
-  Name2["DOM_LOADING"] = "domLoading";
-  Name2["BEGIN_REMOTE_FONT_LOAD"] = "BeginRemoteFontLoad";
-  Name2["REMOTE_FONT_LOADED"] = "RemoteFontLoaded";
-  Name2["ANIMATION_FRAME"] = "AnimationFrame";
-  Name2["ANIMATION_FRAME_PRESENTATION"] = "AnimationFrame::Presentation";
-  Name2["SYNTHETIC_NETWORK_REQUEST"] = "SyntheticNetworkRequest";
-  Name2["USER_TIMING_MEASURE"] = "UserTiming::Measure";
-  Name2["LINK_PRECONNECT"] = "LinkPreconnect";
-})(Name || (Name = {}));
-var Categories = {
-  Console: "blink.console",
-  UserTiming: "blink.user_timing",
-  Loading: "loading"
-};
-function isLegacyTimelineFrame(data) {
-  return "idle" in data && typeof data.idle === "boolean";
-}
-function isRundownScriptCompiled(event) {
-  return event.cat === "disabled-by-default-devtools.target-rundown";
-}
-function isRundownScript(event) {
-  return event.cat === "disabled-by-default-devtools.v8-source-rundown" && event.name === "ScriptCatchup";
-}
-function isRundownScriptSource(event) {
-  return event.cat === "disabled-by-default-devtools.v8-source-rundown-sources" && event.name === "ScriptCatchup";
-}
-function isRundownScriptSourceLarge(event) {
-  return event.cat === "disabled-by-default-devtools.v8-source-rundown-sources" && event.name === "LargeScriptCatchup";
-}
-function isAnyScriptSourceEvent(event) {
-  return event.cat === "disabled-by-default-devtools.v8-source-rundown-sources";
-}
+// trace-enums:trace-enums
+var Types = { Events: { "Phase": { "BEGIN": "B", "END": "E", "COMPLETE": "X", "INSTANT": "I", "COUNTER": "C", "ASYNC_NESTABLE_START": "b", "ASYNC_NESTABLE_INSTANT": "n", "ASYNC_NESTABLE_END": "e", "ASYNC_STEP_INTO": "T", "ASYNC_BEGIN": "S", "ASYNC_END": "F", "ASYNC_STEP_PAST": "p", "FLOW_START": "s", "FLOW_STEP": "t", "FLOW_END": "f", "SAMPLE": "P", "OBJECT_CREATED": "N", "OBJECT_SNAPSHOT": "O", "OBJECT_DESTROYED": "D", "METADATA": "M", "MEMORY_DUMP_GLOBAL": "V", "MEMORY_DUMP_PROCESS": "v", "MARK": "R", "CLOCK_SYNC": "c" }, "Name": { "THREAD_NAME": "thread_name", "PROGRAM": "Program", "RUN_TASK": "RunTask", "ASYNC_TASK": "AsyncTask", "RUN_MICROTASKS": "RunMicrotasks", "XHR_LOAD": "XHRLoad", "XHR_READY_STATE_CHANGED": "XHRReadyStateChange", "PARSE_HTML": "ParseHTML", "PARSE_CSS": "ParseAuthorStyleSheet", "COMPILE_CODE": "V8.CompileCode", "COMPILE_MODULE": "V8.CompileModule", "COMPILE": "v8.compile", "COMPILE_SCRIPT": "V8.CompileScript", "OPTIMIZE": "V8.OptimizeCode", "WASM_STREAM_FROM_RESPONSE_CALLBACK": "v8.wasm.streamFromResponseCallback", "WASM_COMPILED_MODULE": "v8.wasm.compiledModule", "WASM_CACHED_MODULE": "v8.wasm.cachedModule", "WASM_MODULE_CACHE_HIT": "v8.wasm.moduleCacheHit", "WASM_MODULE_CACHE_INVALID": "v8.wasm.moduleCacheInvalid", "PROFILE_CALL": "ProfileCall", "EVALUATE_SCRIPT": "EvaluateScript", "FUNCTION_CALL": "FunctionCall", "EVENT_DISPATCH": "EventDispatch", "EVALUATE_MODULE": "v8.evaluateModule", "REQUEST_MAIN_THREAD_FRAME": "RequestMainThreadFrame", "REQUEST_ANIMATION_FRAME": "RequestAnimationFrame", "CANCEL_ANIMATION_FRAME": "CancelAnimationFrame", "FIRE_ANIMATION_FRAME": "FireAnimationFrame", "REQUEST_IDLE_CALLBACK": "RequestIdleCallback", "CANCEL_IDLE_CALLBACK": "CancelIdleCallback", "FIRE_IDLE_CALLBACK": "FireIdleCallback", "TIMER_INSTALL": "TimerInstall", "TIMER_REMOVE": "TimerRemove", "TIMER_FIRE": "TimerFire", "WEB_SOCKET_CREATE": "WebSocketCreate", "WEB_SOCKET_SEND_HANDSHAKE": "WebSocketSendHandshakeRequest", "WEB_SOCKET_RECEIVE_HANDSHAKE": "WebSocketReceiveHandshakeResponse", "WEB_SOCKET_DESTROY": "WebSocketDestroy", "WEB_SOCKET_SEND": "WebSocketSend", "WEB_SOCKET_RECEIVE": "WebSocketReceive", "CRYPTO_DO_ENCRYPT": "DoEncrypt", "CRYPTO_DO_ENCRYPT_REPLY": "DoEncryptReply", "CRYPTO_DO_DECRYPT": "DoDecrypt", "CRYPTO_DO_DECRYPT_REPLY": "DoDecryptReply", "CRYPTO_DO_DIGEST": "DoDigest", "CRYPTO_DO_DIGEST_REPLY": "DoDigestReply", "CRYPTO_DO_SIGN": "DoSign", "CRYPTO_DO_SIGN_REPLY": "DoSignReply", "CRYPTO_DO_VERIFY": "DoVerify", "CRYPTO_DO_VERIFY_REPLY": "DoVerifyReply", "V8_EXECUTE": "V8.Execute", "V8_CONSOLE_RUN_TASK": "V8Console::runTask", "SCHEDULE_POST_TASK_CALLBACK": "SchedulePostTaskCallback", "RUN_POST_TASK_CALLBACK": "RunPostTaskCallback", "ABORT_POST_TASK_CALLBACK": "AbortPostTaskCallback", "DEBUGGER_ASYNC_TASK_RUN": "v8::Debugger::AsyncTaskRun", "DEBUGGER_ASYNC_TASK_SCHEDULED": "v8::Debugger::AsyncTaskScheduled", "GC": "GCEvent", "DOMGC": "BlinkGC.AtomicPhase", "MAJOR_GC": "MajorGC", "MINOR_GC": "MinorGC", "GC_COLLECT_GARBARGE": "BlinkGC.AtomicPhase", "CPPGC_SWEEP": "CppGC.IncrementalSweep", "SCHEDULE_STYLE_RECALCULATION": "ScheduleStyleRecalculation", "LAYOUT": "Layout", "RECALC_STYLE": "UpdateLayoutTree", "INVALIDATE_LAYOUT": "InvalidateLayout", "LAYOUT_INVALIDATION_TRACKING": "LayoutInvalidationTracking", "COMPUTE_INTERSECTION": "ComputeIntersections", "HIT_TEST": "HitTest", "PRE_PAINT": "PrePaint", "LAYERIZE": "Layerize", "LAYOUT_SHIFT": "LayoutShift", "SYNTHETIC_LAYOUT_SHIFT": "SyntheticLayoutShift", "SYNTHETIC_LAYOUT_SHIFT_CLUSTER": "SyntheticLayoutShiftCluster", "UPDATE_LAYER_TREE": "UpdateLayerTree", "SCHEDULE_STYLE_INVALIDATION_TRACKING": "ScheduleStyleInvalidationTracking", "STYLE_RECALC_INVALIDATION_TRACKING": "StyleRecalcInvalidationTracking", "STYLE_INVALIDATOR_INVALIDATION_TRACKING": "StyleInvalidatorInvalidationTracking", "SELECTOR_STATS": "SelectorStats", "BEGIN_COMMIT_COMPOSITOR_FRAME": "BeginCommitCompositorFrame", "PARSE_META_VIEWPORT": "ParseMetaViewport", "META_CHARSET_CHECK": "MetaCharsetCheck", "SCROLL_LAYER": "ScrollLayer", "UPDATE_LAYER": "UpdateLayer", "PAINT_SETUP": "PaintSetup", "PAINT": "Paint", "PAINT_IMAGE": "PaintImage", "COMMIT": "Commit", "COMPOSITE_LAYERS": "CompositeLayers", "RASTER_TASK": "RasterTask", "IMAGE_DECODE_TASK": "ImageDecodeTask", "IMAGE_UPLOAD_TASK": "ImageUploadTask", "DECODE_IMAGE": "Decode Image", "DRAW_LAZY_PIXEL_REF": "Draw LazyPixelRef", "DECODE_LAZY_PIXEL_REF": "Decode LazyPixelRef", "GPU_TASK": "GPUTask", "RASTERIZE": "Rasterize", "EVENT_TIMING": "EventTiming", "OPTIMIZE_CODE": "V8.OptimizeCode", "CACHE_SCRIPT": "v8.produceCache", "CACHE_MODULE": "v8.produceModuleCache", "V8_SAMPLE": "V8Sample", "JIT_CODE_ADDED": "JitCodeAdded", "JIT_CODE_MOVED": "JitCodeMoved", "STREAMING_COMPILE_SCRIPT": "v8.parseOnBackground", "STREAMING_COMPILE_SCRIPT_WAITING": "v8.parseOnBackgroundWaiting", "STREAMING_COMPILE_SCRIPT_PARSING": "v8.parseOnBackgroundParsing", "BACKGROUND_DESERIALIZE": "v8.deserializeOnBackground", "FINALIZE_DESERIALIZATION": "V8.FinalizeDeserialization", "COMMIT_LOAD": "CommitLoad", "MARK_LOAD": "MarkLoad", "MARK_DOM_CONTENT": "MarkDOMContent", "MARK_FIRST_PAINT": "firstPaint", "MARK_FCP": "firstContentfulPaint", "MARK_SOFT_FCP": "SyntheticSoftFirstContentfulPaint", "MARK_LCP_CANDIDATE": "largestContentfulPaint::Candidate", "MARK_LCP_CANDIDATE_FOR_SOFT_NAVIGATION": "largestContentfulPaint::CandidateForSoftNavigation", "MARK_LCP_INVALIDATE": "largestContentfulPaint::Invalidate", "NAVIGATION_START": "navigationStart", "SOFT_NAVIGATION_START": "SoftNavigationStart", "CONSOLE_TIME": "ConsoleTime", "USER_TIMING": "UserTiming", "INTERACTIVE_TIME": "InteractiveTime", "TIME_STAMP": "TimeStamp", "BEGIN_FRAME": "BeginFrame", "NEEDS_BEGIN_FRAME_CHANGED": "NeedsBeginFrameChanged", "BEGIN_MAIN_THREAD_FRAME": "BeginMainThreadFrame", "ACTIVATE_LAYER_TREE": "ActivateLayerTree", "DRAW_FRAME": "DrawFrame", "DROPPED_FRAME": "DroppedFrame", "FRAME_STARTED_LOADING": "FrameStartedLoading", "PIPELINE_REPORTER": "PipelineReporter", "SCREENSHOT": "Screenshot", "RESOURCE_WILL_SEND_REQUEST": "ResourceWillSendRequest", "RESOURCE_SEND_REQUEST": "ResourceSendRequest", "RESOURCE_RECEIVE_RESPONSE": "ResourceReceiveResponse", "RESOURCE_RECEIVE_DATA": "ResourceReceivedData", "RESOURCE_FINISH": "ResourceFinish", "RESOURCE_MARK_AS_CACHED": "ResourceMarkAsCached", "WEB_SOCKET_SEND_HANDSHAKE_REQUEST": "WebSocketSendHandshakeRequest", "WEB_SOCKET_RECEIVE_HANDSHAKE_REQUEST": "WebSocketReceiveHandshakeResponse", "CPU_PROFILE": "CpuProfile", "PROFILE": "Profile", "START_PROFILING": "CpuProfiler::StartProfiling", "PROFILE_CHUNK": "ProfileChunk", "UPDATE_COUNTERS": "UpdateCounters", "JS_SAMPLE": "JSSample", "ANIMATION": "Animation", "PARSE_AUTHOR_STYLE_SHEET": "ParseAuthorStyleSheet", "EMBEDDER_CALLBACK": "EmbedderCallback", "SET_LAYER_TREE_ID": "SetLayerTreeId", "TRACING_STARTED_IN_PAGE": "TracingStartedInPage", "TRACING_STARTED_IN_BROWSER": "TracingStartedInBrowser", "TRACING_SESSION_ID_FOR_WORKER": "TracingSessionIdForWorker", "LAZY_PIXEL_REF": "LazyPixelRef", "LAYER_TREE_HOST_IMPL_SNAPSHOT": "cc::LayerTreeHostImpl", "PICTURE_SNAPSHOT": "cc::Picture", "LEGACY_DISPLAY_ITEM_LIST_SNAPSHOT": "cc::DisplayItemList", "DISPLAY_ITEM_LIST_SNAPSHOT": "cc::DisplayItemList:snapshot", "INPUT_LATENCY_MOUSE_MOVE": "InputLatency::MouseMove", "INPUT_LATENCY_MOUSE_WHEEL": "InputLatency::MouseWheel", "IMPL_SIDE_FLING": "InputHandlerProxy::HandleGestureFling::started", "SCHEDULE_POST_MESSAGE": "SchedulePostMessage", "HANDLE_POST_MESSAGE": "HandlePostMessage", "RENDER_FRAME_IMPL_CREATE_CHILD_FRAME": "RenderFrameImpl::createChildFrame", "LAYOUT_IMAGE_UNSIZED": "LayoutImageUnsized", "DOM_LOADING": "domLoading", "BEGIN_REMOTE_FONT_LOAD": "BeginRemoteFontLoad", "REMOTE_FONT_LOADED": "RemoteFontLoaded", "ANIMATION_FRAME": "AnimationFrame", "ANIMATION_FRAME_PRESENTATION": "AnimationFrame::Presentation", "SYNTHETIC_NETWORK_REQUEST": "SyntheticNetworkRequest", "USER_TIMING_MEASURE": "UserTiming::Measure", "LINK_PRECONNECT": "LinkPreconnect", "PRELOAD_RENDER_BLOCKING_STATUS_CHANGE": "PreloadRenderBlockingStatusChange" }, "Scope": { "THREAD": "t", "PROCESS": "p", "GLOBAL": "g" } } };
 
 // src/convert/cpuprofile.js
 var roundOff = (num) => Math.floor(num * 1e3) / 1e3;
@@ -1072,116 +81,7 @@ function selfProfileToCPUProfile(selfProfile) {
   return crdpProfile;
 }
 
-// src/convert/trace/phase.js
-var Phase2 = {
-  // Standard
-  BEGIN: (
-    /** @type {Types.Events.Phase.BEGIN} */
-    "B"
-  ),
-  END: (
-    /** @type {Types.Events.Phase.END} */
-    "E"
-  ),
-  COMPLETE: (
-    /** @type {Types.Events.Phase.COMPLETE} */
-    "X"
-  ),
-  INSTANT: (
-    /** @type {Types.Events.Phase.INSTANT} */
-    "I"
-  ),
-  COUNTER: (
-    /** @type {Types.Events.Phase.COUNTER} */
-    "C"
-  ),
-  // Async
-  ASYNC_NESTABLE_START: (
-    /** @type {Types.Events.Phase.ASYNC_NESTABLE_START} */
-    "b"
-  ),
-  ASYNC_NESTABLE_INSTANT: (
-    /** @type {Types.Events.Phase.ASYNC_NESTABLE_INSTANT} */
-    "n"
-  ),
-  ASYNC_NESTABLE_END: (
-    /** @type {Types.Events.Phase.ASYNC_NESTABLE_END} */
-    "e"
-  ),
-  ASYNC_STEP_INTO: (
-    /** @type {Types.Events.Phase.ASYNC_STEP_INTO} */
-    "T"
-  ),
-  ASYNC_BEGIN: (
-    /** @type {Types.Events.Phase.ASYNC_BEGIN} */
-    "S"
-  ),
-  ASYNC_END: (
-    /** @type {Types.Events.Phase.ASYNC_END} */
-    "F"
-  ),
-  ASYNC_STEP_PAST: (
-    /** @type {Types.Events.Phase.ASYNC_STEP_PAST} */
-    "p"
-  ),
-  // Flow
-  FLOW_START: (
-    /** @type {Types.Events.Phase.FLOW_START} */
-    "s"
-  ),
-  FLOW_STEP: (
-    /** @type {Types.Events.Phase.FLOW_STEP} */
-    "t"
-  ),
-  FLOW_END: (
-    /** @type {Types.Events.Phase.FLOW_END} */
-    "f"
-  ),
-  // Sample
-  SAMPLE: (
-    /** @type {Types.Events.Phase.SAMPLE} */
-    "P"
-  ),
-  // Object
-  OBJECT_CREATED: (
-    /** @type {Types.Events.Phase.OBJECT_CREATED} */
-    "N"
-  ),
-  OBJECT_SNAPSHOT: (
-    /** @type {Types.Events.Phase.OBJECT_SNAPSHOT} */
-    "O"
-  ),
-  OBJECT_DESTROYED: (
-    /** @type {Types.Events.Phase.OBJECT_DESTROYED} */
-    "D"
-  ),
-  // Metadata
-  METADATA: (
-    /** @type {Types.Events.Phase.METADATA} */
-    "M"
-  ),
-  // Memory Dump
-  MEMORY_DUMP_GLOBAL: (
-    /** @type {Types.Events.Phase.MEMORY_DUMP_GLOBAL} */
-    "V"
-  ),
-  MEMORY_DUMP_PROCESS: (
-    /** @type {Types.Events.Phase.MEMORY_DUMP_PROCESS} */
-    "v"
-  ),
-  // Mark
-  MARK: (
-    /** @type {Types.Events.Phase.MARK} */
-    "R"
-  ),
-  // Clock sync
-  CLOCK_SYNC: (
-    /** @type {Types.Events.Phase.CLOCK_SYNC} */
-    "c"
-  )
-};
-
-// third_party/mimetypes.js
+// src/third_party/mimetypes.js
 var mimeLookup = {
   "123": "application/vnd.lotus-1-2-3",
   "210": "model/step",
@@ -1272,8 +172,8 @@ var mimeLookup = {
   "mods": "application/mods+xml",
   "m21": "application/mp21",
   "mp21": "application/mp21",
-  "mp4": "application/mp4",
-  "mpg4": "application/mp4",
+  "mp4": "video/mp4",
+  "mpg4": "video/mp4",
   "mp4s": "application/mp4",
   "m4p": "application/mp4",
   "msix": "application/msix",
@@ -2426,15 +1326,13 @@ var mimeLookup = {
 
 // src/convert/trace/network.js
 function innerConstructNetworkRequest(entry, requestId) {
-  const baseNetworkEvt = {
-    ...baseEvt,
-    ts: toMicrosec(entry.startTime),
-    ph: Phase2.INSTANT,
-    s: (
-      /** @type {Types.Events.Scope.THREAD} */
-      "t"
-    )
-  };
+  const baseNetworkEvt = (
+    /** @type {const} */
+    {
+      ph: Types.Events.Phase.INSTANT,
+      s: Types.Events.Scope.THREAD
+    }
+  );
   const relativeToReq = (timing) => (
     /** @type MilliSeconds */
     timing - entry.startTime
@@ -2479,10 +1377,9 @@ function innerConstructNetworkRequest(entry, requestId) {
     // <frame> loading
     other: "other"
   };
-  const sendReq = {
+  const sendReq = makeTraceEvent("ResourceSendRequest", {
     ...baseNetworkEvt,
-    ts: toMicrosec(entry.startTime),
-    name: "ResourceSendRequest",
+    ts: toMicrosec(entry.startTime) || \u03BCs(1),
     args: {
       data: {
         requestId,
@@ -2513,12 +1410,12 @@ function innerConstructNetworkRequest(entry, requestId) {
         } : void 0
       }
     }
-  };
+  });
+  const requestStartMs = Math.max(entry.startTime, entry.requestStart);
   const responseStartMs = Math.max(entry.startTime, entry.responseStart);
-  const receiveResp = {
+  const receiveResp = makeTraceEvent("ResourceReceiveResponse", {
     ...baseNetworkEvt,
-    name: "ResourceReceiveResponse",
-    ts: toMicrosec(responseStartMs),
+    ts: toMicrosec(responseStartMs) || \u03BCs(1),
     args: {
       data: {
         requestId,
@@ -2534,12 +1431,18 @@ function innerConstructNetworkRequest(entry, requestId) {
         mimeType: resolveMimeType(entry),
         // Trace value for responseTime looks like unix epoch in seconds. dunno what the point of that is.
         // This is ignored in RPP
-        responseTime: Timing_exports.Milli(responseStartMs),
+        responseTime: (
+          /** @type {Types.Timing.Milli} */
+          responseStartMs
+        ),
         statusCode: entry.responseStatus || 200,
         // not sure if 200 is a sane default
         timing: {
           // While the rest of timing is relative to the request, this is a actual timestamp.
-          requestTime: Timing_exports.Seconds(entry.startTime / 1e3),
+          requestTime: (
+            /** @type {Types.Timing.Seconds} */
+            entry.startTime / 1e3
+          ),
           // requestTime is in SECONDS (lol)
           // All these timings should be relative to the requestTime. Also they're in millisec.
           connectEnd: (
@@ -2574,9 +1477,9 @@ function innerConstructNetworkRequest(entry, requestId) {
             /** @type MilliSeconds */
             0
           ),
-          sendStart: relativeToReq(entry.requestStart),
-          sendEnd: relativeToReq(entry.requestStart),
-          receiveHeadersEnd: relativeToReq(entry.responseStart),
+          sendStart: relativeToReq(requestStartMs),
+          sendEnd: relativeToReq(requestStartMs),
+          receiveHeadersEnd: relativeToReq(responseStartMs),
           sslEnd: (
             /** @type MilliSeconds */
             -1
@@ -2593,11 +1496,11 @@ function innerConstructNetworkRequest(entry, requestId) {
             /** @type MilliSeconds */
             -1
           ),
-          receiveHeadersStart: relativeToReq(entry.responseStart)
+          receiveHeadersStart: relativeToReq(responseStartMs)
         }
       }
     }
-  };
+  });
   const responseEndMs = entry.entryType === "navigation" ? (
     // Nav Timing ends at loadEventEnd: https://w3c.github.io/navigation-timing/#performanceentry
     // But responseEnd is end of the network request.
@@ -2606,16 +1509,18 @@ function innerConstructNetworkRequest(entry, requestId) {
     // For resource-timing, I have no reason to think these two values aren't identical.
     Math.max(entry.responseEnd, entry.startTime + entry.duration)
   );
-  const resFinish = {
+  const resFinish = makeTraceEvent("ResourceFinish", {
     ...baseNetworkEvt,
-    name: "ResourceFinish",
     // This .ts controls the right whisker. We _could_ use onload handlers to find where they land. But.. eh.
-    ts: toMicrosec(responseEndMs),
+    ts: toMicrosec(responseEndMs) || \u03BCs(1),
     // monotonic. microsec.
     args: {
       data: {
         requestId,
-        finishTime: Timing_exports.Seconds(responseEndMs / 1e3),
+        finishTime: (
+          /** @type {Types.Timing.Seconds} */
+          responseEndMs / 1e3
+        ),
         // Monotonic timescale, but in seconds.
         encodedDataLength: entry.transferSize,
         // there's also entry.encodedBodySize but i think this should include headers?
@@ -2623,29 +1528,25 @@ function innerConstructNetworkRequest(entry, requestId) {
         didFail: false
       }
     }
-  };
+  });
   return [sendReq, receiveResp, resFinish];
 }
 
 // src/convert/trace/loaf.js
 function innerHandleLongTask(entry) {
-  const tevt = {
-    ...baseEvt,
+  return makeTraceEvent(Types.Events.Name.RUN_TASK, {
     // Long Tasks are NOT the same thing as RunTasks, (per my Feb 2023 findings) but.. no trace event equivalent exists.
     // TODO: Find a resolution to this.
-    name: (
-      /** @type {Types.Events.Name.RUN_TASK} */
-      "RunTask"
-    ),
     cat: "disabled-by-default-devtools.timeline",
     ts: toMicrosec(entry.startTime),
     dur: toMicrosec(entry.duration),
-    args: {
-      // @ts-expect-error attribution is not part of the ArgsData interface
-      attribution: entry.attribution
-    }
-  };
-  return tevt;
+    args: (
+      /** @type {Types.Events.Args} */
+      {
+        attribution: entry.attribution
+      }
+    )
+  });
 }
 function innerHandleLoAF(entry) {
   const evts = [];
@@ -2653,6 +1554,7 @@ function innerHandleLoAF(entry) {
   craftUserTimingForDebugging(entryWithoutScripts, "Long Animation Frames", "loAF");
   const loafDuration = Math.max(entry.duration, entry.styleAndLayoutStart - entry.startTime + 0.1);
   const endMs = entry.startTime + loafDuration;
+  const animationFrameId = String(toMicrosec(entry.startTime));
   const beginMainFrameStart = entry.renderStart;
   if (entry.styleAndLayoutStart < beginMainFrameStart) {
     console.warn("styleAndLayoutStart found before BMF!?");
@@ -2660,48 +1562,38 @@ function innerHandleLoAF(entry) {
   const beginMainFrameDuration = endMs - beginMainFrameStart;
   if (beginMainFrameStart !== 0) {
     evts.push(
-      /** @type {BeginMainFrame} */
-      {
-        ...baseEvt,
-        name: "ProxyMain::BeginMainFrame",
+      makeTraceEvent("ProxyMain::BeginMainFrame", {
         ts: toMicrosec(beginMainFrameStart),
         dur: toMicrosec(beginMainFrameDuration),
         args: {}
-      }
+      })
     );
   }
   evts.push(
-    /** @type {LoafEvents.AnimationFrameGroupingEvent} */
-    {
-      ...baseEvt,
-      // Animation frame and its other events are missing from the known event names, for now.
-      name: (
-        /** @type {LoafEvents.Name.AnimationFrame} */
-        "AnimationFrame"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_START,
+    makeTraceEvent(Types.Events.Name.ANIMATION_FRAME, {
+      ph: Types.Events.Phase.ASYNC_NESTABLE_START,
+      id: animationFrameId,
       ts: toMicrosec(entry.startTime),
       args: {
+        id: animationFrameId,
         animation_frame_timing_info: {
           blocking_duration_ms: entry.blockingDuration,
           duration_ms: entry.duration,
           num_scripts: entry.scripts.length
         }
       }
-    }
+    })
   );
   if (entry.firstUIEventTimestamp !== 0) {
     evts.push(
-      /** @type {LoafEvents.AnimationFrameInstantEvent} */
-      {
-        ...baseEvt,
-        name: (
-          /** @type {LoafEvents.Name.AnimationFrameFirstUIEvent} */
-          "AnimationFrame::FirstUIEvent"
-        ),
-        ph: Phase2.ASYNC_NESTABLE_INSTANT,
-        ts: toMicrosec(entry.firstUIEventTimestamp)
-      }
+      makeTraceEvent(
+        /** @type {LoafEvents.Name.AnimationFrameFirstUIEvent} */
+        "AnimationFrame::FirstUIEvent",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_INSTANT,
+          ts: toMicrosec(entry.firstUIEventTimestamp)
+        }
+      )
     );
   }
   entry.scripts.forEach((script) => {
@@ -2720,10 +1612,7 @@ function innerHandleLoAF(entry) {
       }
     );
     evts.push(
-      /** @type {Types.Events.FunctionCall} */
-      {
-        ...baseEvt,
-        name: "FunctionCall",
+      makeTraceEvent(Types.Events.Name.FUNCTION_CALL, {
         ts: toMicrosec(script.executionStart),
         dur: toMicrosec(scriptDurationMs - compileDurationMs),
         args: {
@@ -2733,18 +1622,12 @@ function innerHandleLoAF(entry) {
             // This is wrong, but.. might be right if it was minified to 1 line.
             frame: frameData.frame,
             functionName: script.sourceFunctionName,
-            scriptId: -1,
-            // Not valid.
-            url: script.sourceURL,
-            _invoker: script.invoker,
-            // invoker: "https://tailwindcss.com/_next/static/chunks/framework-ce84985cd166733a.js",
-            _invokerType: script.invokerType,
-            // invokerType: "classic-script",
-            _windowAttribution: script.windowAttribution
-            // windowAttribution: "self",
+            scriptId: "-1",
+            // No matching script is available for a LoAF timing entry.
+            url: script.sourceURL
           }
         }
-      }
+      })
     );
     const profileCall = (
       /** @type {Types.Events.SyntheticProfileCall} */
@@ -2777,7 +1660,7 @@ function innerHandleLoAF(entry) {
           /** @type {LoafEvents.Name.AnimationFrameScriptCompile} */
           "AnimationFrame::Script::Compile"
         ),
-        ph: Phase2.ASYNC_NESTABLE_START,
+        ph: Types.Events.Phase.ASYNC_NESTABLE_START,
         ts: toMicrosec(script.startTime),
         args: {
           data: {
@@ -2800,153 +1683,168 @@ function innerHandleLoAF(entry) {
           /** @type {LoafEvents.Name.AnimationFrameScriptCompile} */
           "AnimationFrame::Script::Compile"
         ),
-        ph: Phase2.ASYNC_NESTABLE_END,
+        ph: Types.Events.Phase.ASYNC_NESTABLE_END,
         ts: toMicrosec(script.executionStart)
       });
     }
-    evts.push({
-      ...baseEvt,
-      name: (
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameScriptExecute} */
-        "AnimationFrame::Script::Execute"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_START,
-      ts: toMicrosec(script.startTime),
-      args: {
-        data: {
-          invokerType: script.invokerType,
-          pauseDuration: script.pauseDuration,
-          sourceLocationUrl: script.sourceURL,
-          sourceLocationFunctionName: script.sourceFunctionName || "(anonymous)",
-          sourceLocationCharPosition: script.sourceCharPosition,
-          // not available on the attribution model, yet
-          layoutDuration: 0,
-          // script.layoutDuration
-          styleDuration: 0
-          // script.styleDuration
+        "AnimationFrame::Script::Execute",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_START,
+          ts: toMicrosec(script.startTime),
+          args: {
+            data: {
+              invokerType: script.invokerType,
+              pauseDuration: script.pauseDuration,
+              sourceLocationUrl: script.sourceURL,
+              sourceLocationFunctionName: script.sourceFunctionName || "(anonymous)",
+              sourceLocationCharPosition: script.sourceCharPosition,
+              // not available on the attribution model, yet
+              layoutDuration: 0,
+              // script.layoutDuration
+              styleDuration: 0
+              // script.styleDuration
+            }
+          }
         }
-      }
-    });
-    evts.push({
-      ...baseEvt,
-      name: (
+      )
+    );
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameScriptExecute} */
-        "AnimationFrame::Script::Execute"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_END,
-      ts: toMicrosec(script.startTime + script.duration)
-    });
+        "AnimationFrame::Script::Execute",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_END,
+          ts: toMicrosec(script.startTime + script.duration)
+        }
+      )
+    );
     if (script.forcedStyleAndLayoutDuration) {
       const scriptEnd = script.startTime + script.duration;
       const forcedStyleAndLayoutStart = scriptEnd - script.forcedStyleAndLayoutDuration;
       addStyleAndLayoutPair(forcedStyleAndLayoutStart, script.forcedStyleAndLayoutDuration);
     }
   });
-  evts.push({
-    ...baseEvt,
-    name: (
-      /** @type {LoafEvents.Name.AnimationFrame} */
-      "AnimationFrame"
-    ),
-    ph: Phase2.ASYNC_NESTABLE_END,
-    ts: toMicrosec(endMs)
-  });
+  evts.push(
+    makeTraceEvent(Types.Events.Name.ANIMATION_FRAME, {
+      ph: Types.Events.Phase.ASYNC_NESTABLE_END,
+      id: animationFrameId,
+      ts: toMicrosec(endMs),
+      args: void 0
+    })
+  );
   function addStyleAndLayoutPair(start, duration) {
     const half = toMicrosec(duration / 2 - 1e-3);
     evts.push(
-      /** @type {Types.Events.RecalcStyle} */
-      {
-        ...baseEvt,
-        name: "UpdateLayoutTree",
+      makeTraceEvent(Types.Events.Name.RECALC_STYLE, {
         ts: toMicrosec(start),
         dur: half,
         args: {
           beginData: { frame: frameData.frame },
           elementCount: -1
         }
-      }
+      })
     );
     evts.push(
-      /** @type {Types.Events.Layout} */
-      {
-        ...baseEvt,
-        name: "Layout",
-        ts: toMicrosec(start) + half,
+      makeTraceEvent(Types.Events.Name.LAYOUT, {
+        ts: (
+          /** @type {Types.Timing.Micro} */
+          toMicrosec(start) + half
+        ),
         dur: half,
         args: {
           beginData: { dirtyObjects: -1, totalObjects: -1, partialLayout: false, frame: frameData.frame },
-          endData: { layoutRoots: [{ depth: 1, nodeId: -1, quads: [[0, 0, 1979, 0, 1979, 1982, 0, 1982]] }] }
+          endData: { layoutRoots: [{ depth: 1, nodeId: (
+            /** @type {DOM.BackendNodeId} */
+            -1
+          ), quads: [[0, 0, 1979, 0, 1979, 1982, 0, 1982]] }] }
         }
-      }
+      })
     );
-    evts.push({
-      ...baseEvt,
-      name: (
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameStyleAndLayout} */
-        "AnimationFrame::StyleAndLayout"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_START,
-      ts: toMicrosec(start)
-    });
-    evts.push({
-      ...baseEvt,
-      name: (
+        "AnimationFrame::StyleAndLayout",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_START,
+          ts: toMicrosec(start)
+        }
+      )
+    );
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameStyleAndLayout} */
-        "AnimationFrame::StyleAndLayout"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_END,
-      ts: toMicrosec(endMs - start)
-    });
+        "AnimationFrame::StyleAndLayout",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_END,
+          ts: toMicrosec(endMs - start)
+        }
+      )
+    );
   }
   if (entry.styleAndLayoutStart !== 0) {
     const operationDuration = (endMs - entry.styleAndLayoutStart) * 1 / 6;
     addStyleAndLayoutPair(entry.styleAndLayoutStart, operationDuration * 2);
-    ["PrePaint", "Paint", "Layerize", "Commit"].forEach((name, i2) => {
-      const start = entry.styleAndLayoutStart + (i2 + 2) * operationDuration;
-      evts.push(
-        /** @type {Types.Events.Complete} */
-        {
-          // Lacking more specific type. That's probably ok.
-          ...baseEvt,
-          name,
-          ts: toMicrosec(start),
-          dur: toMicrosec(operationDuration - 1e-3),
-          // 1 microsec adjustment to avoid losing items in the flamechart
-          args: {
-            data: {
-              // This is a mix of all of them, but.. probably doesn't matter.
-              frame: frameData.frame,
-              isMainFrame: true,
-              isOutermostMainFrame: true,
-              page: frameData.frame,
-              frameSeqId: -1,
-              layerTreeId: -1,
-              clip: [-1, -1, -1, -1, -1, -1, -1, -1],
-              nodeId: -1,
-              layerId: -1
-            }
+    const renderingEvent = (index) => ({
+      ts: toMicrosec(entry.styleAndLayoutStart + (index + 2) * operationDuration),
+      dur: toMicrosec(operationDuration - 1e-3)
+      // Leave 1 microsecond between flamechart items.
+    });
+    evts.push(
+      makeTraceEvent(Types.Events.Name.PRE_PAINT, {
+        ...renderingEvent(0),
+        args: { data: { frame: frameData.frame } }
+      }),
+      makeTraceEvent(Types.Events.Name.PAINT, {
+        ...renderingEvent(1),
+        args: {
+          data: {
+            frame: frameData.frame,
+            layerId: -1,
+            nodeId: (
+              /** @type {DOM.BackendNodeId} */
+              -1
+            ),
+            clip: [-1, -1, -1, -1, -1, -1, -1, -1]
           }
         }
-      );
-    });
-    evts.push({
-      ...baseEvt,
-      name: (
+      }),
+      // Layerize has a runtime name but no upstream event interface. Its data
+      // matches Chrome's frame metadata rather than Paint or Commit's payload.
+      makeTraceEvent(Types.Events.Name.LAYERIZE, {
+        ...renderingEvent(2),
+        args: { data: { frame: frameData.frame, isMainFrame: true, isOutermostMainFrame: true, page: frameData.frame } }
+      }),
+      makeTraceEvent(Types.Events.Name.COMMIT, {
+        cat: "disabled-by-default-devtools.timeline",
+        ph: Types.Events.Phase.INSTANT,
+        s: Types.Events.Scope.THREAD,
+        ts: toMicrosec(entry.styleAndLayoutStart + 5 * operationDuration),
+        args: { frameSeqId: -1, layerTreeId: -1 }
+      })
+    );
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameRender} */
-        "AnimationFrame::Render"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_START,
-      ts: toMicrosec(beginMainFrameStart)
-    });
-    evts.push({
-      ...baseEvt,
-      name: (
+        "AnimationFrame::Render",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_START,
+          ts: toMicrosec(beginMainFrameStart)
+        }
+      )
+    );
+    evts.push(
+      makeTraceEvent(
         /** @type {LoafEvents.Name.AnimationFrameRender} */
-        "AnimationFrame::Render"
-      ),
-      ph: Phase2.ASYNC_NESTABLE_END,
-      ts: toMicrosec(beginMainFrameDuration)
-    });
+        "AnimationFrame::Render",
+        {
+          ph: Types.Events.Phase.ASYNC_NESTABLE_END,
+          ts: toMicrosec(beginMainFrameDuration)
+        }
+      )
+    );
   }
   return evts;
 }
@@ -2956,16 +1854,16 @@ function enhanceWithSources(fieldTrace) {
   const { sources } = fieldTrace;
   if (!sources?.length) return;
   for (const source of sources || []) {
-    const scriptCompiled = {
-      ...baseEvt,
-      name: source.isModule ? "ModuleEvaluated" : "ScriptCompiled",
+    const scriptCompiled = makeTraceEvent(source.isModule ? "ModuleEvaluated" : "ScriptCompiled", {
       cat: "disabled-by-default-devtools.target-rundown",
       ts: \u03BCs(0),
       dur: \u03BCs(1),
-      ph: Phase2.COMPLETE,
       args: {
         data: {
-          frame: source.frameId,
+          frame: (
+            /** @type {Page.FrameId} */
+            source.frameId || "_frameid_"
+          ),
           frameType: source.frameType,
           url: source.url,
           isolate: "0x1",
@@ -2975,18 +1873,18 @@ function enhanceWithSources(fieldTrace) {
           scriptId: source.scriptId
         }
       }
-    };
-    const rundownScript = {
-      ...baseEvt,
-      name: "ScriptCatchup",
+    });
+    const sourceRundown = makeTraceEvent("ScriptCatchup", {
       cat: "disabled-by-default-devtools.v8-source-rundown",
       ts: \u03BCs(0),
       dur: \u03BCs(1),
-      ph: Phase2.COMPLETE,
       args: {
         data: {
           isolate: "0x1",
-          executionContextId: "0x1",
+          executionContextId: (
+            /** @type {Runtime.ExecutionContextId} */
+            1
+          ),
           isModule: source.isModule,
           hasSourceUrl: source.hasSourceUrl,
           url: source.url,
@@ -2996,14 +1894,11 @@ function enhanceWithSources(fieldTrace) {
           scriptId: source.scriptId
         }
       }
-    };
-    const rundownScriptSource = {
-      ...baseEvt,
-      name: "ScriptCatchup",
+    });
+    const rundownSourceText = makeTraceEvent("ScriptCatchup", {
       cat: "disabled-by-default-devtools.v8-source-rundown-sources",
       ts: \u03BCs(0),
       dur: \u03BCs(1),
-      ph: Phase2.COMPLETE,
       args: {
         data: {
           isolate: 1,
@@ -3012,24 +1907,26 @@ function enhanceWithSources(fieldTrace) {
           sourceText: source.content
         }
       }
-    };
-    currentTrace.push(scriptCompiled, rundownScript, rundownScriptSource);
+    });
+    currentTrace.push(scriptCompiled, sourceRundown, rundownSourceText);
   }
-  const scriptSrcById = {};
-  sources.forEach((source) => {
-    scriptSrcById[source.url] = source.scriptId;
-  });
-  currentTrace.forEach((evt) => {
-    if (evt.args?.data?.scriptId && evt.args?.data?.url) {
-      evt.args.data.scriptId = scriptSrcById[evt.args.data.url];
+  const scriptIdByUrl = new Map(sources.map((source) => [source.url, source.scriptId]));
+  for (const evt of currentTrace) {
+    if (evt.name === Types.Events.Name.FUNCTION_CALL && evt.ph === Types.Events.Phase.COMPLETE) {
+      const data = (
+        /** @type {Types.Events.FunctionCall} */
+        evt.args.data
+      );
+      if (data?.url !== void 0) {
+        const scriptId = scriptIdByUrl.get(data.url);
+        if (scriptId !== void 0) data.scriptId = String(scriptId);
+      }
     }
-    if (evt.args?.scriptId && evt.args?.url) {
-      evt.args.scriptId = scriptSrcById[evt.args.url];
+    if (evt.name === "ProfileCall" && "callFrame" in evt && evt.callFrame && typeof evt.callFrame === "object" && "scriptId" in evt.callFrame && "url" in evt.callFrame && typeof evt.callFrame.url === "string") {
+      const scriptId = scriptIdByUrl.get(evt.callFrame.url);
+      if (scriptId !== void 0) evt.callFrame.scriptId = scriptId;
     }
-    if (evt.callFrame?.scriptId && evt.callFrame?.url) {
-      evt.callFrame.scriptId = scriptSrcById[evt.callFrame.url];
-    }
-  });
+  }
 }
 
 // src/convert/trace/trace.js
@@ -3037,8 +1934,14 @@ var toMicrosec = (milliNum) => (
   /** @type {Types.Timing.Micro} */
   milliNum * 1e3
 );
-var Ms = Timing_exports.Milli;
-var \u03BCs = Timing_exports.Micro;
+var Ms = (value) => (
+  /** @type {Types.Timing.Milli} */
+  value
+);
+var \u03BCs = (value) => (
+  /** @type {Types.Timing.Micro} */
+  value
+);
 var currentTrace = [];
 var i = 0;
 var getId = () => (
@@ -3046,11 +1949,20 @@ var getId = () => (
   `0x${(i++).toString(16)}`
 );
 var totalInteractionCount = 0;
+var cumulativeLayoutShiftScore = 0;
+var overallLayoutShiftMaxDistance = 0;
+var profileEndTime = \u03BCs(0);
 var baseEvt = {
   cat: "devtools.timeline",
-  pid: TraceEvents_exports.ProcessID(7),
-  tid: TraceEvents_exports.ThreadID(9),
-  ph: Phase2.COMPLETE,
+  pid: (
+    /** @type {Types.Events.ProcessID} */
+    7
+  ),
+  tid: (
+    /** @type {Types.Events.ThreadID} */
+    9
+  ),
+  ph: Types.Events.Phase.COMPLETE,
   args: {},
   // Hack: Use one to avoid some mishandling in the devtools of valid trace events
   // with a ts of 0. We should fix the bug there, but making this a microsecond off
@@ -3058,6 +1970,23 @@ var baseEvt = {
   ts: \u03BCs(1),
   name: "UNSET_NAME"
 };
+function makeTraceEvent(name, init) {
+  const evt = (
+    /** @type {FieldTraceEventByName<N>} */
+    /** @type {unknown} */
+    {
+      pid: baseEvt.pid,
+      tid: baseEvt.tid,
+      cat: "devtools.timeline",
+      ph: Types.Events.Phase.COMPLETE,
+      args: {},
+      name,
+      ...init
+    }
+  );
+  if ("args" in init && init.args === void 0) delete evt.args;
+  return evt;
+}
 var frameData = {
   processId: baseEvt.pid,
   frame: "_frameid_",
@@ -3068,6 +1997,15 @@ var frameData = {
 function reset() {
   currentTrace.length = 0;
   i = 0;
+  totalInteractionCount = 0;
+  cumulativeLayoutShiftScore = 0;
+  overallLayoutShiftMaxDistance = 0;
+  profileEndTime = \u03BCs(0);
+  frameData.processId = baseEvt.pid;
+  frameData.frame = "_frameid_";
+  frameData.name = "_frame_name_";
+  frameData.url = "https://www.UNSET_URL.com/";
+  frameData.navigationId = "_navid_";
   addBaselineTraceEvents();
 }
 function craftUTEvent(entry) {
@@ -3076,7 +2014,7 @@ function craftUTEvent(entry) {
     name: entry.name,
     cat: "blink.user_timing",
     ts: toMicrosec(entry.startTime),
-    ph: Phase2.INSTANT
+    ph: Types.Events.Phase.INSTANT
   };
   if (entry.entryType === "mark") {
     return currentTrace.push(markEvt);
@@ -3084,11 +2022,11 @@ function craftUTEvent(entry) {
   const measureBegin = {
     ...markEvt,
     id2: { local: getId() },
-    ph: Phase2.ASYNC_NESTABLE_START
+    ph: Types.Events.Phase.ASYNC_NESTABLE_START
   };
   const measureEnd = {
     ...measureBegin,
-    ph: Phase2.ASYNC_NESTABLE_END,
+    ph: Types.Events.Phase.ASYNC_NESTABLE_END,
     ts: toMicrosec(entry.startTime + entry.duration)
   };
   currentTrace.push(measureBegin, measureEnd);
@@ -3146,7 +2084,7 @@ function craftUserTimingForDebugging(entry, trackName, entryName) {
         detail: JSON.stringify(detail)
       }
     },
-    ph: Phase2.INSTANT
+    ph: Types.Events.Phase.INSTANT
   };
   if (entry.entryType === "mark" || entry.duration === 0) {
     currentTrace.push(traceEvent);
@@ -3155,7 +2093,7 @@ function craftUserTimingForDebugging(entry, trackName, entryName) {
   const measureBegin = {
     ...traceEvent,
     id2: { local: getId() },
-    ph: Phase2.ASYNC_NESTABLE_START,
+    ph: Types.Events.Phase.ASYNC_NESTABLE_START,
     args: {
       // It's on `args` on a measure, and `args.data` on a mark. Deal with it 8-D
       detail: JSON.stringify(detail)
@@ -3163,7 +2101,7 @@ function craftUserTimingForDebugging(entry, trackName, entryName) {
   };
   const measureEnd = {
     ...measureBegin,
-    ph: Phase2.ASYNC_NESTABLE_END,
+    ph: Types.Events.Phase.ASYNC_NESTABLE_END,
     ts: toMicrosec(entry.startTime + entry.duration)
   };
   if (entry.entryType === "navigation") {
@@ -3184,17 +2122,13 @@ function handleNavigation(entry) {
   frameData.url = entry.name;
   currentTrace.push(...innerConstructNetworkRequest(entry, frameData.navigationId));
   currentTrace.push(
-    /** @type {Types.Events.NavigationStart} */
-    {
-      ...baseEvt,
-      name: "navigationStart",
+    makeTraceEvent(Types.Events.Name.NAVIGATION_START, {
       cat: "blink.user_timing",
       // Hack: Add one to avoid some mishandling in the devtools of valid trace events
       // with a ts of 0. We should fix the bug there, but making this a microsecond off
       // seems an okay tradeoff.
-      ts: toMicrosec(entry.startTime) + 1,
-      // hack to avoid valid, but zero .ts's.
-      ph: Phase2.MARK,
+      ts: toMicrosec(entry.startTime) || \u03BCs(1),
+      ph: Types.Events.Phase.MARK,
       args: {
         data: {
           documentLoaderURL: frameData.url,
@@ -3204,13 +2138,10 @@ function handleNavigation(entry) {
         },
         frame: frameData.frame
       }
-    }
+    })
   );
   currentTrace.push(
-    /** @type {Types.Events.Dispatch} */
-    {
-      ...baseEvt,
-      name: "EventDispatch",
+    makeTraceEvent("EventDispatch", {
       ts: toMicrosec(entry.loadEventStart),
       dur: toMicrosec(entry.loadEventEnd - entry.loadEventStart),
       args: {
@@ -3218,13 +2149,10 @@ function handleNavigation(entry) {
           type: "load"
         }
       }
-    }
+    })
   );
   currentTrace.push(
-    /** @type {Types.Events.Dispatch} */
-    {
-      ...baseEvt,
-      name: "EventDispatch",
+    makeTraceEvent("EventDispatch", {
       ts: toMicrosec(entry.unloadEventStart),
       dur: toMicrosec(entry.unloadEventEnd - entry.unloadEventStart),
       args: {
@@ -3232,13 +2160,10 @@ function handleNavigation(entry) {
           type: "unload"
         }
       }
-    }
+    })
   );
   currentTrace.push(
-    /** @type {Types.Events.Dispatch} */
-    {
-      ...baseEvt,
-      name: "EventDispatch",
+    makeTraceEvent("EventDispatch", {
       ts: toMicrosec(entry.domContentLoadedEventStart),
       dur: toMicrosec(entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart),
       args: {
@@ -3246,15 +2171,12 @@ function handleNavigation(entry) {
           type: "DOMContentLoaded"
         }
       }
-    }
+    })
   );
   if (entry.domContentLoadedEventEnd)
     currentTrace.push(
-      /** @type {Types.Events.MarkDOMContent} */
-      {
-        ...baseEvt,
-        name: "MarkDOMContent",
-        ph: Phase2.INSTANT,
+      makeTraceEvent(Types.Events.Name.MARK_DOM_CONTENT, {
+        ph: Types.Events.Phase.INSTANT,
         ts: toMicrosec(entry.domContentLoadedEventEnd),
         args: {
           data: {
@@ -3265,16 +2187,13 @@ function handleNavigation(entry) {
             page: frameData.frame
           }
         },
-        s: "t"
-      }
+        s: Types.Events.Scope.THREAD
+      })
     );
   if (entry.loadEventEnd)
     currentTrace.push(
-      /** @type {Types.Events.MarkLoad} */
-      {
-        ...baseEvt,
-        name: "MarkLoad",
-        ph: Phase2.INSTANT,
+      makeTraceEvent(Types.Events.Name.MARK_LOAD, {
+        ph: Types.Events.Phase.INSTANT,
         ts: toMicrosec(entry.loadEventEnd),
         args: {
           data: {
@@ -3285,8 +2204,8 @@ function handleNavigation(entry) {
             page: frameData.frame
           }
         },
-        s: "t"
-      }
+        s: Types.Events.Scope.THREAD
+      })
     );
 }
 function craftLongTaskEvent(entry) {
@@ -3298,12 +2217,8 @@ function handleLoafEvent(entry) {
 function craftEventTimingEvent(entry) {
   const { cancelable, duration, processingEnd, processingStart, interactionId } = entry;
   const id = getId();
-  const beginEvent = {
-    ...baseEvt,
-    name: (
-      /** @type {Types.Events.Name.EVENT_TIMING} */
-      "EventTiming"
-    ),
+  const beginEvent = makeTraceEvent(Types.Events.Name.EVENT_TIMING, {
+    ph: Types.Events.Phase.ASYNC_NESTABLE_START,
     ts: toMicrosec(entry.startTime),
     args: {
       data: {
@@ -3325,210 +2240,266 @@ function craftEventTimingEvent(entry) {
         // nodeId, enqueuedToMainThreadTime, interactionOffset
       }
     },
-    ph: Phase2.ASYNC_NESTABLE_START,
     id
-  };
-  const endEvent = {
-    ...baseEvt,
-    name: (
-      /** @type {Types.Events.Name.EVENT_TIMING} */
-      "EventTiming"
-    ),
+  });
+  const endEvent = makeTraceEvent(Types.Events.Name.EVENT_TIMING, {
+    ph: Types.Events.Phase.ASYNC_NESTABLE_END,
     ts: toMicrosec(entry.startTime + entry.duration),
-    ph: Phase2.ASYNC_NESTABLE_END,
     id,
     args: {}
-  };
+  });
   currentTrace.push(beginEvent, endEvent);
 }
 function craftLayoutShiftEvent(entry) {
-  const cumulativeScoreSoFar = currentTrace.filter(TraceEvents_exports.isLayoutShift).reduce((acc, cur) => acc + (cur.args.data?.score ?? 0), 0);
-  const evt = {
-    ...baseEvt,
-    name: (
-      /** @type {Types.Events.LayoutShift['name']} */
-      "LayoutShift"
-    ),
-    cat: "loading",
-    ph: Phase2.INSTANT,
-    // Instant. Current OPP relies on Frame data to extend the 'duration' of the Layout Shift item within the frame. (Kinda dumb, but w/e.)
-    ts: toMicrosec(entry.startTime),
-    args: {
-      data: {
-        score: entry.value,
-        weighted_score_delta: entry.value,
-        cumulative_score: entry.value + cumulativeScoreSoFar,
-        had_recent_input: entry.hadRecentInput,
-        // @ts-expect-error last_input_timestamp is missing from LayoutShiftData interface
-        last_input_timestamp: entry.lastInputTime * 1e3,
-        // TODO Remove this?
-        impacted_nodes: entry.sources.map((source) => {
-          return {
-            old_rect: [source.previousRect.left, source.previousRect.top, source.previousRect.width, source.previousRect.height],
-            new_rect: [source.currentRect.left, source.currentRect.top, source.currentRect.width, source.currentRect.height],
-            node_id: (
-              /** @type {DOM.BackendNodeId} */
-              -1
-            )
-            // This is invalid, but we have no way of determining what backendNodeId it should be.
-          };
-        })
+  const cumulativeScoreSoFar = cumulativeLayoutShiftScore;
+  cumulativeLayoutShiftScore += entry.value;
+  const frameMaxDistance = entry.sources.reduce((maxDistance, source) => {
+    const xDistance = Math.abs(source.currentRect.left - source.previousRect.left);
+    const yDistance = Math.abs(source.currentRect.top - source.previousRect.top);
+    return Math.max(maxDistance, xDistance, yDistance);
+  }, 0);
+  overallLayoutShiftMaxDistance = Math.max(overallLayoutShiftMaxDistance, frameMaxDistance);
+  currentTrace.push(
+    makeTraceEvent(Types.Events.Name.LAYOUT_SHIFT, {
+      cat: "loading",
+      ph: Types.Events.Phase.INSTANT,
+      s: Types.Events.Scope.THREAD,
+      ts: toMicrosec(entry.startTime),
+      args: {
+        frame: frameData.frame,
+        // `impacted_nodes` is required by the trace-engine type, but the
+        // Performance API does not expose backend node IDs, so omit it.
+        data: (
+          /** @type {Types.Events.LayoutShift['args']['data']} */
+          {
+            score: entry.value,
+            weighted_score_delta: entry.value,
+            cumulative_score: entry.value + cumulativeScoreSoFar,
+            had_recent_input: entry.hadRecentInput,
+            is_main_frame: true,
+            frame_max_distance: frameMaxDistance,
+            overall_max_distance: overallLayoutShiftMaxDistance,
+            // The Performance API exposes source rects but not Blink's clipped and
+            // merged region, so retain the available old/new rects individually.
+            region_rects: entry.sources.flatMap((source) => {
+              if (source.currentRect.left === source.previousRect.left && source.currentRect.top === source.previousRect.top) {
+                return [];
+              }
+              return [
+                [source.previousRect.left, source.previousRect.top, source.previousRect.width, source.previousRect.height],
+                [source.currentRect.left, source.currentRect.top, source.currentRect.width, source.currentRect.height]
+              ];
+            })
+          }
+        )
       }
-    }
-  };
-  currentTrace.push(evt);
+    })
+  );
 }
 function craftMetricEvent(entry) {
   if (entry.entryType === "largest-contentful-paint") {
     currentTrace.push(
-      /** @type {Types.Events.LargestContentfulPaintCandidate} */
-      {
-        ...baseEvt,
+      makeTraceEvent(Types.Events.Name.MARK_LCP_CANDIDATE, {
         cat: "loading,rail,devtools.timeline",
-        ph: Phase2.MARK,
+        ph: Types.Events.Phase.MARK,
         ts: toMicrosec(entry.startTime),
-        name: "largestContentfulPaint::Candidate",
-        args: {
-          data: {
-            candidateIndex: 1,
-            isMainFrame: true,
-            isOutermostMainFrame: true,
-            navigationId: frameData.navigationId,
-            nodeId: (
-              /** @type {DOM.BackendNodeId} */
-              150
-            ),
-            size: 15904,
-            type: "text",
-            loadingAttr: ""
-            // TODO: Maybe we can extract loading=lazy signal for this.
-          },
-          frame: frameData.frame
-        }
+        args: (
+          /** @type {Types.Events.LargestContentfulPaintCandidate['args']} */
+          {
+            data: {
+              candidateIndex: 1,
+              isMainFrame: true,
+              isOutermostMainFrame: true,
+              navigationId: frameData.navigationId,
+              nodeId: (
+                /** @type {DOM.BackendNodeId} */
+                150
+              ),
+              size: 15904,
+              type: "text",
+              loadingAttr: ""
+              // TODO: Maybe we can extract loading=lazy signal for this.
+            },
+            frame: frameData.frame
+          }
+        )
         // args.data.nodeId points to the element. that's in `entry.element` but.. can't serialize that.
         // TODO: figure out if i wanna do something harder here. like nodePath
-      }
+      })
     );
     return;
   }
-  let name = "";
   if (entry.name === "first-contentful-paint") {
-    name = "firstContentfulPaint";
-  } else if (entry.name === "first-paint") {
-    name = "firstPaint";
-  } else {
-    console.warn("Handling unexpected metric event", entry.entryType, entry.name);
+    currentTrace.push(
+      makeTraceEvent(Types.Events.Name.MARK_FCP, {
+        cat: "loading,rail,devtools.timeline",
+        ph: Types.Events.Phase.MARK,
+        ts: toMicrosec(entry.startTime),
+        args: { data: { navigationId: frameData.navigationId }, frame: frameData.frame }
+      })
+    );
+    return;
   }
+  if (entry.name === "first-paint") {
+    currentTrace.push(
+      makeTraceEvent(Types.Events.Name.MARK_FIRST_PAINT, {
+        cat: "loading,rail,devtools.timeline",
+        ph: Types.Events.Phase.MARK,
+        ts: toMicrosec(entry.startTime),
+        args: { data: { navigationId: frameData.navigationId }, frame: frameData.frame }
+      })
+    );
+    return;
+  }
+  console.warn("Handling unexpected metric event", entry.entryType, entry.name);
   currentTrace.push(
-    /** @type {Types.Events.FirstContentfulPaint|Types.Events.FirstPaint} */
+    /** @type {Types.Events.Event} */
     {
       ...baseEvt,
-      name,
+      name: "",
       cat: "loading,rail,devtools.timeline",
-      ph: Phase2.MARK,
+      ph: Types.Events.Phase.MARK,
       ts: toMicrosec(entry.startTime),
-      args: { data: { navigationId: frameData.navigationId }, frame: frameData.frame }
+      args: (
+        /** @type {Types.Events.Args} */
+        { data: { navigationId: frameData.navigationId }, frame: frameData.frame }
+      )
     }
   );
 }
 function addBaselineTraceEvents() {
-  const metaEvtBase = {
-    ...baseEvt,
-    cat: "__metadata",
-    ph: Phase2.METADATA
-  };
   currentTrace.push(
-    /** @type {Types.Events.Metadata} */
+    /** @type {Types.Events.Event} */
     {
-      ...metaEvtBase,
+      ...baseEvt,
+      cat: "__metadata",
+      ph: Types.Events.Phase.METADATA,
       name: "process_labels",
-      args: { labels: "ProcessLabel" },
+      args: (
+        /** @type {Types.Events.Args} */
+        { labels: "ProcessLabel" }
+      ),
       ts: \u03BCs(0)
     }
   );
   currentTrace.push(
-    /** @type {Types.Events.ThreadName} */
-    {
-      ...metaEvtBase,
-      name: "thread_name",
+    makeTraceEvent(Types.Events.Name.THREAD_NAME, {
+      cat: "__metadata",
+      ph: Types.Events.Phase.METADATA,
       args: { name: "CrRendererMain" },
       ts: \u03BCs(0)
-    }
+    })
   );
   currentTrace.push(
-    /** @type {Types.Events.ProcessName} */
-    {
-      ...metaEvtBase,
-      name: "process_name",
+    makeTraceEvent("process_name", {
+      cat: "__metadata",
+      ph: Types.Events.Phase.METADATA,
       args: { name: "Renderer" },
       ts: \u03BCs(0)
-    }
-  );
-  currentTrace.push(
-    /** @type {Types.Events.TracingStartedInBrowser} */
-    {
-      ...metaEvtBase,
-      cat: "disabled-by-default-devtools.timeline",
-      name: "TracingStartedInBrowser",
-      ph: Phase2.INSTANT,
-      s: "t",
-      args: {
-        data: {
-          frameTreeNodeId: 1,
-          persistentIds: true,
-          // TODO.. this is missing something. we still dont create pageFrames like we should
-          // …Maybe its fine in new engine now.
-          // https://source.chromium.org/chromium/chromium/src/+/main:third_party/devtools-frontend/src/front_end/models/timeline_model/TimelineModel.ts;l=1226-1266;drc=269e9ae3ebd8d9c79fa42e19a8674d45afd8cc9f
-          frames: [frameData]
-        }
-      }
-    }
-  );
-  currentTrace.push(
-    /** @type {Types.Events.FrameCommittedInBrowser} */
-    {
-      ...metaEvtBase,
-      cat: "disabled-by-default-devtools.timeline",
-      name: "FrameCommittedInBrowser",
-      ph: Phase2.INSTANT,
-      args: {
-        data: frameData
-      }
-    }
+    })
   );
 }
 function constructCpuProfileEvents(selfProfile) {
-  const cpuProfile = selfProfileToCPUProfile(selfProfile);
+  const sortedProfile = {
+    ...selfProfile,
+    samples: selfProfile.samples ? [...selfProfile.samples].sort((a, b) => a.timestamp - b.timestamp) : void 0
+  };
+  const cpuProfile = selfProfileToCPUProfile(
+    /** @type {any} */
+    sortedProfile
+  );
   const profilerChunkEvts = cpuProfileToProfileChunk(cpuProfile);
   currentTrace.push(...profilerChunkEvts);
+  constructMarkerEvents(
+    /** @type {any} */
+    sortedProfile
+  );
+}
+function constructMarkerEvents(selfProfile) {
+  const samples = selfProfile.samples || [];
+  if (samples.length === 0) return;
+  const events = markerRangesFromSamples(samples).map(markerRangeToTraceEvent);
+  currentTrace.push(...events);
+}
+function markerRangesFromSamples(samples) {
+  const markerRanges = [];
+  let activeMarker = null;
+  let activeMarkerStart = 0;
+  const finishActiveMarker = (end) => {
+    if (activeMarker === null) return;
+    markerRanges.push({
+      marker: activeMarker,
+      start: activeMarkerStart,
+      end
+    });
+    activeMarker = null;
+  };
+  for (const sample of samples) {
+    const marker = renderableMarker(sample.marker);
+    if (marker === null) {
+      finishActiveMarker(sample.timestamp);
+      continue;
+    }
+    if (activeMarker === null) {
+      activeMarker = marker;
+      activeMarkerStart = sample.timestamp;
+      continue;
+    }
+    if (activeMarker !== marker) {
+      finishActiveMarker(sample.timestamp);
+      activeMarker = marker;
+      activeMarkerStart = sample.timestamp;
+    }
+  }
+  finishActiveMarker(samples[samples.length - 1].timestamp + averageSampleInterval(samples));
+  return markerRanges;
+}
+function averageSampleInterval(samples) {
+  if (samples.length <= 1) return 10;
+  return (samples[samples.length - 1].timestamp - samples[0].timestamp) / (samples.length - 1);
+}
+function renderableMarker(marker) {
+  if (!marker || marker === "script" || marker === "other") return null;
+  return marker;
+}
+function markerRangeToTraceEvent(markerRange) {
+  const { marker, start, end } = markerRange;
+  const details = markerTraceDetails(marker);
+  return {
+    ...baseEvt,
+    ...details,
+    ph: Types.Events.Phase.COMPLETE,
+    ts: toMicrosec(start),
+    dur: toMicrosec(end - start)
+  };
+}
+function markerTraceDetails(marker) {
+  const markerDetails = {
+    layout: () => ({ name: "Layout", args: { beginData: { frame: frameData.frame } } }),
+    style: () => ({ name: "UpdateLayoutTree", args: { beginData: { frame: frameData.frame } } }),
+    paint: () => ({ name: "Paint", args: { data: { frame: frameData.frame } } }),
+    gc: () => ({ name: "GCEvent", cat: "devtools.timeline,v8", args: {} })
+  };
+  return markerDetails[marker]?.() ?? { name: `BrowserWork:${marker}`, cat: "devtools.timeline", args: {} };
 }
 function cpuProfileToProfileChunk(cpuProfile) {
   const { nodes, samples, timeDeltas, endTime } = cpuProfile;
+  if (!samples) throw new Error("CPU profile is missing samples");
+  profileEndTime = \u03BCs(endTime);
   const id = getId();
-  const profileEvt = {
-    ...baseEvt,
-    name: (
-      /** @type {Types.Events.Profile['name']} */
-      "Profile"
-    ),
+  const profileEvt = makeTraceEvent(Types.Events.Name.PROFILE, {
+    ph: Types.Events.Phase.SAMPLE,
     cat: "disabled-by-default-v8.cpu_profiler",
     ts: \u03BCs(1),
     args: {
       data: {
-        startTime: \u03BCs(0),
-        // @ts-expect-error endTime is missing from ArgsData
-        endTime
+        startTime: \u03BCs(0)
       }
     },
-    ph: Phase2.SAMPLE,
     id
-  };
-  const profileChunkEvt = {
-    ...baseEvt,
-    name: (
-      /** @type {Types.Events.ProfileChunk['name']} */
-      "ProfileChunk"
-    ),
+  });
+  const profileChunkEvt = makeTraceEvent(Types.Events.Name.PROFILE_CHUNK, {
+    ph: Types.Events.Phase.SAMPLE,
     cat: "disabled-by-default-v8.cpu_profiler",
     // Hack: Use one to avoid some mishandling in the devtools of valid trace events
     // with a ts of 0. We should fix the bug there, but making this a microsecond off
@@ -3537,52 +2508,83 @@ function cpuProfileToProfileChunk(cpuProfile) {
     args: {
       data: {
         cpuProfile: {
-          // @ts-expect-error id attributes are incompatible (see comment on the function header)
-          nodes,
-          // @ts-expect-error id attributes are incompatible (see comment on the function header)
-          samples
+          nodes: nodes?.map((node) => ({
+            ...node,
+            id: (
+              /** @type {Types.Events.CallFrameID} */
+              node.id
+            )
+          })),
+          samples: samples.map((id2) => (
+            /** @type {Types.Events.CallFrameID} */
+            id2
+          ))
         },
-        // @ts-expect-error timeDeltas is of type number[] but expected MicroSeconds[]
-        timeDeltas
+        timeDeltas: timeDeltas?.map(\u03BCs)
       }
     },
-    ph: Phase2.SAMPLE,
     id
-  };
+  });
   return [profileEvt, profileChunkEvt];
 }
 function flagInvalidData() {
   function checkForNaN(obj) {
-    if (typeof obj !== "object") return;
+    if (!obj || typeof obj !== "object") return;
     Object.entries(obj).forEach(([key, value]) => {
       if (typeof value === "number" && isNaN(value)) {
         console.warn(`Ruhroh. NaN found on (${key}) within:`, obj);
         if (globalThis.process?.env.NODE_TEST_CONTEXT) throw new Error(`NaN found on (${key}) within: ${JSON.stringify(obj)}`);
+      } else if (value && typeof value === "object") {
+        checkForNaN(value);
       }
     });
   }
   currentTrace.forEach((evt) => {
     checkForNaN(evt);
-    if (evt.args) {
-      checkForNaN(evt.args);
-      checkForNaN(evt.args.data);
-    }
     if (typeof evt.dur === "number" && evt.dur < 0) {
       console.warn(`Ruhroh. Negative duration found on:`, evt);
       if (globalThis.process?.env.NODE_TEST_CONTEXT) throw new Error(`Negative duration found on: ${JSON.stringify(evt)}`);
     }
   });
 }
-function collectTrace(fieldTrace) {
+function collectTrace(fieldTrace, options = {}) {
+  currentTrace.push(
+    makeTraceEvent(Types.Events.Name.TRACING_STARTED_IN_BROWSER, {
+      cat: "disabled-by-default-devtools.timeline",
+      ph: Types.Events.Phase.INSTANT,
+      s: Types.Events.Scope.THREAD,
+      ts: \u03BCs(0),
+      args: {
+        data: {
+          frameTreeNodeId: 1,
+          persistentIds: true,
+          frames: [{ ...frameData }]
+        }
+      }
+    })
+  );
+  currentTrace.push(
+    makeTraceEvent("FrameCommittedInBrowser", {
+      cat: "disabled-by-default-devtools.timeline",
+      ph: Types.Events.Phase.INSTANT,
+      s: Types.Events.Scope.THREAD,
+      ts: \u03BCs(0),
+      args: {
+        data: { ...frameData }
+      }
+    })
+  );
   const metadata = {
     // TODO: use a navigation timestamp for startTime.
   };
-  if (fieldTrace.sources?.length) {
+  if (options.enhanceWithSources && fieldTrace.sources?.length) {
     enhanceWithSources(fieldTrace);
     metadata.enhancedTraceVersion = 1;
   }
-  const profileEvt = currentTrace.find((e) => e.name === "Profile");
-  const lastTs = profileEvt?.args?.data?.endTime ?? currentTrace.reduce((acc, e) => e.ts + (e.dur ?? 0) > acc ? e.ts + (e.dur ?? 0) : acc, 0);
+  const lastTs = Math.max(
+    profileEndTime,
+    currentTrace.reduce((acc, e) => e.ts + (e.dur ?? 0) > acc ? e.ts + (e.dur ?? 0) : acc, 0)
+  );
   const lastEvent = {
     ...baseEvt,
     name: "RunTask",
@@ -3604,7 +2606,7 @@ function collectTrace(fieldTrace) {
 }
 
 // src/convert/convert.js
-function toTrace(fieldTrace) {
+function toTrace(fieldTrace, options = {}) {
   reset();
   const entries = Array.isArray(fieldTrace) ? fieldTrace : fieldTrace.entries;
   entries.sort((a, b) => a.startTime - b.startTime);
@@ -3678,7 +2680,7 @@ function toTrace(fieldTrace) {
   if (fieldTrace.profile) {
     constructCpuProfileEvents(fieldTrace.profile);
   }
-  const traceEvts = collectTrace(fieldTrace);
+  const traceEvts = collectTrace(fieldTrace, options);
   return traceEvts;
 }
 export {

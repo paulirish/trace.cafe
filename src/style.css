@@ -208,7 +208,8 @@ textarea {
 
 
 /* style a button as a link */
-button#selectfile {
+button#selectfile,
+button#copy-collector {
   border: 0;
   background: 0;
   display: inline;
@@ -220,6 +221,22 @@ button#selectfile {
   cursor: pointer;
   text-decoration: underline;
   font-family: unset;
+  font-size: inherit;
+}
+
+.collect-hint {
+  margin: 16px 20px 8px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  color: #5f6368;
+  font-size: 13px;
+}
+
+.collect-hint code {
+  background: #f1f3f4;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
 }
 
 

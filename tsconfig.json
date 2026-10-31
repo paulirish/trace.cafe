@@ -30,6 +30,7 @@
   ],
   "exclude": [
     "src/third_party/fieldtrace-convert.js",
-    "src/third_party/fieldtrace-convert.js.map"
+    "src/third_party/fieldtrace-convert.js.map",
+    "src/third_party/fieldtrace-debug.js"
   ]
 }

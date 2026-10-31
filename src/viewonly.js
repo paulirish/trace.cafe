@@ -100,6 +100,17 @@ setupDragAndDrop(handleFile);
 readParams(); // Handle permalinks and load stuff
 setupFileInput(handleFile);
 
+$('#copy-collector')?.addEventListener('click', async e => {
+  const btn = /** @type {HTMLButtonElement} */ (e.currentTarget);
+  const code = await fetch('./fieldtrace-debug.js').then(r => r.text());
+  await navigator.clipboard.writeText(code);
+  const orig = btn.textContent;
+  btn.textContent = 'Copied! Paste in Console, then run viewFT()';
+  setTimeout(() => {
+    btn.textContent = orig;
+  }, 3000);
+});
+
 
 // Handle pasting of trace file contents.
 document.body.addEventListener('paste', async e => {
